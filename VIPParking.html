@@ -161,6 +161,28 @@
                 source: availableTags
             });
 
+            var availableTimes = [
+                "08:00",
+                "08:30",
+                "09:00",
+                "09:30",
+                "10:00",
+                "10:30",
+                "11:00",
+                "11:30",
+                "12:00",
+                "13:00",
+                "13:30",
+                "14:00",
+                "14:30",
+                "15:00",
+                "15:30",
+                "16:00",
+                "16:30"
+                ];
+            $("#entrytime").autocomplete({
+                source: availableTimes
+            });
         });
     </script>
     <!-- CSS 格式修改 -->
@@ -205,7 +227,7 @@
                 <div class="col-sm-4">
                     停車日期：<input type="text" id="selectdate" name="entry.1579235648" placeholder="停車日期" required> <br />
                     <br />
-                    進場時間：<input type="text" name="entry.1092861337" placeholder="08:00"> <br />
+                    進場時間：<input type="text"id="entrytime" name="entry.1092861337" placeholder="08:00"> <br />
                 </div>
             </div>
             <br />
