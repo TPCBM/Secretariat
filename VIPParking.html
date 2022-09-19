@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>停車申請</title>
+    <meta charset="UTF-8">
+    <!-- 響應式網站 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Boostrap 導入程式 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+
+    <!-- jQuery -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+    <script>
+        $(function () {
+            $("#selectdate").datepicker({
+                changeYear: true,
+                changeMonth: true,
+                dayNamesMin: ["日", "一", "二", "三", "四", "五", "六"],
+                monthNamesShort: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+                prevText: '上月',
+                nextText: '下月',
+                dateFormat: 'yy-mm-dd'
+            });
+        });
+    </script>
+    <!-- CSS 格式修改 -->
+    <style>
+        body {
+            background-color: #FBDA61;
+            background-image: linear-gradient(45deg, #FBDA61 0%, #FF5ACD 100%);
+        }
+    </style>
+
+</head>
+
+<body>
+    <form
+        action="https://docs.google.com/forms/d/e/1FAIpQLSeJYr-Aid6iuAqjlPUg5gw0oPWUEPxSLKPD9cHVQlgGsM8Byg/formResponse">
+
+        <div class="container text-center">
+            貴賓停車申請
+            <p>
+                總處副樓240巷一樓平面停車位申請表單<br />
+                *供非總處之其他單位同仁及外賓、訪客申請用
+            </p>
+            <div class="row">
+                <!-- 第一欄位 -->
+                <div class="col-sm-4">
+                    申請單位：<input type="text" name="entry.1834099464" placeholder="秘書處"> <br />
+                    <br />
+                    姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：<input type="text" name="entry.1008725713"
+                        placeholder="台電秘管家"> <br />
+                    <br />
+                    姓名代號：<input type="text" name="entry.1235191990" placeholder="123456"> <br />
+                    <br />
+                    電話分機：<input type="text" name="entry.675052688" placeholder="6395"> <br />
+                    <br />
+                </div>
+                <!-- 第二欄位 -->
+                <div class="col-sm-4">
+                    車牌號碼：<input type="text" name="entry.1120941535" placeholder="BBQ-9527"> <br />
+                    <br />
+                </div>
+                <!-- 第三欄位 -->
+                <div class="col-sm-4">
+                    停車日期：<input type="text" id="selectdate" name="entry.1579235648" placeholder="停車日期" required> <br />
+                    <br />
+                    進場時間：<input type="text" name="entry.1092861337" placeholder="08:00"> <br />
+                </div>
+            </div>
+            <br />
+            <input type="submit" value="送出申請">
+        </div>
+    </form>
+</body>
+
+</html>
