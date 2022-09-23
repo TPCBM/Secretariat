@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>停車申請</title>
+    <meta charset="UTF-8">
+    <!-- 響應式網站 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Boostrap 導入程式 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+
+    <!-- jQuery -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+    <script>
+        $(function () {
+            $("#selectdate").datepicker({
+                changeYear: true,
+                changeMonth: true,
+                dayNamesMin: ["日", "一", "二", "三", "四", "五", "六"],
+                monthNamesShort: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+                prevText: '上月',
+                nextText: '下月',
+                dateFormat: 'yy-mm-dd'
+            });
+
+            var availableTags = [
+                "001董事會",
+                "002總經理副總經理室",
+                "902水火力發電事業部執行長暨副執行長室",
+                "903核能發電事業部執行長暨副執行長室",
+                "904輸供電事業部執行長暨副執行長室",
+                "905配售電事業部執行長暨副執行長室",
+                "003企劃處",
+                "004發電處",
+                "005供電處",
+                "006電力調度處",
+                "007業務處",
+                "008材料處",
+                "009燃料處",
+                "010財務處",
+                "014秘書處",
+                "015電源開發處",
+                "017營建處",
+                "018會計處",
+                "023系統規劃處",
+                "024資訊系統處",
+                "027核能技術處",
+                "034核能安全委員會",
+                "043核能發電廠緊急計劃執行委員會",
+                "045特種防護團",
+                "050育樂活動推行委員會",
+                "051公眾服務處",
+                "053法律事務室",
+                "054核能安全處",
+                "056核能發電處",
+                "057政風處",
+                "061環境保護處",
+                "062工業安全衛生處",
+                "063新事業開發室",
+                "077配電處",
+                "078核能後端營運處",
+                "079促進電力發展營運協助金審議委員會",
+                "095董事會檢核室",
+                "096人力資源處",
+                "101基隆區營業處",
+                "102台北市區營業處",
+                "103桃園區營業處",
+                "104新竹區營業處",
+                "105台中區營業處",
+                "106彰化區營業處",
+                "107嘉義區營業處",
+                "108台南區營業處",
+                "109高雄區營業處",
+                "110屏東區營業處",
+                "111台東區營業處",
+                "112花蓮區營業處",
+                "113宜蘭區營業處",
+                "114澎湖區營業處",
+                "115台北南區營業處",
+                "116台北北區營業處",
+                "117台北西區營業處",
+                "118南投區營業處",
+                "119鳳山區營業處",
+                "120雲林區營業處",
+                "121新營區營業處",
+                "122苗栗區營業處",
+                "123金門區營業處",
+                "124馬祖區營業處",
+                "203萬大發電廠",
+                "204大觀發電廠",
+                "205明潭發電廠",
+                "225東部發電廠",
+                "231蘭陽發電廠",
+                "236桂山發電廠",
+                "238石門發電廠",
+                "239曾文發電廠",
+                "240翡翠分廠",
+                "255大甲溪發電廠",
+                "257卓蘭發電廠",
+                "271高屏發電廠",
+                "300深澳發電廠",
+                "320林口發電廠",
+                "330南部發電廠",
+                "340大林發電廠",
+                "341興達發電廠",
+                "350第一核能發電廠",
+                "351第二核能發電廠",
+                "352第三核能發電廠",
+                "356龍門核能發電廠",
+                "360協和發電廠",
+                "370通霄發電廠",
+                "371台中發電廠",
+                "380大潭發電廠",
+                "390尖山發電廠",
+                "391塔山發電廠",
+                "470台北供電區營運處",
+                "475新桃供電區營運處",
+                "480台中供電區營運處",
+                "485嘉南供電區營運處",
+                "490高屏供電區營運處",
+                "495花東供電區營運處",
+                "513訓練所",
+                "525放射試驗室",
+                "530南部資料處理中心",
+                "533電力修護處",
+                "534電力修護處南部分處",
+                "535中部資料處理中心",
+                "542電力修護處中部分處",
+                "544澳洲辦事處",
+                "545電力通信處",
+                "546綜合研究所",
+                "602綜合施工處",
+                "609水力施工處",
+                "633核能火力發電工程處",
+                "638北部施工處",
+                "653輸變電工程處",
+                "654北區施工處",
+                "655中區施工處",
+                "656南區施工處",
+                "672龍門施工處",
+                "673深澳施工處",
+                "675南部施工處",
+                "676中部施工處",
+                "678協和施工處",
+                "690台中煤倉工務所",
+                "693再生能源處",
+                "952水火力發電事業部策劃室",
+                "953核能發電事業部策劃室",
+                "954輸供電事業部策劃室",
+                "955配售電事業部策劃室"
+            ];
+            $("#tags").autocomplete({
+                source: availableTags
+            });
+
+            var availableTimes = [
+                "08:00",
+                "08:30",
+                "09:00",
+                "09:30",
+                "10:00",
+                "10:30",
+                "11:00",
+                "11:30",
+                "12:00",
+                "13:00",
+                "13:30",
+                "14:00",
+                "14:30",
+                "15:00",
+                "15:30",
+                "16:00",
+                "16:30"
+            ];
+            $("#entrytime").autocomplete({
+                source: availableTimes
+            });
+        });
+    </script>
+    <!-- CSS 格式修改 -->
+    <style>
+        body {
+            background-color: #87ffc0;
+background-image: linear-gradient(180deg, #87ffc0 0%, #9dcefd 100%);
+
+            
+        }
+
+        H2 {
+            color: rgb(0, 0, 0);
+            text-shadow: 0px 0px 6px rgba(255,255,255,0.7);
+        }
+    </style>
+
+</head>
+
+<body>
+    <form
+        action="https://docs.google.com/forms/d/e/1FAIpQLSeJYr-Aid6iuAqjlPUg5gw0oPWUEPxSLKPD9cHVQlgGsM8Byg/formResponse">
+
+        <div class="container text-center">
+            <H2>貴賓停車申請</H2>
+            <p>
+                總處副樓240巷一樓平面停車位申請表單<br />
+                *供非總處之其他單位同仁及外賓、訪客申請用
+            </p>
+            <div class="row">
+                <!-- 第一欄位 -->
+                <div class="col-sm-4">
+                    申請單位：<input type="text" id="tags" name="entry.1834099464" placeholder="014秘書處"> <br />
+                    <br />
+                    姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：<input type="text" name="entry.1008725713"
+                        placeholder="台電秘管家"> <br />
+                    <br />
+                    姓名代號：<input type="text" name="entry.1235191990" placeholder="123456"> <br />
+                    <br />
+                    電話分機：<input type="text" name="entry.675052688" placeholder="6395"> <br />
+                    <br />
+                </div>
+                <!-- 第二欄位 -->
+                <div class="col-sm-4">
+                    車牌號碼：<input type="text" name="entry.1120941535" placeholder="BBQ-9527"> <br />
+                    <br />
+                </div>
+                <!-- 第三欄位 -->
+                <div class="col-sm-4">
+                    停車日期：<input type="text" id="selectdate" name="entry.1579235648" placeholder="停車日期" required> <br />
+                    <br />
+                    進場時間：<input type="text" id="entrytime" name="entry.1092861337" placeholder="08:00"> <br />
+                </div>
+            </div>
+            <br />
+            <input type="submit" value="送出申請">
+        </div>
+    </form>
+</body>
+
+</html>
