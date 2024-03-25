@@ -10,15 +10,19 @@ def main():
     # 選擇日期
     selected_date = st.date_input("選擇日期", pd.Timestamp.today())
 
+    # 確認選擇的日期類型並轉換為 datetime.datetime
+    if isinstance(selected_date, str):
+        selected_date = pd.to_datetime(selected_date)
+
     # 顯示選擇日期的預定狀況
     st.write(f"日期：{selected_date.date()}")
-    bookings = get_bookings_for_date(df, selected_date.date())
+    bookings = get_bookings_for_date(df, selected_date)
     st.write(bookings)
 
     # 如果日期可預訂，顯示預訂按鈕
     if not bookings:
         if st.button("預訂"):
-            add_booking(df, selected_date.date())
+            add_booking(df, selected_date)
             st.write("預訂成功！")
 
 def create_example_dataframe():
@@ -34,12 +38,12 @@ def create_example_dataframe():
 
 def get_bookings_for_date(df, selected_date):
     # 檢查選擇日期的預定狀況
-    bookings = df[df["Date"].dt.date == selected_date]["Bookings"].values
+    bookings = df[df["Date"].dt.date == selected_date.date()]["Bookings"].values
     return bookings[0] if bookings else False
 
 def add_booking(df, selected_date):
     # 將選擇日期設置為已預訂
-    df.loc[df["Date"].dt.date == selected_date, "Bookings"] = True
+    df.loc[df["Date"].dt.date == selected_date.date(), "Bookings"] = True
 
 if __name__ == "__main__":
     main()
