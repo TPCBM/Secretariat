@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from datetime import datetime
 
 def main():
     st.title("日曆型態顯示和訂位應用程式")
@@ -9,6 +10,9 @@ def main():
 
     # 選擇日期
     selected_date = st.date_input("選擇日期", pd.Timestamp.today())
+
+    # 將選擇的日期轉換為 datetime.datetime
+    selected_date = selected_date.to_pydatetime()
 
     # 顯示選擇日期的預定狀況
     st.write(f"日期：{selected_date.date()}")
