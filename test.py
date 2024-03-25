@@ -1,3 +1,12 @@
+import time
+
+import streamlit as st
+
+import numpy as np
+import pandas as pd
+st.title('我的第一個應用程式')
+
+
 with st.form(key='my_form'):
     form_name = st.text_input(label='姓名', placeholder='請輸入姓名')
     form_gender = st.selectbox('性別', ['男', '女', '其他'])
