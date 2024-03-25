@@ -1,11 +1,10 @@
 import streamlit as st
-from streamlitdate-picker import st_datepicker
 
 def main():
     st.title("日曆型態顯示和訂位應用程式")
 
     # 顯示日曆
-    selected_date = st_datepicker("選擇日期")
+    selected_date = st.date_input("選擇日期")
 
     # 如果選擇了日期，顯示訂位按鈕
     if selected_date:
