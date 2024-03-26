@@ -1,28 +1,28 @@
 import streamlit as st
-import calendar
-from datetime import datetime
 
-# 页面标题
-st.title('餐厅订位系统')
+# Corrected import statements
+from streamlit_date_picker import date_range_picker, date_picker
+from streamlit_date_picker.constants import PickerType, Unit
 
-# 选择月份
-selected_month = st.selectbox("选择月份", [datetime.now().replace(month=i).strftime("%Y-%m") for i in range(1, 13)])
+st.title('Streamlit Date Picker')
 
-# 获取选择的年份和月份
-year, month = map(int, selected_month.split("-"))
+# Use date_range_picker to create a datetime range picker
+st.subheader('Date Range Picker')
+date_range_string = date_range_picker(picker_type=PickerType.time.string_value,
+                                      start=-30, end=0, unit=Unit.minutes.string_value,
+                                      key='range_picker',
+                                      refresh_button={'is_show': True, 'button_name': 'Refresh last 30min',
+                                                      'refresh_date': -30,
+                                                      'unit': Unit.minutes.string_value})
+if date_range_string is not None:
+    start_datetime = date_range_string[0]
+    end_datetime = date_range_string[1]
+    st.write(f"Date Range Picker [{start_datetime}, {end_datetime}]")
 
-# 创建日历
-days_in_month = calendar.monthrange(year, month)[1]
+st.subheader('Date Picker')
+# Use date_picker to create a date picker
+date_string = date_picker(picker_type=PickerType.time.string_value, value=0, unit=Unit.days.string_value,
+                          key='date_picker')
 
-for i in range(1, days_in_month + 1):
-    day = datetime(year, month, i)
-    st.subheader(day.strftime("%Y-%m-%d"))
-
-    # 添加预订表单
-    reservation_name = st.text_input("输入您的姓名")
-    reservation_contact = st.text_input("输入您的联系方式")
-
-    # 保存预订
-    if st.button("提交预订"):
-        st.success(f"预订成功！日期：{day}, 姓名：{reservation_name}, 联系方式：{reservation_contact}")
-        # 在这里可以将预订信息保存到数据库或其他地方
+if date_string is not None:
+    st.write('Date Picker: ', date_string)
