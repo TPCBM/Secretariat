@@ -1,28 +1,24 @@
 import streamlit as st
+from datetime import datetime, timedelta
 
-# Corrected import statements
-from streamlit_date_picker import date_range_picker, date_picker
-from streamlit_date_picker.constants import PickerType, Unit
+def main():
+    st.title("日曆型態的訂位應用程式")
 
-st.title('Streamlit Date Picker')
+    # 選擇日期
+    selected_date = st.date_input("選擇日期", datetime.today())
 
-# Use date_range_picker to create a datetime range picker
-st.subheader('Date Range Picker')
-date_range_string = date_range_picker(picker_type=PickerType.time.string_value,
-                                      start=-30, end=0, unit=Unit.minutes.string_value,
-                                      key='range_picker',
-                                      refresh_button={'is_show': True, 'button_name': 'Refresh last 30min',
-                                                      'refresh_date': -30,
-                                                      'unit': Unit.minutes.string_value})
-if date_range_string is not None:
-    start_datetime = date_range_string[0]
-    end_datetime = date_range_string[1]
-    st.write(f"Date Range Picker [{start_datetime}, {end_datetime}]")
+    # 選擇時間
+    selected_time = st.time_input("選擇時間", datetime.now().time())
 
-st.subheader('Date Picker')
-# Use date_picker to create a date picker
-date_string = date_picker(picker_type=PickerType.time.string_value, value=0, unit=Unit.days.string_value,
-                          key='date_picker')
+    # 選擇服務或項目
+    service_options = ["按摩", "美甲", "髮型設計"]
+    selected_service = st.selectbox("選擇服務或項目", service_options)
 
-if date_string is not None:
-    st.write('Date Picker: ', date_string)
+    # 顯示訂單摘要
+    st.subheader("訂單摘要")
+    st.write(f"日期: {selected_date}")
+    st.write(f"時間: {selected_time}")
+    st.write(f"服務或項目: {selected_service}")
+
+if __name__ == "__main__":
+    main()
