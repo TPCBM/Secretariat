@@ -1,26 +1,53 @@
-import streamlit as st
+from enum import Enum
 
-from streamlit_date_picker import date_range_picker, PickerType, Unit, date_picker
+import streamlit.components.v1 as components
+import os
 
-st.title('Streamlit Date Picker')
 
-# Use date_range_picker to create a datetime range picker
-st.subheader('Date Range Picker')
-date_range_string = date_range_picker(picker_type=PickerType.time.string_value,
-                                      start=-30, end=0, unit=Unit.minutes.string_value,
-                                      key='range_picker',
-                                      refresh_button={'is_show': True, 'button_name': 'Refresh last 30min',
-                                                      'refresh_date': -30,
-                                                      'unit': Unit.minutes.string_value})
-if date_range_string is not None:
-    start_datetime = date_range_string[0]
-    end_datetime = date_range_string[1]
-    st.write(f"Date Range Picker [{start_datetime}, {end_datetime}]")
+class PickerType(Enum):
+    time = 'time',
+    date = 'date',
+    week = 'week',
+    month = 'month',
+    quarter = 'quarter',
+    year = 'year'
 
-st.subheader('Date Picker')
-# Use date_picker to create a date picker
-date_string = date_picker(picker_type=PickerType.time.string_value, value=0, unit=Unit.days.string_value,
-                          key='date_picker')
+    @property
+    def string_value(self):
+        return self.value[0]
 
-if date_string is not None:
-    st.write('Date Picker: ', date_string)
+
+class Unit(Enum):
+    milliseconds = 'milliseconds',
+    seconds = 'seconds',
+    minutes = 'minutes',
+    hours = 'hours',
+    days = 'days',
+    weeks = 'weeks',
+    months = 'months',
+    years = 'years'
+
+    @property
+    def string_value(self):
+        return self.value[0]
+
+
+_RELEASE = True
+
+if not _RELEASE:
+    component_func = components.declare_component(
+        "date_picker",
+        url="http://localhost:3000",
+    )
+else:
+    parent_dir = os.path.dirname(os.path.abspath(__file__))
+    build_dir = os.path.join(parent_dir, "frontend/build")
+    component_func = components.declare_component("dater_picker", path=build_dir)
+
+
+def date_range_picker(picker_type='time', start=-30, end=0, unit='minutes', key=None, refresh_button=None):
+    return component_func(id='date_range_picker', kw=locals(), key=key)
+
+
+def date_picker(picker_type='date', value=0, unit='days', key=None):
+    return component_func(id='date_picker', kw=locals(), key=key)
