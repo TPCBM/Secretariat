@@ -11,7 +11,7 @@ def main():
     selected_time = st.time_input("選擇時間", datetime.now().time())
 
     # 選擇服務或項目
-    service_options = ["按摩", "美甲", "髮型設計"]
+    service_options = ["中餐", "晚餐"]
     selected_service = st.selectbox("選擇服務或項目", service_options)
 
     # 顯示訂單摘要
