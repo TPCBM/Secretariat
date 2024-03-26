@@ -20,5 +20,14 @@ def main():
     st.write(f"時間: {selected_time}")
     st.write(f"服務或項目: {selected_service}")
 
+    # 如果選擇了日期，顯示訂位按鈕
+    if selected_date:
+        st.write(f"你選擇的日期是: {selected_date}")
+        st.write("請點選下方按鈕訂位")
+
+        if st.button("訂位"):
+            st.write("訂位成功！")
+
+
 if __name__ == "__main__":
     main()
