@@ -2,13 +2,13 @@ import streamlit as st
 from datetime import datetime, timedelta
 
 def main():
-    st.title("日曆型態的訂位應用程式")
+    st.title("勵進餐廳訂位系統")
 
     # 選擇日期
     selected_date = st.date_input("選擇日期", datetime.today())
 
     # 選擇時間
-    selected_time = st.time_input("選擇時間", datetime.now().time())
+    #  selected_time = st.time_input("選擇時間", datetime.now().time())
 
     # 選擇服務或項目
     service_options = ["中餐", "晚餐"]
