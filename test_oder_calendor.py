@@ -1,33 +1,27 @@
 import streamlit as st
-from datetime import datetime, timedelta
+from datetime import datetime
 
-def main():
-    st.title("日曆型態的訂位應用程式")
+# 页面标题
+st.title('餐厅订位系统')
 
-    # 選擇日期
-    selected_date = st.date_input("選擇日期", datetime.today())
+# 选择月份
+selected_month = st.selectbox("选择月份", [datetime.now().replace(month=i).strftime("%Y-%m") for i in range(1, 13)])
 
-    # 選擇時間
-    selected_time = st.time_input("選擇時間", datetime.now().time())
+# 获取选择的年份和月份
+year, month = map(int, selected_month.split("-"))
 
-    # 選擇服務或項目
-    service_options = ["中餐", "晚餐"]
-    selected_service = st.selectbox("選擇服務或項目", service_options)
+# 创建日历
+days_in_month = calendar.monthrange(year, month)[1]
 
-    # 顯示訂單摘要
-    st.subheader("訂單摘要")
-    st.write(f"日期: {selected_date}")
-    st.write(f"時間: {selected_time}")
-    st.write(f"服務或項目: {selected_service}")
+for i in range(1, days_in_month + 1):
+    day = datetime(year, month, i)
+    st.subheader(day.strftime("%Y-%m-%d"))
 
-    # 如果選擇了日期，顯示訂位按鈕
-    if selected_date:
-        st.write(f"你選擇的日期是: {selected_date}")
-        st.write("請點選下方按鈕訂位")
+    # 添加预订表单
+    reservation_name = st.text_input("输入您的姓名")
+    reservation_contact = st.text_input("输入您的联系方式")
 
-        if st.button("訂位"):
-            st.write("訂位成功！")
-
-
-if __name__ == "__main__":
-    main()
+    # 保存预订
+    if st.button("提交预订"):
+        st.success(f"预订成功！日期：{day}, 姓名：{reservation_name}, 联系方式：{reservation_contact}")
+        # 在这里可以将预订信息保存到数据库或其他地方
