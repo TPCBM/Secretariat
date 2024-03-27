@@ -2,7 +2,7 @@ import streamlit as st
 from datetime import datetime, timedelta
 st.image(
             "https://cdn2.ettoday.net/images/7234/d7234800.jpg",
-            width=400, # Manually Adjust the width of the image as per requirement
+            width=600, # Manually Adjust the width of the image as per requirement
         )
 def main():
     st.title("勵進餐廳訂位系統")
