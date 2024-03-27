@@ -8,7 +8,16 @@ reservations = {}
 reservations["2023-12-01"] = ["John Doe", "10:00 AM"]
 reservations["2023-12-15"] = ["Jane Doe", "2:00 PM"]
 # Get user input
-selected_month,selected_year = st.date_input("Select Month", datetime.now())
+# Get current date and time
+now = datetime.now()
+
+# Extract year and month
+selected_year = now.year
+selected_month = now.month
+
+# Use extracted values in date_input
+selected_month, selected_year = st.date_input("Select Month", (selected_month, selected_year))
+
 
 # Iterate through days
 for day in range(1, calendar.monthrange(selected_year, selected_month)[1] + 1):
