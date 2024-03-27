@@ -2,7 +2,8 @@ import streamlit as st
 import calendar
 from datetime import datetime
 
-reservations = pd.DataFrame()
+reservations = {}
+
 # Sample data
 reservations["2023-12-01"] = ["John Doe", "10:00 AM"]
 reservations["2023-12-15"] = ["Jane Doe", "2:00 PM"]
