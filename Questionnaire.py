@@ -3,32 +3,25 @@ import streamlit as st
 def main():
     st.title('动态问卷')
 
-    # 第一部分问题
-    st.subheader('第一部分')
-    name = st.text_input('1. 你的名字是什么？')
+    # 第一个问题
+    question_1 = st.radio('1. 你喜欢编程吗？', ('是', '否'))
 
-    # 根据第一个问题的答案决定是否显示第二部分问题
-    if name:
-        st.subheader('第二部分')
-        age = st.slider('2. 你的年龄是多少？', min_value=0, max_value=100)
-
-    # 根据第二个问题的答案决定是否显示第三部分问题
-    if 'age' in locals() and age:
-        st.subheader('第三部分')
-        gender = st.selectbox('3. 你的性别是？', ['男', '女'])
-        feedback = st.text_area('4. 你有什么反馈或建议？')
+    # 根据第一个问题的回答显示不同的下一个问题
+    if question_1 == '是':
+        question_2 = st.slider('2. 你从事编程多长时间了？', min_value=0, max_value=10)
+    else:
+        question_3 = st.text_input('3. 你不喜欢编程的原因是什么？')
 
     submitted = st.button('提交')
 
     if submitted:
-        # 将收集到的数据显示出来
+        # 显示收集到的数据
         st.write('感谢回答！')
-        st.write(f'名字: {name}')
-        if 'age' in locals():
-            st.write(f'年龄: {age}')
-        if 'gender' in locals():
-            st.write(f'性别: {gender}')
-            st.write(f'反馈: {feedback}')
+        st.write(f'你喜欢编程吗？: {question_1}')
+        if question_1 == '是':
+            st.write(f'从事编程的时间: {question_2}')
+        else:
+            st.write(f'不喜欢编程的原因: {question_3}')
 
 if __name__ == '__main__':
     main()
