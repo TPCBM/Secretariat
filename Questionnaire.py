@@ -3,7 +3,7 @@ from datetime import datetime
 import requests
 
 # 设置 LINE 的消息推送 API 认证令牌
-LINE_NOTIFY_TOKEN = "你的LINE消息推送API令牌"
+LINE_NOTIFY_TOKEN = "gWhC59RP6bMjAN4PtU0DPbIdU703f9PBJCKUY1aTuHw"
 
 def main():
     st.title('保安防護聯繫會議辦理情形填報表單')
@@ -18,6 +18,8 @@ def main():
         question_4 = ''
         question_5 = ''
     else:
+        # 如果未召开会议，则将第二个问题的答案设为 None
+        question_2 = None
         # 如果未召开会议，则显示第三个问题：是否已规划召开会议
         question_3 = st.radio('3. 是否已「規劃」召開保安防護聯繫會議?', ('是', '否'))
         if question_3 == '是':
