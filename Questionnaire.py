@@ -19,9 +19,6 @@ def main():
     else:
         question_5 = st.text_input('5. 請說明尚未規劃保安防護聯繫會議之原因')
 
-
-
-    
     submitted = st.button('提交')
 
     if submitted:
