@@ -18,8 +18,6 @@ def main():
         question_4 = ''
         question_5 = ''
     else:
-        # 如果未召开会议，则将第二个问题的答案设为 None
-        question_2 = None
         # 如果未召开会议，则显示第三个问题：是否已规划召开会议
         question_3 = st.radio('3. 是否已「規劃」召開保安防護聯繫會議?', ('是', '否'))
         if question_3 == '是':
@@ -60,9 +58,6 @@ def send_to_line(question_1, question_2, question_3, question_4, question_5):
             message += f"「規劃」保安防護聯繫會議召開日期: {question_4}\n"
         else:
             message += f"尚未規劃保安防護聯繫會議之原因: {question_5}\n"
-
-    # 将消息内容转换为 ASCII 编码，忽略无法编码的字符
-    message = message.encode('ascii', errors='ignore')
 
     # 发送 POST 请求到 LINE 的消息推送 API
     url = "https://notify-api.line.me/api/notify"
