@@ -1,5 +1,9 @@
 import streamlit as st
 from datetime import datetime
+import requests
+
+# 设置 LINE 的消息推送 API 认证令牌
+LINE_NOTIFY_TOKEN = "gWhC59RP6bMjAN4PtU0DPbIdU703f9PBJCKUY1aTuHw"
 
 def main():
     st.title('保安防護聯繫會議辦理情形填報表單')
@@ -23,6 +27,9 @@ def main():
     submitted = st.button('提交')
 
     if submitted:
+        # 发送消息到 LINE
+        send_to_line(question_1)
+
         # 显示收集到的数据
         st.write('感谢回答！')
         st.write(f'是否已召開保安防護聯繫會議: {question_1}')
@@ -34,6 +41,22 @@ def main():
                 st.write(f'「規劃」保安防護聯繫會議召開日期: {question_4}')
             else:
                 st.write(f'尚未規劃保安防護聯繫會議之原因: {question_5}')
+
+def send_to_line(question_1):
+    # 构造要发送的消息
+    message = f"是否已召開保安防護聯繫會議: {question_1}"
+
+    # 发送 POST 请求到 LINE 的消息推送 API
+    url = "https://notify-api.line.me/api/notify"
+    headers = {"Authorization": f"Bearer {LINE_NOTIFY_TOKEN}"}
+    payload = {"message": message}
+    response = requests.post(url, headers=headers, data=payload)
+
+    # 检查是否成功发送消息
+    if response.status_code == 200:
+        st.write("消息已成功发送到 LINE！")
+    else:
+        st.write("消息发送失败，请检查 LINE 的消息推送设置。")
 
 if __name__ == '__main__':
     main()
