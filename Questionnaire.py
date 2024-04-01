@@ -1,14 +1,14 @@
 import streamlit as st
 
 def main():
-    st.title('动态问卷')
+    st.title('保安防護聯繫會議辦理情形填報表單')
 
     # 第一个问题
-    question_1 = st.radio('1. 你喜欢编程吗？', ('是', '否'))
+    question_1 = st.radio('1. 是否已召開保安防護聯繫會議?', ('是', '否'))
 
     # 根据第一个问题的回答显示不同的下一个问题
     if question_1 == '是':
-        question_2 = st.slider('2. 你从事编程多长时间了？', min_value=0, max_value=10)
+        question_2 = st.slider('2. 保安防護聯繫會議召開日期為?', min_value=0, max_value=10)
     else:
         question_3 = st.text_input('3. 你不喜欢编程的原因是什么？')
 
