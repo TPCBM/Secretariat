@@ -1,4 +1,5 @@
 import streamlit as st
+是否已「規劃」召開保安防護聯繫會議?
 
 def main():
     st.title('保安防護聯繫會議辦理情形填報表單')
@@ -8,10 +9,19 @@ def main():
 
     # 根据第一个问题的回答显示不同的下一个问题
     if question_1 == '是':
-        question_2 = st.slider('2. 保安防護聯繫會議召開日期為?', min_value=0, max_value=10)
+        question_2 = st.date_input('2. 保安防護聯繫會議召開日期為?', datetime.today())
     else:
-        question_3 = st.text_input('3. 你不喜欢编程的原因是什么？')
+        question_3 = st.radio('3. 是否已「規劃」召開保安防護聯繫會議?', ('是', '否'))
 
+    # 根据第一个问题的回答显示不同的下一个问题
+    if question_3 == '是':
+        question_4 = st.date_input('4. 「規劃」保安防護聯繫會議召開日期為?', datetime.today())
+    else:
+        question_5 = st.text_input('5. 請說明尚未規劃保安防護聯繫會議之原因')
+
+
+
+    
     submitted = st.button('提交')
 
     if submitted:
