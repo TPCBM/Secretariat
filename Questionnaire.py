@@ -61,8 +61,8 @@ def send_to_line(question_1, question_2, question_3, question_4, question_5):
         else:
             message += f"尚未規劃保安防護聯繫會議之原因: {question_5}\n"
 
-    # 将消息内容编码为 ASCII 格式
-    message = message.encode('ascii', 'ignore')
+    # 将消息内容转换为 ASCII 编码，忽略无法编码的字符
+    message = message.encode('ascii', errors='ignore')
 
     # 发送 POST 请求到 LINE 的消息推送 API
     url = "https://notify-api.line.me/api/notify"
