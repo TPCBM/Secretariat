@@ -1,5 +1,4 @@
 import streamlit as st
-是否已「規劃」召開保安防護聯繫會議?
 
 def main():
     st.title('保安防護聯繫會議辦理情形填報表單')
