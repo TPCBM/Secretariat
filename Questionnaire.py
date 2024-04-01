@@ -9,9 +9,9 @@ def main():
     # 根据第一个问题的回答显示不同的下一个问题
     if question_1 == '是':
         question_2 = st.date_input('2. 保安防護聯繫會議召開日期為?', datetime.today())
+        submitted = st.button('提交')
     else:
         question_3 = st.radio('3. 是否已「規劃」召開保安防護聯繫會議?', ('是', '否'))
-        submitted = st.button('提交')
     
     # 根据第一个问题的回答显示不同的下一个问题
     if question_3 == '是':
