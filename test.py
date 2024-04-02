@@ -5,16 +5,13 @@ from datetime import datetime, timedelta
 # 创建一个包含日期和时间段的DataFrame
 def create_schedule(start_date, end_date):
     dates = pd.date_range(start=start_date, end=end_date)
-    schedule = pd.DataFrame(dates, columns=['Date'])
-    schedule['Morning'] = ''
-    schedule['Afternoon'] = ''
+    schedule = pd.DataFrame(index=dates, columns=['Morning', 'Afternoon'])
     return schedule
 
 # 在日历上显示预订情况
 def show_schedule(schedule):
     cols = st.columns(7)  # 创建7列的布局，代表一周的7天
-    for i, row in schedule.iterrows():
-        date = row['Date']
+    for date, row in schedule.iterrows():
         weekday = date.strftime('%a')
         col_idx = date.weekday()  # 获取当前日期的星期几对应的列索引
         with cols[col_idx]:
@@ -25,7 +22,7 @@ def show_schedule(schedule):
 # 提交预订信息
 def submit_reservation(date, period, name, phone):
     global schedule
-    schedule.loc[schedule['Date'] == date, period] = f"{name} ({phone})"
+    schedule.loc[date, period] = f"{name} ({phone})"
     st.write("预订成功！")
     st.write(schedule)
 
