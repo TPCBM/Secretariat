@@ -6,17 +6,17 @@ from calendar_display import main as display_calendar
 from reservation_form import reservation_form, reservation_data
 
 def main():
-    st.title("餐厅预订系统")
+    st.title("勵進餐廳預定")
 
     option = st.sidebar.selectbox(
-        '选择页面',
-        ['显示日历', '填写预订表单']
+        '頁面選單',
+        ['空位查詢日曆', '填寫預定表單']
     )
 
-    if option == '显示日历':
+    if option == '空位查詢日曆':
         # 将预订信息传递给日历显示页面
         display_calendar(reservation_data)
-    elif option == '填写预订表单':
+    elif option == '填寫預定表單':
         reservation_form()
 
 if __name__ == "__main__":
