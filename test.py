@@ -24,7 +24,7 @@ def show_schedule(schedule):
             if pd.notna(row['Morning']) or pd.notna(row['Afternoon']):
                 st.write(f"{date.day} 日：{row['Morning']} {row['Afternoon']}")
             else:
-                st.write(f"{date.day} 日：空")
+                st.write(f"{date.day} 日：不顯示任何資訊")
 
 # 提交预订信息
 def submit_reservation(date, period, name, phone, schedule):
