@@ -6,24 +6,15 @@ from datetime import datetime, timedelta
 def create_schedule(selected_month):
     # 获取所选月份的第一天和最后一天
     start_date = selected_month.replace(day=1)
-    end_date = selected_month.replace(day=1) + timedelta(days=31)
+    end_date = start_date + pd.offsets.MonthEnd(0)
     # 创建日期范围
-    dates = pd.date_range(start=start_date, end=end_date, closed='left')
+    dates = pd.date_range(start=start_date, end=end_date)
     schedule = pd.DataFrame(index=dates, columns=['Morning', 'Afternoon'])
     return schedule
 
 # 在日历上显示预订情况
 def show_schedule(schedule):
-    cols = st.columns(7)  # 创建7列的布局，代表一周的7天
-    for date, row in schedule.iterrows():
-        if date.month != schedule.index[0].month:  # 如果日期不在选定的月份内，跳过
-            continue
-        weekday = date.strftime('%a')
-        col_idx = date.weekday()  # 获取当前日期的星期几对应的列索引
-        with cols[col_idx]:
-            st.write(f"**{date.strftime('%Y-%m-%d')} ({weekday})**")
-            st.write(row['Morning'])
-            st.write(row['Afternoon'])
+    st.write(schedule)
 
 # 提交预订信息
 def submit_reservation(date, period, name, phone):
@@ -36,21 +27,19 @@ def main():
     global schedule
     st.title("餐厅定位系统")
 
-    # 获取当前日期
-    today = datetime.today()
-    current_month = today.replace(day=1)  # 获取当前月份的第一天
-
-    # 用户选择月份
-    selected_month = st.date_input("选择月份", current_month)
+    # 月份选择
+    selected_month = st.selectbox("月份选择", [f"{i} 月" for i in range(1, 13)])
 
     # 创建选定月份的日历
-    schedule = create_schedule(selected_month)
+    selected_month_number = int(selected_month.split()[0])
+    selected_date = datetime(datetime.now().year, selected_month_number, 1)
+    schedule = create_schedule(selected_date)
 
     # 显示日历上的预订情况
     show_schedule(schedule)
 
     # 用户选择预订日期和时间段
-    date = st.date_input("选择日期")
+    date = st.date_input("选择日期", min_value=schedule.index.min(), max_value=schedule.index.max())
     period = st.selectbox("选择时间段", ['Morning', 'Afternoon'])
 
     # 用户输入预订信息
