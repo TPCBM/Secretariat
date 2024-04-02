@@ -35,7 +35,7 @@ def main():
 
 css="""
 <style>
-    [data-testid="stForm"] {
+    [data-testid="sttitle"] {
         background: LightBlue;
     }
 </style>
