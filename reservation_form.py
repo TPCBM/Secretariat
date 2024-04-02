@@ -21,7 +21,6 @@ def reservation_form():
         else:
             # 将预订信息添加到全局变量中
             global reservation_data
-            ＃reservation_data = reservation_data.append({'Date': date, 'Period': period, 'Name': name, 'Phone': phone}, ignore_index=True)
             # 创建一个新的 DataFrame 包含新的预订数据，并与之前的数据合并
             new_reservation = pd.DataFrame({'Date': [date], 'Period': [period], 'Name': [name], 'Phone': [phone]})
             reservation_data = pd.concat([reservation_data, new_reservation], ignore_index=True)
