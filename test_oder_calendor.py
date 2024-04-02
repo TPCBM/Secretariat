@@ -35,13 +35,12 @@ def main():
 
     css="""
     <style>
-    [data-testid="sttitle"] {
-        background: LightBlue;
-    }
+        [data-testid="sttitle"] {
+            background:LightBlue;
+        }
     </style>
     """
     st.write(css, unsafe_allow_html=True)
-
 
 if __name__ == "__main__":
     main()
