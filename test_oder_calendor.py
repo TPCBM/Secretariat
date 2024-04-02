@@ -33,14 +33,14 @@ def main():
         if st.button("訂位"):
             st.write("訂位成功！")
 
-css="""
-<style>
+    css="""
+    <style>
     [data-testid="sttitle"] {
         background: LightBlue;
     }
-</style>
-"""
-st.write(css, unsafe_allow_html=True)
+    </style>
+    """
+    st.write(css, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
