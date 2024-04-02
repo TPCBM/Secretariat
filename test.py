@@ -69,9 +69,10 @@ def main():
     # min_date = datetime.combine(schedule.index.min(), datetime.min.time()).date()
     # max_date = datetime.combine(schedule.index.max(), datetime.max.time()).date()
     # date = st.date_input("选择日期", min_value=min_date, max_value=max_date)
-    date = st.date_input("选择日期", datetime.today()）
+    date = st.date_input('选择日期', datetime.today()）
     period = st.selectbox("选择时间段", ['Morning', 'Afternoon'])
 
+    
     # 用户填写预订信息
     name = st.text_input("预订人姓名")
     phone = st.text_input("联系电话")
