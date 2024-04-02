@@ -48,7 +48,7 @@ def show_schedule(schedule):
 def submit_reservation(date, period, name, phone, schedule):
     schedule.loc[date, period] = f"{name} ({phone})"
     st.write("预订成功！")
-    #  st.write(schedule)
+    st.write(schedule)
 
 def main():
     global schedule
