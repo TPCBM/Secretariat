@@ -12,7 +12,7 @@ def main():
     css="""
     <style>
     [data-testid="stForm"] {
-        background: LightBlue;
+        backgroundColor="#2bd9bc";
     }
     </style>
     """
