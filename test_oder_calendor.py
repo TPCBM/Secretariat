@@ -1,7 +1,6 @@
 import streamlit as st
 from datetime import datetime, timedelta
-[theme]
-backgroundColor="#2bd9bc"
+ # backgroundColor="#2bd9bc"
 
 st.image(
             "https://cdn2.ettoday.net/images/7234/d7234800.jpg",
@@ -10,6 +9,14 @@ st.image(
 def main():
     st.title("勵進餐廳訂位系統")
 
+    css="""
+    <style>
+    [data-testid="stForm"] {
+        background: LightBlue;
+    }
+    </style>
+    """
+            
     # 選擇日期
     selected_date = st.date_input("選擇日期", datetime.today())
 
