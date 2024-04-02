@@ -10,9 +10,12 @@ def create_schedule(start_date, end_date):
 
 # 在日历上显示预订情况
 def show_schedule(schedule, selected_month):
+    # 将 selected_month 转换为 pandas Timestamp 对象
+    selected_month = pd.Timestamp(selected_month)
+
     # 过滤出所选月份的数据
     schedule_filtered = schedule[(schedule.index >= selected_month) & (schedule.index < (selected_month + pd.DateOffset(months=1)))]
-    
+
     cols = st.columns(7)  # 创建7列的布局，代表一周的7天
     for date, row in schedule_filtered.iterrows():
         weekday = date.strftime('%a')
