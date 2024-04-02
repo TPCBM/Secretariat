@@ -15,12 +15,14 @@ def show_schedule(schedule):
     st.write(schedule)
 
 # 提交预订信息
-def submit_reservation(schedule, date, period, name, phone):
+def submit_reservation(date, period, name, phone):
+    global schedule
     schedule.loc[schedule['Date'] == date, period] = f"{name} ({phone})"
     st.write("预订成功！")
     st.write(schedule)
 
 def main():
+    global schedule
     st.title("餐厅定位系统")
 
     # 获取当前日期
@@ -46,7 +48,7 @@ def main():
 
     # 提交预订信息
     if st.button("提交预订"):
-        submit_reservation(schedule, date, period, name, phone)
+        submit_reservation(date, period, name, phone)
 
 if __name__ == "__main__":
     main()
