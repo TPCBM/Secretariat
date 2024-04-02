@@ -14,17 +14,17 @@ def create_schedule(selected_month):
 
 # 在日历上显示预订情况
 def show_schedule(schedule):
+    st.write("日\t一\t二\t三\t四\t五\t六")
     cols = st.columns(7)  # 创建7列的布局，代表一周的7天
     for date, row in schedule.iterrows():
         if date.month != schedule.index[0].month:  # 如果日期不在选定的月份内，跳过
             continue
-        weekday = date.strftime('%a')
         col_idx = date.weekday()  # 获取当前日期的星期几对应的列索引
         with cols[col_idx]:
             if pd.notna(row['Morning']) or pd.notna(row['Afternoon']):
                 st.write(f"{date.day} 日：{row['Morning']} {row['Afternoon']}")
             else:
-                st.write(f"{date.day} 日：不顯示任何資訊")
+                st.write(f"{date.day} 日：")
 
 # 提交预订信息
 def submit_reservation(date, period, name, phone, schedule):
