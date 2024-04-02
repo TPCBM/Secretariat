@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # 创建一个包含日期和时间段的DataFrame
 def create_schedule(start_date, end_date):
@@ -12,7 +12,15 @@ def create_schedule(start_date, end_date):
 
 # 在日历上显示预订情况
 def show_schedule(schedule):
-    st.write(schedule)
+    cols = st.columns(7)  # 创建7列的布局，代表一周的7天
+    for i, row in schedule.iterrows():
+        date = row['Date']
+        weekday = date.strftime('%a')
+        col_idx = date.weekday()  # 获取当前日期的星期几对应的列索引
+        with cols[col_idx]:
+            st.write(f"**{date.strftime('%Y-%m-%d')} ({weekday})**")
+            st.write(row['Morning'])
+            st.write(row['Afternoon'])
 
 # 提交预订信息
 def submit_reservation(date, period, name, phone):
@@ -32,7 +40,7 @@ def main():
 
     # 创建一个月份的日历
     start_date = st.date_input("选择月份", datetime(current_year, current_month, 1))
-    end_date = pd.to_datetime(start_date) + pd.DateOffset(days=30)
+    end_date = start_date + timedelta(days=30)
     schedule = create_schedule(start_date, end_date)
 
     # 显示日历上的预订情况
