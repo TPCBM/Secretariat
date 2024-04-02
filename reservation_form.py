@@ -8,7 +8,7 @@ from datetime import datetime
 reservation_data = pd.DataFrame(columns=['Date', 'Period', 'Name', 'Phone'])
 
 def reservation_form():
-    st.title("勵進餐廳預定")
+    st.title("請填寫預定表單")
 
     date = st.date_input("訂位日期")
     period = st.selectbox("訂位時段", ['中午(11:00-14:00)', '晚上(17:00-20:00)'])
