@@ -1,6 +1,6 @@
 import streamlit as st
 from datetime import datetime, timedelta
-backgroundColor="#FFFFFF"
+backgroundColor="#2bd9bc"
 st.image(
             "https://cdn2.ettoday.net/images/7234/d7234800.jpg",
             width=400, # Manually Adjust the width of the image as per requirement
