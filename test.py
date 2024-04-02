@@ -16,17 +16,6 @@ def create_schedule(selected_month):
 def show_schedule(schedule):
     st.write("日\t一\t二\t三\t四\t五\t六")
     cols = st.columns(7)  # 创建7列的布局，代表一周的7天
-
-    # 获取月份的第一天是星期几
-    first_day_of_month = schedule.index[0]
-    first_day_of_month_weekday = first_day_of_month.weekday()
-
-    # 输出月份第一行之前的空白
-    for i in range(first_day_of_month_weekday):
-        with cols[i]:
-            st.write(" ")
-
-    # 输出日期和预订情况
     date_iter = schedule.index[0]
     while date_iter <= schedule.index[-1]:
         # 找到星期几对应的列
@@ -66,7 +55,9 @@ def main():
     show_schedule(schedule)
 
     # 用户选择预订日期和时间段
-    date = st.date_input("选择日期", min_value=schedule.index.min(), max_value=schedule.index.max())
+    min_date = datetime.combine(schedule.index.min(), datetime.min.time())
+    max_date = datetime.combine(schedule.index.max(), datetime.max.time())
+    date = st.date_input("选择日期", min_value=min_date, max_value=max_date)
     period = st.selectbox("选择时间段", ['Morning', 'Afternoon'])
 
     # 用户填写预订信息
