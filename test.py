@@ -66,7 +66,7 @@ def main():
     show_schedule(schedule)
 
     # 用户选择预订日期和时间段
-    date = st.date_input("选择日期", min_value=schedule.index.min(), max_value=schedule.index.max())
+    date = st.date_input("选择日期")
     period = st.selectbox("选择时间段", ['Morning', 'Afternoon'])
 
     # 用户填写预订信息
