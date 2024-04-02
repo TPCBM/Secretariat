@@ -16,15 +16,22 @@ def create_schedule(selected_month):
 def show_schedule(schedule):
     st.write("日\t一\t二\t三\t四\t五\t六")
     cols = st.columns(7)  # 创建7列的布局，代表一周的7天
-    for date, row in schedule.iterrows():
-        if date.month != schedule.index[0].month:  # 如果日期不在选定的月份内，跳过
-            continue
-        col_idx = date.weekday()  # 获取当前日期的星期几对应的列索引
+    date_iter = schedule.index[0]
+    while date_iter <= schedule.index[-1]:
+        # 找到星期几对应的列
+        col_idx = date_iter.weekday()
         with cols[col_idx]:
-            if pd.notna(row['Morning']) or pd.notna(row['Afternoon']):
-                st.write(f"{date.day} 日：{row['Morning']} {row['Afternoon']}")
+            # 如果不是当前月的日期，显示空白
+            if date_iter.month != schedule.index[0].month:
+                st.write(" ")
             else:
-                st.write(f"{date.day} 日：")
+                # 显示日期和预订情况
+                if pd.notna(schedule.loc[date_iter, 'Morning']) or pd.notna(schedule.loc[date_iter, 'Afternoon']):
+                    st.write(f"{date_iter.day} 日：{schedule.loc[date_iter, 'Morning']} {schedule.loc[date_iter, 'Afternoon']}")
+                else:
+                    st.write(f"{date_iter.day} 日：")
+            # 更新日期迭代器
+            date_iter += timedelta(days=1)
 
 # 提交预订信息
 def submit_reservation(date, period, name, phone, schedule):
