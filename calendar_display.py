@@ -12,7 +12,7 @@ def create_schedule(selected_month):
     schedule = pd.DataFrame(index=dates, columns=['Morning', 'Afternoon'])
     return schedule
 
-def show_schedule(schedule):
+def show_schedule(schedule, reservation_data):
     # 在日历上显示预订情况
     st.write("日\t一\t二\t三\t四\t五\t六")
     cols = st.columns(7)
@@ -31,15 +31,21 @@ def show_schedule(schedule):
             if date_iter.month != schedule.index[0].month:
                 st.write(" ")
             else:
-                st.write(date_iter.day)
+                # 在日历中显示预订信息
+                if not reservation_data.empty:
+                    for index, row in reservation_data.iterrows():
+                        if row['Date'] == date_iter:
+                            st.write(f"{date_iter.day} 日：{row['Name']} ({row['Phone']}) - {row['Period']}")
+                else:
+                    st.write(date_iter.day)
         date_iter += timedelta(days=1)
 
-def main():
+def main(reservation_data):
     selected_month = st.selectbox("选择月份", [f"{i} 月" for i in range(1, 13)])
     selected_month_number = int(selected_month.split()[0])
     selected_date = datetime(datetime.now().year, selected_month_number, 1)
     schedule = create_schedule(selected_date)
-    show_schedule(schedule)
+    show_schedule(schedule, reservation_data)
 
 if __name__ == "__main__":
     main()
