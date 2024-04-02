@@ -11,7 +11,7 @@ def main():
 
     css="""
     <style>
-    [data-testid="stForm"] {
+    [data-testid="sttitle"] {
         backgroundColor="#2bd9bc";
     }
     </style>
