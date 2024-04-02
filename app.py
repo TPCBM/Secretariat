@@ -1,6 +1,7 @@
 # app.py
 
 import streamlit as st
+import pandas as pd
 from calendar_display import main as display_calendar
 from reservation_form import reservation_form, reservation_data
 
