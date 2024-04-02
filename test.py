@@ -10,8 +10,9 @@ def create_schedule(start_date, end_date):
 
 # 在日历上显示预订情况
 def show_schedule(schedule):
+    schedule_sorted = schedule.sort_index()  # 按日期排序
     cols = st.columns(7)  # 创建7列的布局，代表一周的7天
-    for date, row in schedule.iterrows():
+    for date, row in schedule_sorted.iterrows():
         weekday = date.strftime('%a')
         col_idx = date.weekday()  # 获取当前日期的星期几对应的列索引
         with cols[col_idx]:
