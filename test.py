@@ -48,7 +48,8 @@ def show_schedule(schedule):
 def submit_reservation(date, period, name, phone, schedule):
     schedule.loc[date, period] = f"{name} ({phone})"
     st.write("预订成功！")
-    st.write(schedule)
+    st.write("当前预订情况：")
+    st.text(schedule.to_string())  # 将 DataFrame 转换为字符串并显示
 
 def main():
     session_state = st.session_state
