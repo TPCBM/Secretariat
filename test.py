@@ -69,7 +69,7 @@ def main():
     # min_date = datetime.combine(schedule.index.min(), datetime.min.time()).date()
     # max_date = datetime.combine(schedule.index.max(), datetime.max.time()).date()
     # date = st.date_input("选择日期", min_value=min_date, max_value=max_date)
-    date = st.date_input('选择日期'）
+    date = st.date_input('选择日期')
     period = st.selectbox("选择时间段", ['Morning', 'Afternoon'])
 
     
