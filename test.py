@@ -9,10 +9,12 @@ def create_schedule(start_date, end_date):
     return schedule
 
 # 在日历上显示预订情况
-def show_schedule(schedule):
-    schedule_sorted = schedule.sort_index()  # 按日期排序
+def show_schedule(schedule, selected_month):
+    # 过滤出所选月份的数据
+    schedule_filtered = schedule[(schedule.index >= selected_month) & (schedule.index < (selected_month + pd.DateOffset(months=1)))]
+    
     cols = st.columns(7)  # 创建7列的布局，代表一周的7天
-    for date, row in schedule_sorted.iterrows():
+    for date, row in schedule_filtered.iterrows():
         weekday = date.strftime('%a')
         col_idx = date.weekday()  # 获取当前日期的星期几对应的列索引
         with cols[col_idx]:
@@ -33,16 +35,17 @@ def main():
 
     # 获取当前日期
     today = datetime.today()
-    current_month = today.month
+    current_month = today.replace(day=1)  # 获取当前月份的第一天
     current_year = today.year
 
     # 创建一个月份的日历
-    start_date = st.date_input("选择月份", datetime(current_year, current_month, 1))
-    end_date = start_date + timedelta(days=30)
+    selected_month = st.date_input("选择月份", current_month)
+    start_date = selected_month
+    end_date = selected_month + timedelta(days=30)
     schedule = create_schedule(start_date, end_date)
 
     # 显示日历上的预订情况
-    show_schedule(schedule)
+    show_schedule(schedule, selected_month)
 
     # 用户选择预订日期和时间段
     date = st.date_input("选择日期")
