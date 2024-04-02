@@ -51,7 +51,10 @@ def submit_reservation(date, period, name, phone, schedule):
     st.write(schedule)
 
 def main():
-    global schedule
+    session_state = st.session_state
+    if 'schedule' not in session_state:
+        session_state.schedule = create_schedule(datetime.now())
+
     st.title("餐厅定位系统")
 
     # 月份选择
@@ -60,10 +63,10 @@ def main():
     # 创建选定月份的日历
     selected_month_number = int(selected_month.split()[0])
     selected_date = datetime(datetime.now().year, selected_month_number, 1)
-    schedule = create_schedule(selected_date)
+    session_state.schedule = create_schedule(selected_date)
 
     # 显示日历上的预订情况
-    show_schedule(schedule)
+    show_schedule(session_state.schedule)
 
     # 用户选择预订日期和时间段
     date = st.date_input("选择日期")
@@ -78,7 +81,7 @@ def main():
         if name == '' or phone == '':
             st.error("姓名和电话为必填项！")
         else:
-            submit_reservation(date, period, name, phone, schedule)
+            submit_reservation(date, period, name, phone, session_state.schedule)
 
 if __name__ == "__main__":
     main()
