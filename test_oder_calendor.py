@@ -8,14 +8,6 @@ st.image(
         )
 def main():
     st.title("勵進餐廳訂位系統")
-
-    css="""
-    <style>
-    [data-testid="sttitle"] {
-        backgroundColor="#2bd9bc";
-    }
-    </style>
-    """
             
     # 選擇日期
     selected_date = st.date_input("選擇日期", datetime.today())
@@ -40,6 +32,15 @@ def main():
 
         if st.button("訂位"):
             st.write("訂位成功！")
+
+css="""
+<style>
+    [data-testid="stForm"] {
+        background: LightBlue;
+    }
+</style>
+"""
+st.write(css, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
