@@ -38,7 +38,7 @@ def show_schedule(schedule):
             else:
                 # 显示日期和预订情况
                 if pd.notna(schedule.loc[date_iter, 'Morning']) or pd.notna(schedule.loc[date_iter, 'Afternoon']):
-                    st.write(f"{date_iter.day} 日：{schedule.loc[date_iter, 'Morning']} {schedule.loc[date_iter, 'Afternoon']}")
+                    st.write(f"{date_iter.day} 日：{str(schedule.loc[date_iter, 'Morning'])} {str(schedule.loc[date_iter, 'Afternoon'])}")
                 else:
                     st.write(f"{date_iter.day} 日：")
             # 更新日期迭代器
