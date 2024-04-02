@@ -41,7 +41,7 @@ def show_schedule(schedule, reservation_data):
         date_iter += timedelta(days=1)
 
 def main(reservation_data):
-    selected_month = st.selectbox("选择月份", [f"{i} 月" for i in range(1, 13)])
+    selected_month = st.selectbox("訂位月份", [f"{i} 月" for i in range(1, 13)])
     selected_month_number = int(selected_month.split()[0])
     selected_date = datetime(datetime.now().year, selected_month_number, 1)
     schedule = create_schedule(selected_date)
