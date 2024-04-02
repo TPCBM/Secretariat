@@ -2,7 +2,7 @@
 
 import streamlit as st
 from calendar_display import main as display_calendar
-from reservation_form import reservation_form
+from reservation_form import reservation_form, reservation_data
 
 def main():
     st.title("餐厅预订系统")
@@ -13,7 +13,8 @@ def main():
     )
 
     if option == '显示日历':
-        display_calendar()
+        # 将预订信息传递给日历显示页面
+        display_calendar(reservation_data)
     elif option == '填写预订表单':
         reservation_form()
 
