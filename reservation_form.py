@@ -22,8 +22,6 @@ def reservation_form(reservation_data):
 
             st.success("預定成功！")
 
-            print("Updated reservation data:", reservation_data)  # 添加打印语句以确认更新后的数据
-
             return reservation_data  # 返回更新后的 reservation_data
 
     # 如果没有提交预订，返回原始的 reservation_data
