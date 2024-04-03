@@ -14,7 +14,7 @@ def create_schedule(selected_month):
 
 def show_schedule(schedule, reservation_data):
     # 创建一个空的 DataFrame 来存储日历信息
-    calendar_df = pd.DataFrame(index=schedule.index, columns=['Date', 'Morning', 'Afternoon'])
+    calendar_df = pd.DataFrame(index=schedule.index, columns=['預定日期', '中午(11:00-14:00)', '晚上(17:00-20:00)'])
 
     # 填充日期列
     calendar_df['Date'] = calendar_df.index.day
