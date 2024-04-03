@@ -4,10 +4,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# 用于保存预订信息的全局变量
-reservation_data = pd.DataFrame(columns=['Date', 'Period', 'Name', 'Phone'])
-
-def reservation_form():
+def reservation_form(reservation_data):  # 将 reservation_data 作为参数传入函数中
     st.title("請填寫預定表單")
 
     date = st.date_input("訂位日期")
@@ -26,6 +23,3 @@ def reservation_form():
             reservation_data = pd.concat([reservation_data, new_reservation], ignore_index=True)
 
             st.success("預定成功！")
-
-if __name__ == "__main__":
-    reservation_form()
