@@ -17,7 +17,7 @@ def show_schedule(schedule, reservation_data):
     calendar_df = pd.DataFrame(index=schedule.index, columns=['預定日期', '中午(11:00-14:00)', '晚上(17:00-20:00)'])
 
     # 填充日期列
-    calendar_df['Date'] = calendar_df.index.day
+    calendar_df['預定日期'] = calendar_df.index.day
 
     # 填充预订信息
     for index, row in reservation_data.iterrows():
@@ -25,13 +25,21 @@ def show_schedule(schedule, reservation_data):
         period = row['Period']
         name = row['Name']
         phone = row['Phone']
-        if period == 'Morning':
-            calendar_df.loc[calendar_df.index == date, 'Morning'] = f"{name} ({phone})"
-        elif period == 'Afternoon':
-            calendar_df.loc[calendar_df.index == date, 'Afternoon'] = f"{name} ({phone})"
+        if period == '中午(11:00-14:00)':
+            calendar_df.loc[calendar_df.index == date, '中午(11:00-14:00)'] = f"{name} ({phone})"
+        elif period == '晚上(17:00-20:00)':
+            calendar_df.loc[calendar_df.index == date, '晚上(17:00-20:00)'] = f"{name} ({phone})"
+
+    # 检查是否有日期和时间段已经被预订
+    for index, row in calendar_df.iterrows():
+        if row['中午(11:00-14:00)'] is not pd.NA:
+            calendar_df.loc[index, '中午(11:00-14:00)'] = "已預訂"
+        if row['晚上(17:00-20:00)'] is not pd.NA:
+            calendar_df.loc[index, '晚上(17:00-20:00)'] = "已預訂"
 
     # 显示日历表格
     st.dataframe(calendar_df)
+
 
 def main(reservation_data):
     selected_month = st.selectbox("訂位月份", [f"{i} 月" for i in range(1, 13)])
