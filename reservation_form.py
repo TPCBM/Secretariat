@@ -12,7 +12,7 @@ def reservation_form(reservation_data):
     name = st.text_input("訂位人姓名")
     phone = st.text_input("訂位人電話")
 
-    if st.button("提交预订"):
+    if st.button("提出申請"):
         if name == '' or phone == '':
             st.error("姓名和電話為必填！")
         else:
