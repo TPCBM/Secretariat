@@ -1,5 +1,3 @@
-# app.py
-
 import streamlit as st
 import pandas as pd
 from calendar_display import main as display_calendar
@@ -20,8 +18,8 @@ def main():
         # 将预订信息传递给日历显示页面
         display_calendar(reservation_data)
     elif option == '填寫預定表單':
-        # 将 reservation_data 作为参数传递给填写表单页面
-        reservation_form(reservation_data)
+        # 调用 reservation_form 函数并将 reservation_data 作为参数传递给它
+        reservation_data = reservation_form(reservation_data)
 
 if __name__ == "__main__":
     main()
