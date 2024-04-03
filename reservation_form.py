@@ -21,3 +21,6 @@ def reservation_form(reservation_data):
             st.success("預定成功！")
 
             return reservation_data  # 返回更新后的 reservation_data
+
+    # 如果没有提交预订，返回原始的 reservation_data
+    return reservation_data
