@@ -19,27 +19,20 @@ def show_schedule(schedule, reservation_data):
     # 填充日期列
     calendar_df['預定日期'] = calendar_df.index.day
 
-    # 填充预订信息
-    for index, row in reservation_data.iterrows():
-        date = row['Date']
-        period = row['Period']
-        name = row['Name']
-        phone = row['Phone']
-        if period == '中午(11:00-14:00)':
-            calendar_df.loc[calendar_df.index == date, '中午(11:00-14:00)'] = f"{name} ({phone})"
-        elif period == '晚上(17:00-20:00)':
-            calendar_df.loc[calendar_df.index == date, '晚上(17:00-20:00)'] = f"{name} ({phone})"
-
-    # 检查每个日期和时间段是否已预订
+    # 检查每个日期和时间段是否在预订数据中
     for index, row in calendar_df.iterrows():
-        if row['中午(11:00-14:00)'] is not pd.NA:
-            calendar_df.loc[index, '中午(11:00-14:00)'] = "已預訂"
-        else:
-            calendar_df.loc[index, '中午(11:00-14:00)'] = "空閒"
-        if row['晚上(17:00-20:00)'] is not pd.NA:
-            calendar_df.loc[index, '晚上(17:00-20:00)'] = "已預訂"
-        else:
-            calendar_df.loc[index, '晚上(17:00-20:00)'] = "空閒"
+        date = row.name.date()
+        morning_status = "空閒"
+        afternoon_status = "空閒"
+        if not reservation_data.empty:
+            morning_reservations = reservation_data[(reservation_data['Date'] == date) & (reservation_data['Period'] == '中午(11:00-14:00)')]
+            afternoon_reservations = reservation_data[(reservation_data['Date'] == date) & (reservation_data['Period'] == '晚上(17:00-20:00)')]
+            if not morning_reservations.empty:
+                morning_status = "已預訂"
+            if not afternoon_reservations.empty:
+                afternoon_status = "已預訂"
+        calendar_df.loc[index, '中午(11:00-14:00)'] = morning_status
+        calendar_df.loc[index, '晚上(17:00-20:00)'] = afternoon_status
 
     # 显示日历表格
     st.dataframe(calendar_df)
