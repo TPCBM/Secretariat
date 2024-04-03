@@ -13,34 +13,25 @@ def create_schedule(selected_month):
     return schedule
 
 def show_schedule(schedule, reservation_data):
-    # 在日历上显示预订情况
-    st.write("日\t一\t二\t三\t四\t五\t六")
-    cols = st.columns(7)
+    # 创建一个空的 DataFrame 来存储日历信息
+    calendar_df = pd.DataFrame(index=schedule.index, columns=['Date', 'Morning', 'Afternoon'])
 
-    first_day_of_month = schedule.index[0]
-    first_day_of_month_weekday = first_day_of_month.weekday()
+    # 填充日期列
+    calendar_df['Date'] = calendar_df.index.day
 
-    for i in range(first_day_of_month_weekday):
-        with cols[i]:
-            st.write(" ")
+    # 填充预订信息
+    for index, row in reservation_data.iterrows():
+        date = row['Date']
+        period = row['Period']
+        name = row['Name']
+        phone = row['Phone']
+        if period == 'Morning':
+            calendar_df.loc[calendar_df.index == date, 'Morning'] = f"{name} ({phone})"
+        elif period == 'Afternoon':
+            calendar_df.loc[calendar_df.index == date, 'Afternoon'] = f"{name} ({phone})"
 
-    date_iter = schedule.index[0]
-    while date_iter <= schedule.index[-1]:
-        col_idx = date_iter.weekday()
-        with cols[col_idx]:
-            if date_iter.month != schedule.index[0].month:
-                st.write(" ")
-            else:
-                # 检查日期是否在预订数据中
-                reservations_on_date = reservation_data[reservation_data['Date'] == date_iter]
-                if not reservations_on_date.empty:
-                    # 如果有预订信息，显示预订信息
-                    for index, row in reservations_on_date.iterrows():
-                        st.write(f"{date_iter.day} 日：{row['Name']} ({row['Phone']}) - {row['Period']}")
-                else:
-                    # 如果没有预订信息，显示空闲状态
-                    st.write(f"{date_iter.day} 日：空閒")
-        date_iter += timedelta(days=1)
+    # 显示日历表格
+    st.dataframe(calendar_df)
 
 def main(reservation_data):
     selected_month = st.selectbox("訂位月份", [f"{i} 月" for i in range(1, 13)])
