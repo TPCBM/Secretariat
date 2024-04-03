@@ -21,5 +21,8 @@ def main():
         # 调用 reservation_form 函数并将 reservation_data 作为参数传递给它
         reservation_data = reservation_form(reservation_data)
 
+        # 更新日历显示
+        display_calendar(reservation_data)
+
 if __name__ == "__main__":
     main()
