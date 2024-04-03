@@ -31,13 +31,15 @@ def show_schedule(schedule, reservation_data):
             if date_iter.month != schedule.index[0].month:
                 st.write(" ")
             else:
-                # 在日历中显示预订信息
-                if not reservation_data.empty:
-                    for index, row in reservation_data.iterrows():
-                        if row['Date'] == date_iter:
-                            st.write(f"{date_iter.day} 日：{row['Name']} ({row['Phone']}) - {row['Period']}")
+                # 检查日期是否在预订数据中
+                reservations_on_date = reservation_data[reservation_data['Date'] == date_iter]
+                if not reservations_on_date.empty:
+                    # 如果有预订信息，显示预订信息
+                    for index, row in reservations_on_date.iterrows():
+                        st.write(f"{date_iter.day} 日：{row['Name']} ({row['Phone']}) - {row['Period']}")
                 else:
-                    st.write(date_iter.day)
+                    # 如果没有预订信息，显示空闲状态
+                    st.write(f"{date_iter.day} 日：空閒")
         date_iter += timedelta(days=1)
 
 def main(reservation_data):
