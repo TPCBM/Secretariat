@@ -30,16 +30,19 @@ def show_schedule(schedule, reservation_data):
         elif period == '晚上(17:00-20:00)':
             calendar_df.loc[calendar_df.index == date, '晚上(17:00-20:00)'] = f"{name} ({phone})"
 
-    # 检查是否有日期和时间段已经被预订
+    # 检查每个日期和时间段是否已预订
     for index, row in calendar_df.iterrows():
         if row['中午(11:00-14:00)'] is not pd.NA:
             calendar_df.loc[index, '中午(11:00-14:00)'] = "已預訂"
+        else:
+            calendar_df.loc[index, '中午(11:00-14:00)'] = "空閒"
         if row['晚上(17:00-20:00)'] is not pd.NA:
             calendar_df.loc[index, '晚上(17:00-20:00)'] = "已預訂"
+        else:
+            calendar_df.loc[index, '晚上(17:00-20:00)'] = "空閒"
 
     # 显示日历表格
     st.dataframe(calendar_df)
-
 
 def main(reservation_data):
     selected_month = st.selectbox("訂位月份", [f"{i} 月" for i in range(1, 13)])
