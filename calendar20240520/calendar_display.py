@@ -3,16 +3,12 @@ import pandas as pd
 from datetime import datetime
 import calendar
 
-def create_schedule(selected_date):
-    # 获取选择的年份和月份
-    year = selected_date.year
-    month = selected_date.month
-
+def create_schedule(year, month):
     # 获取当月第一天的星期和当月总天数
     first_day_of_month, num_days = calendar.monthrange(year, month)
 
     # 创建一个包含日期和时间段的DataFrame
-    dates = pd.date_range(start=selected_date.replace(day=1), periods=num_days)
+    dates = pd.date_range(start=datetime(year, month, 1), periods=num_days)
     schedule = pd.DataFrame(index=dates, columns=['Morning', 'Afternoon'])
     return schedule
 
@@ -58,10 +54,10 @@ def show_schedule(schedule, reservation_data):
                         st.write("空閒")
 
 def main(reservation_data):
+    selected_year = st.selectbox("選擇年份", [datetime.now().year + i for i in range(-1, 5)])
     selected_month = st.selectbox("訂位月份", [f"{i} 月" for i in range(1, 13)])
     selected_month_number = int(selected_month.split()[0])
-    selected_date = datetime(datetime.now().year, selected_month_number, 1)
-    schedule = create_schedule(selected_date)
+    schedule = create_schedule(selected_year, selected_month_number)
     show_schedule(schedule, reservation_data)
 
 if __name__ == "__main__":
