@@ -12,53 +12,44 @@ def create_schedule(year, month):
     schedule = pd.DataFrame(index=dates, columns=['Morning', 'Afternoon'])
     return schedule
 
-def show_schedule(schedule, reservation_data):
-    st.write("### 預定情況")
+def show_schedule(year, month, reservation_data):
+    st.write(f"### {year} 年 {month} 月預定情況")
 
-    # 获取选择的年份和月份
-    selected_date = schedule.index[0]
-    year = selected_date.year
-    month = selected_date.month
+    # 获取当月日历矩阵
+    cal = calendar.monthcalendar(year, month)
 
-    # 获取当月第一天的星期和当月总天数
-    first_day_of_month, num_days = calendar.monthrange(year, month)
+    # 创建一个 DataFrame 来存储日历信息
+    cal_df = pd.DataFrame(cal, columns=["日", "一", "二", "三", "四", "五", "六"])
 
-    # 创建一个空的日历矩阵
-    cal_matrix = [[""] * 7 for _ in range(6)]
+    # 创建显示用的 DataFrame
+    display_df = cal_df.applymap(lambda day: f"{day}" if day != 0 else "")
 
-    # 填充日期
-    day_counter = 1
-    for i in range(6):
-        for j in range(7):
-            if i == 0 and j < first_day_of_month:
-                continue
-            if day_counter > num_days:
-                break
-            cal_matrix[i][j] = day_counter
-            day_counter += 1
+    # 填充预订信息
+    for index, row in reservation_data.iterrows():
+        date = row['Date']
+        if date.year == year and date.month == month:
+            period = row['Period']
+            name = row['Name']
+            phone = row['Phone']
+            display_text = f"{name} ({phone})"
+            day = date.day
 
-    # 显示日历
-    st.write("日\t一\t二\t三\t四\t五\t六")
-    cols = st.columns(7)
-    for week in cal_matrix:
-        for i, day in enumerate(week):
-            with cols[i]:
-                if day != "":
-                    date = datetime(year, month, day)
-                    st.write(f"{day}")
-                    reservations_on_date = reservation_data[reservation_data['Date'] == date]
-                    if not reservations_on_date.empty:
-                        for _, row in reservations_on_date.iterrows():
-                            st.write(f"{row['Period']}: 已預訂")
-                    else:
-                        st.write("空閒")
+            for week in range(6):
+                for weekday in range(7):
+                    if cal_df.iloc[week, weekday] == day:
+                        if period == '中午(11:00-14:00)':
+                            display_df.iloc[week, weekday] += f"\n{display_text} - 午"
+                        elif period == '晚上(17:00-20:00)':
+                            display_df.iloc[week, weekday] += f"\n{display_text} - 晚"
+
+    # 显示日历表格
+    st.dataframe(display_df)
 
 def main(reservation_data):
     selected_year = st.selectbox("選擇年份", [datetime.now().year + i for i in range(-1, 5)])
     selected_month = st.selectbox("訂位月份", [f"{i} 月" for i in range(1, 13)])
     selected_month_number = int(selected_month.split()[0])
-    schedule = create_schedule(selected_year, selected_month_number)
-    show_schedule(schedule, reservation_data)
+    show_schedule(selected_year, selected_month_number, reservation_data)
 
 if __name__ == "__main__":
     main()
