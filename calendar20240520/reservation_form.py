@@ -18,6 +18,7 @@ def reservation_form(reservation_data):
             new_reservation = pd.DataFrame({'Date': [date], 'Period': [period], 'Name': [name], 'Phone': [phone]})
             reservation_data = pd.concat([reservation_data, new_reservation], ignore_index=True)
             st.success("預定成功！")
+            st.experimental_rerun()  # 强制重新运行程序以更新日历显示
             return reservation_data  # 返回更新后的 reservation_data
 
     # 如果没有提交预订，返回原始的 reservation_data
