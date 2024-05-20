@@ -19,7 +19,7 @@ def show_schedule(year, month, reservation_data):
     cal = calendar.monthcalendar(year, month)
 
     # 创建一个 DataFrame 来存储日历信息
-    cal_df = pd.DataFrame(cal, columns=["日", "一", "二", "三", "四", "五", "六"])
+    cal_df = pd.DataFrame(cal, columns=["一", "二", "三", "四", "五", "六", "日"])
 
     # 创建显示用的 DataFrame
     display_df = cal_df.applymap(lambda day: f"{day}" if day != 0 else "")
@@ -34,13 +34,13 @@ def show_schedule(year, month, reservation_data):
             display_text = f"{name} ({phone})"
             day = date.day
 
-            for week in range(6):
+            for week in range(len(cal)):
                 for weekday in range(7):
-                    if cal_df.iloc[week, weekday] == day:
+                    if cal[week][weekday] == day:
                         if period == '中午(11:00-14:00)':
-                            display_df.iloc[week, weekday] += f"\n{display_text} - 午"
+                            display_df.iat[week, weekday] += f"\n{display_text} - 午"
                         elif period == '晚上(17:00-20:00)':
-                            display_df.iloc[week, weekday] += f"\n{display_text} - 晚"
+                            display_df.iat[week, weekday] += f"\n{display_text} - 晚"
 
     # 显示日历表格
     st.dataframe(display_df)
