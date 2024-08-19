@@ -31,7 +31,7 @@ start = datetime(today.year, today.month, 1)
 end = (start + timedelta(days=32)).replace(day=1)
 
 # 獲取事件
-calendar_id = 'primary'  # 這裡可以替換為你的日曆 ID
+calendar_id = 'sd2721idgjjildevu45dc6t4ek@group.calendar.google.com'  # 這裡可以替換為你的日曆 ID
 events = get_calendar_events(calendar_id, start, end)
 
 # 計算每日事件數量
