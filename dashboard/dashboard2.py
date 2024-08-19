@@ -6,7 +6,7 @@ from googleapiclient.discovery import build
 from datetime import datetime, timedelta
 
 # Google Calendar API 設定
-SERVICE_ACCOUNT_FILE = 'path/to/credentials.json'
+SERVICE_ACCOUNT_FILE = '/Users/bojuping/Desktop/VSCode/credentials.json'
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 # 認證並建立 API 服務
