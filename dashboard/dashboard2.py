@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import numpy as np
-import matplotlib.pyplot as plt
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
@@ -47,10 +46,12 @@ st.subheader('事件數量')
 st.write(daily_events)
 
 # 顯示圖表
+# 使用 Altair 繪圖代替 matplotlib
 st.subheader('事件數量圖表')
-fig, ax = plt.subplots()
-daily_events.sort_index().plot(kind='bar', ax=ax)
-ax.set_xlabel('日期')
-ax.set_ylabel('事件數量')
-ax.set_title('每日事件數量')
-st.pyplot(fig)
+chart = alt.Chart(daily_events.reset_index()).mark_bar().encode(
+    x='index:O',
+    y='0:Q'
+).properties(
+    title='每日事件數量'
+)
+st.altair_chart(chart, use_container_width=True)
