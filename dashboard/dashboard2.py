@@ -56,7 +56,7 @@ daily_events.name = '申請停放數量'
 st.subheader('240巷車位概況')
 st.write(daily_events)
 
-# 使用 Streamlit 顯示標題
+# 使用 Streamlit 顯示背景和表格
 st.markdown("""
     <style>
     .report-container {
@@ -67,11 +67,15 @@ st.markdown("""
         color: white;
         text-align: center;
     }
+    .dataframe {
+        color: black;  /* 确保表格文字颜色可见 */
+        margin-top: 20px;
+    }
     </style>
     <div class="report-container">
         <h2>240巷車位概況</h2>
         <div class="dataframe">
-            """ + daily_events.to_frame().to_html() + """
+            """ + daily_events.to_frame().to_html(classes='dataframe', border=0) + """
         </div>
     </div>
     """, unsafe_allow_html=True)
