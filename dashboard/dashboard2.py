@@ -60,7 +60,7 @@ background_css = f"""
 <style>
 .report-container {{
     background: url('{background_image_url}');
-    background-size: contain;
+    background-size: 20px 40px;
     padding: 20px;
     border-radius: 10px;
     color: white;
