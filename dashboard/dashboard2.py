@@ -37,10 +37,7 @@ events = get_calendar_events(calendar_id, start, end)
 # 計算每日事件數量
 daily_events = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in events]).value_counts()
 
-# 更改 Series 的名称
-daily_events.name = '申請停放數量'
-
-# 使用 Streamlit 顯示
+# 使用 Streamlit 顯示標題
 st.markdown("""
     <style>
     .title {
@@ -48,6 +45,20 @@ st.markdown("""
         font-size: 36px;
         font-weight: bold;
     }
+    </style>
+    <h1 class="title">大樓管理組 儀表板</h1>
+    """, unsafe_allow_html=True)
+
+# 更改 Series 的名称
+daily_events.name = '申請停放數量'
+
+# 顯示事件數據
+st.subheader('240巷車位概況')
+st.write(daily_events)
+
+# 使用 Streamlit 顯示標題
+st.markdown("""
+    <style>
     .report-container {
         background: url('https://i.im.ge/2023/12/29/x3xWPF.2-0.png');
         background-size: cover;
@@ -56,25 +67,11 @@ st.markdown("""
         color: white;
         text-align: center;
     }
-    .dataframe {
-        margin-top: 20px;
-    }
     </style>
-    <h1 class="title">大樓管理組 儀表板</h1>
     <div class="report-container">
         <h2>240巷車位概況</h2>
         <div class="dataframe">
-            """ + daily_events.to_frame().to_html(classes='dataframe', border=0) + """
+            """ + daily_events.to_frame().to_html() + """
         </div>
     </div>
     """, unsafe_allow_html=True)
-
-# 你可以在這裡啟用或禁用圖表顯示部分
-# 顯示圖表
-# st.subheader('事件數量圖表')
-# fig, ax = plt.subplots()
-# daily_events.sort_index().plot(kind='bar', ax=ax)
-# ax.set_xlabel('日期')
-# ax.set_ylabel('事件數量')
-# ax.set_title('每日事件數量')
-# st.pyplot(fig)
