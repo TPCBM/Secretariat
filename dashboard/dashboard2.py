@@ -53,7 +53,7 @@ st.markdown("""
 daily_events.name = '申請停放數量'
 
 # 设置背景图片
-background_image_url = 'static/images/background.png'  # 替换为实际图片路径
+background_image_url = 'dashboard/x3xWPF.2-0.png'  # 替换为实际图片路径
 
 # 生成背景图的 CSS
 background_css = f"""
