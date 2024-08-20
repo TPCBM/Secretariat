@@ -37,8 +37,20 @@ events = get_calendar_events(calendar_id, start, end)
 # 計算每日事件數量
 daily_events = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in events]).value_counts()
 
+# 使用 Streamlit 顯示標題
+st.markdown("""
+    <style>
+    .title {
+        text-align: center;
+        font-size: 36px;
+        font-weight: bold;
+    }
+    </style>
+    <h1 class="title">大樓管理組 儀表板</h1>
+    """, unsafe_allow_html=True)
+
 # 使用 Streamlit 顯示
-st.title('大樓管理組 儀表板')
+# st.title('大樓管理組 儀表板')
 
 # 更改 Series 的名称
 daily_events.name = '申請停放數量'
