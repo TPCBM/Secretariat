@@ -56,26 +56,30 @@ daily_events.name = '申請停放數量'
 st.subheader('240巷車位概況')
 st.write(daily_events)
 
-# 使用 Streamlit 顯示背景和表格
-st.markdown("""
-    <style>
-    .report-container {
-        background: url('https://i.im.ge/2023/12/29/x3xWPF.2-0.png');
-        background-size: cover;
-        padding: 20px;
-        border-radius: 10px;
-        color: white;
-        text-align: center;
-    }
-    .dataframe {
-        color: black;  /* 确保表格文字颜色可见 */
-        margin-top: 20px;
-    }
-    </style>
-    <div class="report-container">
-        <h2>240巷車位概況</h2>
-        <div class="dataframe">
-            """ + daily_events.to_frame().to_html(classes='dataframe', border=0) + """
+# 上传图片
+uploaded_file = st.file_uploader("上传背景图片", type=["png", "jpg", "jpeg"])
+
+if uploaded_file is not None:
+    base64_image = base64.b64encode(uploaded_file.read()).decode()
+    st.markdown(f"""
+        <style>
+        .report-container {{
+            background: url(data:image/png;base64,{base64_image});
+            background-size: cover;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+        }}
+        .dataframe {{
+            color: black;
+            margin-top: 20px;
+        }}
+        </style>
+        <div class="report-container">
+            <h2>240巷車位概況</h2>
+            <div class="dataframe">
+                {daily_events.to_frame().to_html(classes='dataframe', border=0)}
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
