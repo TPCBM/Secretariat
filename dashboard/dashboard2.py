@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
+import base64
 
 # Google Calendar API 設定
 SERVICE_ACCOUNT_FILE = 'dashboard/credentials.json'
@@ -52,34 +53,28 @@ st.markdown("""
 # 更改 Series 的名称
 daily_events.name = '申請停放數量'
 
-# 顯示事件數據
-st.subheader('240巷車位概況')
-st.write(daily_events)
+# 设置背景图片
+background_image_url = 'static/images/background.png'  # 替换为实际图片路径
 
-# 上传图片
-uploaded_file = st.file_uploader("上传背景图片", type=["png", "jpg", "jpeg"])
-
-if uploaded_file is not None:
-    base64_image = base64.b64encode(uploaded_file.read()).decode()
-    st.markdown(f"""
-        <style>
-        .report-container {{
-            background: url(data:image/png;base64,{base64_image});
-            background-size: cover;
-            padding: 20px;
-            border-radius: 10px;
-            color: white;
-            text-align: center;
-        }}
-        .dataframe {{
-            color: black;
-            margin-top: 20px;
-        }}
-        </style>
-        <div class="report-container">
-            <h2>240巷車位概況</h2>
-            <div class="dataframe">
-                {daily_events.to_frame().to_html(classes='dataframe', border=0)}
-            </div>
+st.markdown(f"""
+    <style>
+    .report-container {{
+        background: url({background_image_url});
+        background-size: cover;
+        padding: 20px;
+        border-radius: 10px;
+        color: white;
+        text-align: center;
+    }}
+    .dataframe {{
+        color: black;
+        margin-top: 20px;
+    }}
+    </style>
+    <div class="report-container">
+        <h2>240巷車位概況</h2>
+        <div class="dataframe">
+            {daily_events.to_frame().to_html(classes='dataframe', border=0)}
         </div>
-        """, unsafe_allow_html=True)
+    </div>
+    """, unsafe_allow_html=True)
