@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import base64
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
@@ -37,6 +37,9 @@ events = get_calendar_events(calendar_id, start, end)
 # 計算每日事件數量
 daily_events = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in events]).value_counts()
 
+# 更改 Series 的名称
+daily_events.name = '申請停放數量'
+
 # 使用 Streamlit 顯示標題
 st.markdown("""
     <style>
@@ -49,17 +52,18 @@ st.markdown("""
     <h1 class="title">大樓管理組 儀表板</h1>
     """, unsafe_allow_html=True)
 
-# 更改 Series 的名称
-daily_events.name = '申請停放數量'
+# 获取 Base64 编码的图片
+def get_base64_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode()
 
-# 设置背景图片
-background_image_url = 'x3xWPF.2-0.png'  # 确保图片在同一目录下
+background_image_base64 = get_base64_image('x3xWPF.2-0.png')  # 确保路径正确
 
 # 生成背景图的 CSS
 background_css = f"""
 <style>
 .report-container {{
-    background: url('{background_image_url}');
+    background: url(data:image/png;base64,{background_image_base64});
     background-size: cover;
     padding: 20px;
     border-radius: 10px;
