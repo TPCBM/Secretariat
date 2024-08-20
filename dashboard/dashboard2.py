@@ -76,8 +76,8 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # 顯示事件數據
-# st.subheader('240巷車位概況')
-# st.write(daily_events)
+st.subheader('240巷車位概況')
+st.write(daily_events)
 
 # 顯示圖表
 # st.subheader('事件數量圖表')
