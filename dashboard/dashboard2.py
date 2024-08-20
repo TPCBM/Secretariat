@@ -40,6 +40,9 @@ daily_events = pd.Series([event['start'].get('date', event['start'].get('dateTim
 # 使用 Streamlit 顯示
 st.title('大樓管理組 儀表板')
 
+# 更改欄位名稱
+daily_events = daily_events.rename(columns={'original_column_name': '申請停放數量'})
+
 # 顯示事件數據
 st.subheader('240巷車位概況')
 st.write(daily_events)
