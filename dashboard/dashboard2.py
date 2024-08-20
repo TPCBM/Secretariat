@@ -70,7 +70,7 @@ background_css = f"""
 }}
 .dataframe {{
     color: black;
-    margin-top: 10px;
+    margin-top: 30px;
 }}
 </style>
 """
