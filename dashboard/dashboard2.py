@@ -55,9 +55,29 @@ st.markdown("""
 # 更改 Series 的名称
 daily_events.name = '申請停放數量'
 
+# 使用 Streamlit 顯示標題
+st.markdown("""
+    <style>
+    .report-container {
+        background: url('https://i.im.ge/2023/12/29/x3xWPF.2-0.png');
+        background-size: cover;
+        padding: 20px;
+        border-radius: 10px;
+        color: white;
+        text-align: center;
+    }
+    </style>
+    <div class="report-container">
+        <h2>240巷車位概況</h2>
+        <div class="dataframe">
+            """ + daily_events.to_frame().to_html() + """
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
 # 顯示事件數據
-st.subheader('240巷車位概況')
-st.write(daily_events)
+# st.subheader('240巷車位概況')
+# st.write(daily_events)
 
 # 顯示圖表
 # st.subheader('事件數量圖表')
