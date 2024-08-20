@@ -18,8 +18,8 @@ service = build('calendar', 'v3', credentials=credentials)
 def get_calendar_events(calendar_id, start_time, end_time):
     events_result = service.events().list(
         calendarId=calendar_id,
-        timeMin=start_time.isoformat() + 'Z',
-        timeMax=end_time.isoformat() + 'Z',
+        timeMin=start_time,
+        timeMax=end_time,
         singleEvents=True,
         orderBy='startTime'
     ).execute()
@@ -45,10 +45,10 @@ st.subheader('事件數量')
 st.write(daily_events)
 
 # 顯示圖表
-# st.subheader('事件數量圖表')
-# fig, ax = plt.subplots()
-# daily_events.sort_index().plot(kind='bar', ax=ax)
-# ax.set_xlabel('日期')
-# ax.set_ylabel('事件數量')
-# ax.set_title('每日事件數量')
-# st.pyplot(fig)
+st.subheader('事件數量圖表')
+fig, ax = plt.subplots()
+daily_events.sort_index().plot(kind='bar', ax=ax)
+ax.set_xlabel('日期')
+ax.set_ylabel('事件數量')
+ax.set_title('每日事件數量')
+st.pyplot(fig)
