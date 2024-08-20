@@ -38,10 +38,10 @@ events = get_calendar_events(calendar_id, start, end)
 daily_events = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in events]).value_counts()
 
 # 使用 Streamlit 顯示
-st.title('Google 日曆每日事件數量')
+st.title('大樓管理組 儀表板')
 
 # 顯示事件數據
-st.subheader('事件數量')
+st.subheader('240巷車位概況')
 st.write(daily_events)
 
 # 顯示圖表
