@@ -28,7 +28,7 @@ def get_calendar_events(calendar_id, start_time, end_time):
 # 設置日期範圍
 today = datetime.utcnow().date()
 start = datetime(today.year, today.month, 1)
-end = (start + timedelta(days=1)).replace(day=1)
+end = today + timedelta(days=1)
 
 # 獲取事件
 calendar_id = 'sd2721idgjjildevu45dc6t4ek@group.calendar.google.com'  # 這裡可以替換為你的日曆 ID
