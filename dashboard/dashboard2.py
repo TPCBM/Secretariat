@@ -64,7 +64,7 @@ background_css = f"""
     padding: 20px;
     border-radius: 10px;
     color: white;
-    text-align: center;
+    text-align: left;
 }}
 .dataframe {{
     color: black;
