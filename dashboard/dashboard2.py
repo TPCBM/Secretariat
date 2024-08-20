@@ -60,7 +60,9 @@ background_css = f"""
 <style>
 .report-container {{
     background: url('{background_image_url}');
-    background-size: contain;
+    background-size: contain;  /* 确保图片缩小显示 */
+    background-position: left top;  /* 图片靠左上角对齐 */
+    background-repeat: no-repeat;  /* 防止图片重复 */
     padding: 20px;
     border-radius: 10px;
     color: white;
