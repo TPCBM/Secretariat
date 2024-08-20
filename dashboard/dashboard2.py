@@ -26,7 +26,7 @@ def get_calendar_events(calendar_id, start_time, end_time):
     return events_result.get('items', [])
 
 # 設置日期範圍
-today = datetime.utcnow().date()
+today = datetime.now().date()
 start = today
 end = today + timedelta(days=1)
 
