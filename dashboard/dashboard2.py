@@ -55,6 +55,10 @@ st.markdown("""
 # 更改 Series 的名称
 daily_events.name = '申請停放數量'
 
+# 顯示事件數據
+st.subheader('240巷車位概況')
+st.write(daily_events)
+
 # 使用 Streamlit 顯示標題
 st.markdown("""
     <style>
@@ -74,10 +78,6 @@ st.markdown("""
         </div>
     </div>
     """, unsafe_allow_html=True)
-
-# 顯示事件數據
-st.subheader('240巷車位概況')
-st.write(daily_events)
 
 # 顯示圖表
 # st.subheader('事件數量圖表')
