@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
-import base64
 
 # Google Calendar API 設定
 SERVICE_ACCOUNT_FILE = 'dashboard/credentials.json'
@@ -54,23 +53,29 @@ st.markdown("""
 daily_events.name = '申請停放數量'
 
 # 设置背景图片
-background_image_url = 'dashboard/x3xWPF.2-0.png'  # 替换为实际图片路径
+background_image_url = 'static/images/background.png'  # 替换为实际图片路径
 
+# 生成背景图的 CSS
+background_css = f"""
+<style>
+.report-container {{
+    background: url('{background_image_url}');
+    background-size: cover;
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+}}
+.dataframe {{
+    color: black;
+    margin-top: 20px;
+}}
+</style>
+"""
+
+# 显示背景图片和数据
+st.markdown(background_css, unsafe_allow_html=True)
 st.markdown(f"""
-    <style>
-    .report-container {{
-        background: url({background_image_url});
-        background-size: cover;
-        padding: 20px;
-        border-radius: 10px;
-        color: white;
-        text-align: center;
-    }}
-    .dataframe {{
-        color: black;
-        margin-top: 20px;
-    }}
-    </style>
     <div class="report-container">
         <h2>240巷車位概況</h2>
         <div class="dataframe">
