@@ -105,6 +105,7 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# 顯示 Google Sheets 最新一筆資料
+# 顯示 Google Sheets 最新一筆資料，並且設置背景色
 st.subheader('總處大小事(最新一筆)')
-st.write(latest_data)
+st.write(latest_data.style.applymap(lambda x: 'background-color: lightblue', subset=latest_data.columns))
+
