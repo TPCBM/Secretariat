@@ -74,7 +74,11 @@ st.markdown("""
         color: white;
     }
     .section1 h2 {
-        font-size: 32px;  /* 調整字體大小 */
+        font-size: 30px;  /* 調整字體大小 */
+        padding: 20px;
+        border-radius: 10px;
+        color: black;
+        max-width: 100%;  /* 增加寬度 */
         text-align: center;  /* 文字置中 */
     }
     .section2 {
