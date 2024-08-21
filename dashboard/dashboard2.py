@@ -88,7 +88,15 @@ st.markdown("""
         padding: 10px;
         border: 1px solid black;
     }
+    .hide-index {
+        border-collapse: collapse;
+        width: 100%;
+    }
     .hide-index th, .hide-index td {
+        padding: 10px;
+        border: 1px solid black;
+    }
+    .hide-index thead {
         display: none;
     }
     </style>
