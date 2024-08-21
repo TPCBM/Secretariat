@@ -67,7 +67,7 @@ st.markdown("""
     .section1 {
         background: url('https://i.im.ge/2023/12/29/x3xWPF.2-0.png');
         background-size: contain;
-        background-position: left top;
+        background-position: center;
         background-repeat: no-repeat;
         padding: 20px;
         border-radius: 10px;
