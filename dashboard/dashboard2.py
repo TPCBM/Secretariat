@@ -94,18 +94,22 @@ background_css = f"""
 </style>
 """
 
-# 顯示背景圖片和數據
-st.markdown(background_css, unsafe_allow_html=True)
-st.markdown(f"""
-    <div class="report-container">
-        <h2>240巷車位概況</h2>
-        <div class="dataframe">
-            {daily_events.to_frame().to_html(classes='dataframe', border=0)}
+# 使用 columns 並排顯示兩個區塊
+col1, col2 = st.columns(2)
+
+# 在第一列顯示「240巷車位概況」
+with col1:
+    st.markdown(background_css, unsafe_allow_html=True)
+    st.markdown(f"""
+        <div class="report-container">
+            <h2>240巷車位概況</h2>
+            <div class="dataframe">
+                {daily_events.to_frame().to_html(classes='dataframe', border=0)}
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-# 顯示 Google Sheets 最新一筆資料，並且設置背景色
-st.subheader('總處大小事(最新一筆)')
-st.write(latest_data.style.applymap(lambda x: 'background-color: lightblue', subset=latest_data.columns))
-
+# 在第二列顯示「總處大小事(最新一筆)」
+with col2:
+    st.subheader('總處大小事(最新一筆)')
+    st.write(latest_data.style.applymap(lambda x: 'background-color: lightblue', subset=latest_data.columns))
