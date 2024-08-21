@@ -88,8 +88,8 @@ st.markdown("""
         padding: 10px;
         border: 1px solid black;
     }
-    .hide-index td:first-child {
-        display: none;
+    .hide-index tbody td::before {
+        content: none;
     }
     </style>
     <h1 class="title">大樓管理組 儀表板</h1>
@@ -107,7 +107,7 @@ with col1:
         <div class="section1">
             <h2>240巷車位概況</h2>
             <div class="dataframe">
-                {daily_events.to_frame().to_html(classes='dataframe', border=0, index=False)}
+                {daily_events.to_frame().to_html(classes='dataframe', border=0)}
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -118,17 +118,21 @@ with col2:
     columns_part1 = latest_data.iloc[:, :4]  # 取前4列
     columns_part2 = latest_data.iloc[:, 4:]  # 取第5列及後面的列
 
+    # 隱藏索引欄
+    columns_part1_html = columns_part1.style.hide(axis='index').to_html(classes='dataframe hide-index', border=0)
+    columns_part2_html = columns_part2.style.hide(axis='index').to_html(classes='dataframe hide-index', border=0)
+
     # 顯示「總處大小事(最新一筆)」
     st.markdown(f"""
         <div class="section2">
             <h3>總處大小事(最新一筆)</h3>
             <h4>最新資料 - 前4列</h4>
-            <div class="dataframe hide-index">
-                {columns_part1.to_html(classes='dataframe', border=0, index=False)}
+            <div class="dataframe">
+                {columns_part1_html}
             </div>
             <h4>最新資料 - 剩餘列</h4>
-            <div class="dataframe hide-index">
-                {columns_part2.to_html(classes='dataframe', border=0, index=False)}
+            <div class="dataframe">
+                {columns_part2_html}
             </div>
         </div>
         """, unsafe_allow_html=True)
