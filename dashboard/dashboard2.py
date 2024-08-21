@@ -111,15 +111,5 @@ with col1:
 
 # 在第二列顯示「總處大小事(最新一筆)」
 with col2:
-# 拆分 latest_data 的列
-columns_part1 = latest_data.iloc[:, :4]  # 取前4列
-columns_part2 = latest_data.iloc[:, 4:]  # 取第5列及後面的列
-
-# 顯示最新資料，將兩部分表格在不同列顯示
-st.subheader('總處大小事(最新一筆)')
-
-# 顯示第一部分表格
-st.write(columns_part1.style.applymap(lambda x: 'background-color: lightblue', subset=columns_part1.columns))
-
-# 換行顯示第二部分表格
-st.write(columns_part2.style.applymap(lambda x: 'background-color: lightblue', subset=columns_part2.columns))
+    st.subheader('總處大小事(最新一筆)')
+    st.write(latest_data.style.applymap(lambda x: 'background-color: lightblue', subset=latest_data.columns))
