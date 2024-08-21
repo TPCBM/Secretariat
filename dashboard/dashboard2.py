@@ -75,6 +75,7 @@ st.markdown("""
     }
     .section1 h2 {
         font-size: 32px;  /* 調整字體大小 */
+        text-align: center;  /* 文字置中 */
     }
     .section2 {
         background-color: #f0f0f0;  /* 淺灰色背景 */
