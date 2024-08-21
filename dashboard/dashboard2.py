@@ -91,6 +91,9 @@ background_css = f"""
     color: black;
     margin-top: 30px;
 }}
+.hide-index {{
+    display: none;
+}}
 </style>
 """
 
@@ -120,10 +123,8 @@ with col2:
 
     # 第一部分表格顯示前4列，隱藏索引
     st.write(columns_part1.style.applymap(lambda x: 'background-color: lightblue', subset=columns_part1.columns)
-             .hide(axis='index'))
+             .hide(axis='index').to_html(classes='dataframe hide-index', border=0), unsafe_allow_html=True)
 
     # 顯示第二部分表格，換行顯示剩餘列，隱藏索引
     st.write(columns_part2.style.applymap(lambda x: 'background-color: lightblue', subset=columns_part2.columns)
-             .hide(axis='index'))
-
-
+             .hide(axis='index').to_html(classes='dataframe hide-index', border=0), unsafe_allow_html=True)
