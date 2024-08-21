@@ -107,7 +107,7 @@ with col1:
         <div class="section1">
             <h2>240巷車位概況</h2>
             <div class="dataframe">
-                {daily_events.to_frame().to_html(classes='dataframe', border=0)}
+                {daily_events.to_frame().to_html(classes='dataframe', border=0, index=False)}
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -124,11 +124,11 @@ with col2:
             <h3>總處大小事(最新一筆)</h3>
             <h4>最新資料 - 前4列</h4>
             <div class="dataframe hide-index">
-                {columns_part1.to_html(classes='dataframe', border=0)}
+                {columns_part1.to_html(classes='dataframe', border=0, index=False)}
             </div>
             <h4>最新資料 - 剩餘列</h4>
             <div class="dataframe hide-index">
-                {columns_part2.to_html(classes='dataframe', border=0)}
+                {columns_part2.to_html(classes='dataframe', border=0, index=False)}
             </div>
         </div>
         """, unsafe_allow_html=True)
