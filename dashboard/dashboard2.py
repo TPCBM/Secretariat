@@ -111,6 +111,11 @@ with col1:
 
 # 在第二列顯示「總處大小事(最新一筆)」
 with col2:
+    # 拆分 latest_data 的列
+    columns_part1 = latest_data.iloc[:, :4]  # 取前4列
+    columns_part2 = latest_data.iloc[:, 4:]  # 取第5列及後面的列
+
+    # 顯示「總處大小事(最新一筆)」
     st.markdown(f"""
         <div class="section2">
             <h3>總處大小事(最新一筆)</h3>
