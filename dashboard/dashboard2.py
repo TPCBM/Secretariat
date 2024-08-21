@@ -10,6 +10,9 @@ import gspread
 SERVICE_ACCOUNT_FILE = 'dashboard/credentials.json'
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly', 'https://www.googleapis.com/auth/spreadsheets.readonly']
 
+# gspread 認證
+gc = gspread.authorize(credentials)
+
 # 認證並建立 API 服務
 credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
