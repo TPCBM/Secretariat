@@ -103,6 +103,7 @@ st.markdown("""
     .hide-index th, .hide-index td {
         padding: 10px;
         border: 1px solid black;
+        text-align: center;  /* 置中表格文字 */
     }
     .hide-index td {
         padding-left: 0; /* 隱藏索引欄的內容 */
