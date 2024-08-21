@@ -140,7 +140,7 @@ with col2:
     # 顯示「總處大小事(最新一筆)」
     st.markdown(f"""
         <div class="section2 col2-content">
-            <h4>最新資料 - 前4列</h4>
+            <h4>總處大小事(最新一筆)</h4>
             <div class="dataframe">
                 {columns_part1_html}
             </div>
