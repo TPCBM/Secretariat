@@ -4,10 +4,11 @@ import matplotlib.pyplot as plt
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
+import gspread
 
 # Google Calendar API 設定
 SERVICE_ACCOUNT_FILE = 'dashboard/credentials.json'
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+SCOPES = ['https://www.googleapis.com/auth/calendar.readonly', 'https://www.googleapis.com/auth/spreadsheets.readonly']
 
 # 認證並建立 API 服務
 credentials = service_account.Credentials.from_service_account_file(
@@ -36,6 +37,21 @@ events = get_calendar_events(calendar_id, start, end)
 
 # 計算每日事件數量
 daily_events = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in events]).value_counts()
+
+# *取得 Google Sheets 中的最新一筆資料
+def get_latest_sheet_data(spreadsheet_id, sheet_name):
+    sh = gc.open_by_key(spreadsheet_id)
+    worksheet = sh.worksheet(sheet_name)
+    data = worksheet.get_all_records()  # 取得所有數據
+    df = pd.DataFrame(data)  # 將數據轉為 pandas DataFrame
+    return df.tail(1)  # 取得最後一行資料
+
+# *設置 Google Sheets 資訊
+SPREADSHEET_ID = 'your_google_sheet_id'  # 替換為你的 Google Sheets ID
+SHEET_NAME = 'Sheet1'  # 替換為你的工作表名稱
+
+# *顯示 Google Sheets 中的最新一筆資料
+latest_data = get_latest_sheet_data(SPREADSHEET_ID, SHEET_NAME)
 
 # 使用 Streamlit 顯示標題
 st.markdown("""
@@ -85,3 +101,7 @@ st.markdown(f"""
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+# 顯示 Google Sheets 最新一筆資料
+st.subheader('Google Sheet 最新一筆資料')
+st.write(latest_data)
