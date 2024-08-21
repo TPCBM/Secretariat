@@ -77,21 +77,16 @@ background_image_url = 'https://i.im.ge/2023/12/29/x3xWPF.2-0.png'  # 確保圖�
 # 生成背景圖的 CSS
 background_css = f"""
 <style>
-.section1 {
-        background: url('https://i.im.ge/2023/12/29/x3xWPF.2-0.png');
-        background-size: contain;
-        background-position: left top;
-        background-repeat: no-repeat;
-        padding: 20px;
-        border-radius: 10px;
-        color: white;
-    }
-    .section2 {
-        background-color: #f0f0f0;  /* 淺灰色背景 */
-        padding: 20px;
-        border-radius: 10px;
-        color: black;
-    }
+.report-container {{
+    background: url('{background_image_url}');
+    background-size: contain;  /* 確保圖片縮小顯示 */
+    background-position: left top;  /* 圖片靠左上角對齊 */
+    background-repeat: no-repeat;  /* 防止圖片重複 */
+    padding: 30px;
+    border-radius: 10px;
+    color: white;
+    text-align: left;
+}}
 .dataframe {{
     color: black;
     margin-top: 30px;
