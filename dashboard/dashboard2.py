@@ -5,9 +5,8 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
 import gspread
-from gspread_dataframe import set_with_dataframe
 
-# Google Calendar API 設定
+# Google API 設定
 SERVICE_ACCOUNT_FILE = 'dashboard/credentials.json'
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly', 'https://www.googleapis.com/auth/spreadsheets.readonly']
 
@@ -17,7 +16,7 @@ credentials = service_account.Credentials.from_service_account_file(
 service = build('calendar', 'v3', credentials=credentials)
 
 # gspread 認證
-gc = gspread.authorize(credentials.with_scopes(SCOPES))
+gc = gspread.service_account(filename=SERVICE_ACCOUNT_FILE)
 
 # 取得日曆事件
 def get_calendar_events(calendar_id, start_time, end_time):
@@ -69,20 +68,20 @@ st.markdown("""
     <h1 class="title">大樓管理組 儀表板</h1>
     """, unsafe_allow_html=True)
 
-# 更改 Series 的名称
+# 更改 Series 的名稱
 daily_events.name = '申請停放數量'
 
-# 设置背景图片
-background_image_url = 'https://i.im.ge/2023/12/29/x3xWPF.2-0.png'  # 确保图片在同一目录下
+# 設置背景圖片
+background_image_url = 'https://i.im.ge/2023/12/29/x3xWPF.2-0.png'  # 確保圖片在同一目錄下
 
-# 生成背景图的 CSS
+# 生成背景圖的 CSS
 background_css = f"""
 <style>
 .report-container {{
     background: url('{background_image_url}');
-    background-size: contain;  /* 确保图片缩小显示 */
-    background-position: left top;  /* 图片靠左上角对齐 */
-    background-repeat: no-repeat;  /* 防止图片重复 */
+    background-size: contain;  /* 確保圖片縮小顯示 */
+    background-position: left top;  /* 圖片靠左上角對齊 */
+    background-repeat: no-repeat;  /* 防止圖片重複 */
     padding: 30px;
     border-radius: 10px;
     color: white;
@@ -95,7 +94,7 @@ background_css = f"""
 </style>
 """
 
-# 显示背景图片和数据
+# 顯示背景圖片和數據
 st.markdown(background_css, unsafe_allow_html=True)
 st.markdown(f"""
     <div class="report-container">
