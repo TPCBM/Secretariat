@@ -112,15 +112,14 @@ with col1:
 # 在第二列顯示「總處大小事(最新一筆)」
 with col2:
     # 拆分 latest_data 的列
-    columns_part1 = latest_data.iloc[:, :4]  # 取前4列
-    columns_part2 = latest_data.iloc[:, 4:]  # 取第5列及後面的列
+    columns_part1 = latest_data.iloc[:, :4].set_index('')  # 取前4列並移除索引列
+    columns_part2 = latest_data.iloc[:, 4:].set_index('')  # 取第5列及後面的列並移除索引列
 
     # 顯示「總處大小事(最新一筆)」
     st.subheader('總處大小事(最新一筆)')
 
     # 第一部分表格顯示前4列
-    st.write(columns_part1.style.applymap(lambda x: 'background-color: lightblue', subset=columns_part1.columns))
+    st.write(columns_part1.style.applymap(lambda x: 'background-color: lightblue', subset=columns_part1.columns), index=False)
 
     # 顯示第二部分表格，換行顯示剩餘列
-    st.write(columns_part2.style.applymap(lambda x: 'background-color: lightblue', subset=columns_part2.columns))
-
+    st.write(columns_part2.style.applymap(lambda x: 'background-color: lightblue', subset=columns_part2.columns), index=False)
