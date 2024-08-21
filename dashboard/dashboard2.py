@@ -61,7 +61,7 @@ st.markdown("""
     <style>
     .title {
         text-align: center;
-        font-size: 36px;
+        font-size: 50px;
         font-weight: bold;
     }
     .section1 {
