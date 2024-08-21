@@ -96,8 +96,8 @@ st.markdown("""
         padding: 10px;
         border: 1px solid black;
     }
-    .hide-index thead {
-        display: none;
+    .hide-index td {
+        padding-left: 0; /* 隱藏索引欄的內容 */
     }
     </style>
     <h1 class="title">大樓管理組 儀表板</h1>
@@ -127,8 +127,8 @@ with col2:
     columns_part2 = latest_data.iloc[:, 4:]  # 取第5列及後面的列
 
     # 生成 HTML 表格，隱藏索引
-    columns_part1_html = columns_part1.to_html(classes='dataframe hide-index', border=0)
-    columns_part2_html = columns_part2.to_html(classes='dataframe hide-index', border=0)
+    columns_part1_html = columns_part1.style.hide(axis='index').render()
+    columns_part2_html = columns_part2.style.hide(axis='index').render()
 
     # 顯示「總處大小事(最新一筆)」
     st.markdown(f"""
