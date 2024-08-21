@@ -72,13 +72,10 @@ st.markdown("""
         padding: 20px;
         border-radius: 10px;
         color: white;
+        text-align: center;  /* 文字置中 */
     }
     .section1 h2 {
-        font-size: 30px;  /* 調整字體大小 */
-        padding: 20px;
-        border-radius: 10px;
-        color: black;
-        max-width: 100%;  /* 增加寬度 */
+        font-size: 28px;  /* 調整字體大小 */
         text-align: center;  /* 文字置中 */
     }
     .section2 {
