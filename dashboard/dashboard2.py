@@ -106,5 +106,5 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
 # 顯示 Google Sheets 最新一筆資料
-st.subheader('Google Sheet 最新一筆資料')
+st.subheader('總處大小事(最新一筆)')
 st.write(latest_data)
