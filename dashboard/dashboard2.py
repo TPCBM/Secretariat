@@ -78,6 +78,7 @@ st.markdown("""
         padding: 20px;
         border-radius: 10px;
         color: black;
+        max-width: 100%;  /* 增加寬度 */
     }
     .dataframe {
         color: black;
@@ -109,8 +110,8 @@ st.markdown("""
 # 更改 Series 的名稱
 daily_events.name = '申請停放數量'
 
-# 使用 columns 並排顯示兩個區塊
-col1, col2 = st.columns(2)
+# 使用 columns 並排顯示兩個區塊，調整寬度比例
+col1, col2 = st.columns([1, 2])  # col2 比 col1 寬
 
 # 在第一列顯示「240巷車位概況」
 with col1:
