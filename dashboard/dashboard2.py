@@ -82,6 +82,7 @@ st.markdown("""
         border-radius: 10px;
         color: black;
         max-width: 100%;  /* 增加寬度 */
+        text-align: center;  /* 文字置中 */
     }
     .dataframe {
         color: black;
