@@ -64,6 +64,31 @@ st.markdown("""
         font-size: 36px;
         font-weight: bold;
     }
+    .section1 {{
+        background: url('https://i.im.ge/2023/12/29/x3xWPF.2-0.png');
+        background-size: cover;  /* 確保圖片覆蓋整個區域 */
+        background-position: center;
+        background-repeat: no-repeat;
+        padding: 20px;
+        border-radius: 10px;
+        color: white;
+        margin-bottom: 20px;
+    }}
+    .section2 {{
+        background-color: #f0f0f0;  /* 淺灰色背景 */
+        padding: 20px;
+        border-radius: 10px;
+        color: black;
+    }}
+    .dataframe {{
+        color: black;
+        border-collapse: collapse;
+        width: 100%;
+    }}
+    .dataframe th, .dataframe td {{
+        padding: 10px;
+        border: 1px solid black;
+    }}
     </style>
     <h1 class="title">大樓管理組 儀表板</h1>
     """, unsafe_allow_html=True)
@@ -71,40 +96,13 @@ st.markdown("""
 # 更改 Series 的名稱
 daily_events.name = '申請停放數量'
 
-# 設置背景圖片
-background_image_url = 'https://i.im.ge/2023/12/29/x3xWPF.2-0.png'  # 確保圖片在同一目錄下
-
-# 生成背景圖的 CSS
-background_css = f"""
-<style>
-.report-container {{
-    background: url('{background_image_url}');
-    background-size: contain;  /* 確保圖片縮小顯示 */
-    background-position: left top;  /* 圖片靠左上角對齊 */
-    background-repeat: no-repeat;  /* 防止圖片重複 */
-    padding: 30px;
-    border-radius: 10px;
-    color: white;
-    text-align: left;
-}}
-.dataframe {{
-    color: black;
-    margin-top: 30px;
-}}
-.hide-index {{
-    display: none;
-}}
-</style>
-"""
-
 # 使用 columns 並排顯示兩個區塊
 col1, col2 = st.columns(2)
 
 # 在第一列顯示「240巷車位概況」
 with col1:
-    st.markdown(background_css, unsafe_allow_html=True)
-    st.markdown(f"""
-        <div class="report-container">
+    st.markdown("""
+        <div class="section1">
             <h2>240巷車位概況</h2>
             <div class="dataframe">
                 {daily_events.to_frame().to_html(classes='dataframe', border=0)}
@@ -121,10 +119,16 @@ with col2:
     # 顯示「總處大小事(最新一筆)」
     st.subheader('總處大小事(最新一筆)')
 
-    # 第一部分表格顯示前4列，隱藏索引
-    st.write(columns_part1.style.applymap(lambda x: 'background-color: lightblue', subset=columns_part1.columns)
-             .hide(axis='index').to_html(classes='dataframe hide-index', border=0), unsafe_allow_html=True)
-
-    # 顯示第二部分表格，換行顯示剩餘列，隱藏索引
-    st.write(columns_part2.style.applymap(lambda x: 'background-color: lightblue', subset=columns_part2.columns)
-             .hide(axis='index').to_html(classes='dataframe hide-index', border=0), unsafe_allow_html=True)
+    # 第一部分表格顯示前4列
+    st.markdown("""
+        <div class="section2">
+            <h3>最新資料 - 前4列</h3>
+            <div class="dataframe">
+                {columns_part1.to_html(classes='dataframe', border=0)}
+            </div>
+            <h3>最新資料 - 剩餘列</h3>
+            <div class="dataframe">
+                {columns_part2.to_html(classes='dataframe', border=0)}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
