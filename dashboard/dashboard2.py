@@ -99,6 +99,9 @@ st.markdown("""
     .hide-index td {
         padding-left: 0; /* 隱藏索引欄的內容 */
     }
+    .col2-content {
+        font-size: 14px;  /* 調整字體大小 */
+    }
     </style>
     <h1 class="title">大樓管理組 儀表板</h1>
     """, unsafe_allow_html=True)
@@ -132,7 +135,7 @@ with col2:
 
     # 顯示「總處大小事(最新一筆)」
     st.markdown(f"""
-        <div class="section2">
+        <div class="section2 col2-content">
             <h3>總處大小事(最新一筆)</h3>
             <h4>最新資料 - 前4列</h4>
             <div class="dataframe">
