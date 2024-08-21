@@ -47,7 +47,7 @@ def get_latest_sheet_data(spreadsheet_id, sheet_name):
     return df.tail(1)  # 取得最後一行資料
 
 # *設置 Google Sheets 資訊
-SPREADSHEET_ID = 'your_google_sheet_id'  # 替換為你的 Google Sheets ID
+SPREADSHEET_ID = '1XiBEOWus9hnXzAMOX5dss-nheYKFEEIzeUzpcYXzmMM'  # 替換為你的 Google Sheets ID
 SHEET_NAME = 'Sheet1'  # 替換為你的工作表名稱
 
 # *顯示 Google Sheets 中的最新一筆資料
