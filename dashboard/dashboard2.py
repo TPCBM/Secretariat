@@ -86,6 +86,7 @@ st.markdown("""
         color: black;
         max-width: 100%;  /* 增加寬度 */
         text-align: center;  /* 文字置中 */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 添加陰影效果 */
     }
     .dataframe {
         color: black;
