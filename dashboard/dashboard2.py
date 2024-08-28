@@ -78,7 +78,7 @@ st.markdown("""
         font-weight: bold;
     }
     .section1 {
-        background-color: #f0f0f0;  /* 淺灰色背景 */
+        background-color: #E0FFFF;  /* 淺灰色背景 */
         padding: 20px;
         border-radius: 10px;
         color: black;
