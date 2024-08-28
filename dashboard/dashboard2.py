@@ -76,9 +76,10 @@ st.markdown("""
         text-align: center;
         font-size: 50px;
         font-weight: bold;
-        color: #333;
-        text-shadow: 0 1px 0 #fff, 0 2px 0 #f5f5f5, 0 3px 0 #fff, 0 4px 0 #f5f5f5, 0 5px 0 #fff, 0 6px 0 #f5f5f5, 0 7px 0 #fff, 0 8px 0 #f5f5f5, 0 9px 0 #fff, 0 10px 0 #f5f5f5, 0 11px 0 #fff, 0 12px 0 #f5f5f5, 0 13px 0 #fff, 0 14px 0 #f5f5f5, 0 15px 0 #fff; /* 3D 效果 */
-    }
+        background: -webkit-linear-gradient(#ff7e5f, #feb47b); /* 漸變色 */
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent; /* 文字填充透明 */
+     }
     .section1 {
         background-color: #E0FFFF;  /* 淺灰色背景 */
         padding: 20px;
