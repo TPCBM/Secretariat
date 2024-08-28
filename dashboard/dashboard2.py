@@ -90,7 +90,7 @@ st.markdown("""
         font-size: 28px;  /* 調整字體大小 */
         text-align: center;  /* 文字置中 */
     }
-    .content {
+    .col1-content {
         font-size: 20px;  /* 調整字體大小 */
     }    
     .section2 {
