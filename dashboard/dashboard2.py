@@ -136,15 +136,16 @@ daily_events.name = '申請停放數量'
 # 使用 columns 並排顯示兩個區塊，調整寬度比例
 col1, col2 = st.columns([1, 1.5])  # col2 比 col1 寬
 
-# 顯示結果
-st.markdown(f"""
-    <div class="section1">
-        <h2>240巷車位概況</h2>
-        <div class="dataframe">
-            {daily_events.to_html(classes='dataframe', index=False, border=0)}
+# 在第一列顯示「240巷車位概況」
+with col1:
+    st.markdown(f"""
+        <div class="section1">
+            <h2>240巷車位概況</h2>
+            <div class="dataframe">
+                {daily_events.to_html(classes='dataframe', index=False, border=0)}
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
 # 在第二列顯示「總處大小事(最新一筆)」
 with col2:
