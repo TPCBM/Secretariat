@@ -87,9 +87,12 @@ st.markdown("""
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 添加陰影效果 */
     }
     .section1 h2 {
-        font-size: 36px;  /* 調整字體大小 */
+        font-size: 28px;  /* 調整字體大小 */
         text-align: center;  /* 文字置中 */
     }
+    .content {
+        font-size: 14px;  /* 調整字體大小 */
+    }    
     .section2 {
         background-color: #f0f0f0;  /* 淺灰色背景 */
         padding: 20px;
