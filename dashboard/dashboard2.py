@@ -137,6 +137,7 @@ daily_events.name = '申請停放數量'
 col1, col2 = st.columns([1, 1.5])  # col2 比 col1 寬
 
 # 在第一列顯示「240巷車位概況」
+# 第一個區塊內的樣式和表格顯示
 with col1:
     st.markdown(f"""
         <style>
@@ -144,7 +145,7 @@ with col1:
             text-align: center;  /* 標題文字置中 */
         }
         .centered-table td {
-       text-align: center;  /* 表格文字置中 */
+            text-align: center;  /* 表格文字置中 */
         }
         </style>
         <div class="section1">
@@ -154,7 +155,6 @@ with col1:
             </div>
         </div>
         """, unsafe_allow_html=True)
-
 
 # 在第二列顯示「總處大小事(最新一筆)」
 with col2:
