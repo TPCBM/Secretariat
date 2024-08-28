@@ -52,7 +52,7 @@ tomorrow_events_count = (events_by_day == tomorrow_str).sum()
 
 # 將今天和明天的事件數量組成 DataFrame
 daily_events = pd.DataFrame({
-    '日期': ['今天', '明天'],
+    '日期': ['today_str', 'tomorrow_str'],
     '申請停放數量': [today_events_count, tomorrow_events_count]
 })
 
