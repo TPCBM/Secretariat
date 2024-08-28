@@ -140,14 +140,6 @@ col1, col2 = st.columns([1, 1.5])  # col2 比 col1 寬
 # 第一個區塊內的樣式和表格顯示
 with col1:
     st.markdown(f"""
-        <style>
-        .centered-table th {
-            text-align: center;  /* 標題文字置中 */
-        }
-        .centered-table td {
-            text-align: center;  /* 表格文字置中 */
-        }
-        </style>
         <div class="section1">
             <h2>240巷車位概況</h2>
             <div class="dataframe centered-table">
