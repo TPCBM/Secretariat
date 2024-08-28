@@ -139,21 +139,21 @@ col1, col2 = st.columns([1, 1.5])  # col2 比 col1 寬
 # 在第一列顯示「240巷車位概況」
 with col1:
     st.markdown(f"""
-    <style>
-    .centered-table th {
-        text-align: center;  /* 標題文字置中 */
-    }
-    .centered-table td {
-        text-align: center;  /* 表格文字置中 */
-    }
-    </style>
-    <div class="section1">
-        <h2>240巷車位概況</h2>
-        <div class="dataframe centered-table">
-            {daily_events.to_html(classes='dataframe centered-table', index=False, border=0)}
+        <style>
+        .centered-table th {
+            text-align: center;  /* 標題文字置中 */
+        }
+        .centered-table td {
+            text-align: center;  /* 表格文字置中 */
+        }
+        </style>
+        <div class="section1">
+            <h2>240巷車位概況</h2>
+            <div class="dataframe centered-table">
+                {daily_events.to_html(classes='dataframe centered-table', index=False, border=0)}
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
 # 在第二列顯示「總處大小事(最新一筆)」
 with col2:
