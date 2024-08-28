@@ -91,7 +91,7 @@ st.markdown("""
         text-align: center;  /* 文字置中 */
     }
     .content {
-        font-size: 14px;  /* 調整字體大小 */
+        font-size: 20px;  /* 調整字體大小 */
     }    
     .section2 {
         background-color: #f0f0f0;  /* 淺灰色背景 */
