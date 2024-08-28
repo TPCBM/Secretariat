@@ -121,10 +121,10 @@ st.markdown("""
         padding-left: 0; /* 隱藏索引欄的內容 */
     }
     .col2-content {
-        font-size: 14px;  /* 調整字體大小 */
+        font-size: 18px;  /* 調整字體大小 */
     }
     .col1-content {
-        font-size: 14px;  /* 調整字體大小 */
+        font-size: 18px;  /* 調整字體大小 */
     }
     </style>
     <h1 class="title">大樓管理組 儀表板</h1>
