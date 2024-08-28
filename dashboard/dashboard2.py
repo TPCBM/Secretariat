@@ -144,7 +144,7 @@ with col1:
             text-align: center;  /* 標題文字置中 */
         }
         .centered-table td {
-            text-align: center;  /* 表格文字置中 */
+       text-align: center;  /* 表格文字置中 */
         }
         </style>
         <div class="section1">
@@ -154,6 +154,7 @@ with col1:
             </div>
         </div>
         """, unsafe_allow_html=True)
+
 
 # 在第二列顯示「總處大小事(最新一筆)」
 with col2:
