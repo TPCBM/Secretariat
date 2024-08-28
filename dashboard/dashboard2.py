@@ -32,27 +32,24 @@ def get_calendar_events(calendar_id, start_time, end_time):
 # 設置日期範圍
 today = datetime.now().date()
 start = datetime.combine(today, datetime.min.time()).isoformat() + 'Z'
-end = datetime.combine(today + timedelta(days=1), datetime.min.time()).isoformat() + 'Z'
+end = datetime.combine(today + timedelta(days=2), datetime.min.time()).isoformat() + 'Z'  # 調整為今天 + 2 天
 
 # 獲取事件
 calendar_id = 'sd2721idgjjildevu45dc6t4ek@group.calendar.google.com'  # 這裡可以替換為你的日曆 ID
 events = get_calendar_events(calendar_id, start, end)
 
-# 計算每日事件數量
-# daily_events = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in events]).value_counts()
-
-# 設置今天和明天的日期字串
+# 計算今天和明天的事件數量
+events_by_day = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in events])
 today_str = today.isoformat()  # 今天的日期字串
 tomorrow_str = (today + timedelta(days=1)).isoformat()  # 明天的日期字串
 
 # 計算今天和明天的事件數量
-events_by_day = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in events])
 today_events_count = (events_by_day == today_str).sum()
 tomorrow_events_count = (events_by_day == tomorrow_str).sum()
 
 # 將今天和明天的事件數量組成 DataFrame
 daily_events = pd.DataFrame({
-    '日期': [today_str, tomorrow_str],
+    '日期': ['今天', '明天'],
     '申請停放數量': [today_events_count, tomorrow_events_count]
 })
 
@@ -141,16 +138,15 @@ daily_events.name = '申請停放數量'
 # 使用 columns 並排顯示兩個區塊，調整寬度比例
 col1, col2 = st.columns([1, 1.5])  # col2 比 col1 寬
 
-# 在第一列顯示「240巷車位概況」
-with col1:
-    st.markdown(f"""
-        <div class="section1">
-            <h2>240巷車位概況</h2>
-            <div class="dataframe">
-                {daily_events.to_html(classes='dataframe', index=False, border=0)}
-            </div>
+# 顯示結果
+st.markdown(f"""
+    <div class="section1">
+        <h2>240巷車位概況</h2>
+        <div class="dataframe">
+            {daily_events.to_html(classes='dataframe', index=False, border=0)}
         </div>
-        """, unsafe_allow_html=True)
+    </div>
+    """, unsafe_allow_html=True)
 
 # 在第二列顯示「總處大小事(最新一筆)」
 with col2:
