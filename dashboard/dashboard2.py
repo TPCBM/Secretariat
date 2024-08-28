@@ -78,15 +78,13 @@ st.markdown("""
         font-weight: bold;
     }
     .section1 {
-        background: url('https://i.im.ge/2023/12/29/x3xWPF.2-0.png');
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
+        background-color: #f0f0f0;  /* 淺灰色背景 */
         padding: 20px;
         border-radius: 10px;
-        color: white;
+        color: black;
         max-width: 100%;  /* 增加寬度 */
         text-align: center;  /* 文字置中 */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 添加陰影效果 */
     }
     .section1 h2 {
         font-size: 28px;  /* 調整字體大小 */
