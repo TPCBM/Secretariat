@@ -39,7 +39,23 @@ calendar_id = 'sd2721idgjjildevu45dc6t4ek@group.calendar.google.com'  # 這裡�
 events = get_calendar_events(calendar_id, start, end)
 
 # 計算每日事件數量
-daily_events = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in events]).value_counts()
+# daily_events = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in events]).value_counts()
+
+# 設置今天和明天的日期字串
+today_str = today.isoformat()  # 今天的日期字串
+tomorrow_str = (today + timedelta(days=1)).isoformat()  # 明天的日期字串
+
+# 計算今天和明天的事件數量
+events_by_day = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in events])
+today_events_count = (events_by_day == today_str).sum()
+tomorrow_events_count = (events_by_day == tomorrow_str).sum()
+
+# 將今天和明天的事件數量組成 DataFrame
+daily_events = pd.DataFrame({
+    '日期': ['今天', '明天'],
+    '申請停放數量': [today_events_count, tomorrow_events_count]
+})
+
 
 # 取得 Google Sheets 中的最新一筆資料
 def get_latest_sheet_data(spreadsheet_id, sheet_name):
@@ -131,7 +147,7 @@ with col1:
         <div class="section1">
             <h2>240巷車位概況</h2>
             <div class="dataframe">
-                {daily_events.to_frame().to_html(classes='dataframe', border=0)}
+                {daily_events.to_html(classes='dataframe', index=False, border=0)}
             </div>
         </div>
         """, unsafe_allow_html=True)
