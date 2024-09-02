@@ -176,3 +176,32 @@ with col2:
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+#... 保留原有的代碼
+
+# 新日曆的本週每日事件顯示區塊
+new_calendar_id = 'd0svld4vlapgnsl2sau7puqi30@group.calendar.google.com'  # 替換為新的日曆 ID
+week_events, start_of_week, end_of_week = get_week_events(new_calendar_id)
+
+events_by_day = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in week_events])
+week_days = pd.date_range(start=start_of_week, end=end_of_week).strftime('%Y-%m-%d')
+week_events_count = [events_by_day.str.contains(day).sum() for day in week_days]
+
+weekly_events_df = pd.DataFrame({
+    '日期': week_days,
+    '事件數量': week_events_count
+})
+
+st.markdown("""
+    <div class="section1">
+        <h2>本週事件數量（新日曆）</h2>
+    </div>
+""", unsafe_allow_html=True)
+
+st.markdown(f"""
+    <div class="section2">
+        <div class="dataframe centered-table">
+            {weekly_events_df.to_html(classes='dataframe centered-table', index=False, border=0)}
+        </div>
+    </div>
+""", unsafe_allow_html=True)
