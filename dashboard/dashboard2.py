@@ -179,6 +179,22 @@ with col2:
 
 #... 保留原有的代碼
 
+# 定義取得本週事件的函數
+def get_week_events(calendar_id):
+    # 設置本週的開始時間（週一）
+    today = datetime.now().date()
+    start_of_week = today - timedelta(days=today.weekday())  # 取得本週一的日期
+    end_of_week = start_of_week + timedelta(days=6)  # 取得本週日的日期
+
+    start_time = datetime.combine(start_of_week, datetime.min.time()).isoformat() + 'Z'
+    end_time = datetime.combine(end_of_week, datetime.min.time()).isoformat() + 'Z'
+
+    # 獲取本週的事件
+    week_events = get_calendar_events(calendar_id, start_time, end_time)
+    
+    return week_events, start_of_week, end_of_week
+
+
 # 新日曆的本週每日事件顯示區塊
 new_calendar_id = 'd0svld4vlapgnsl2sau7puqi30@group.calendar.google.com'  # 替換為新的日曆 ID
 # 獲取本週的事件
