@@ -204,28 +204,31 @@ def get_week_events(new_calendar_id):
 # 獲取本週的事件
 week_events, start_of_week, end_of_week = get_week_events(new_calendar_id)  # 獲取本週的事件
 
-# 安全地處理 week_events 並檢查 'start' 是否存在
+# 安全地处理 week_events 并检查 'start' 是否存在
 events_by_day = pd.Series([
     event['start'].get('date', event['start'].get('dateTime', '')).split('T')[0]
     for event in week_events if 'start' in event
 ])
 
-# 設置本週的日期範圍
+# 打印 events_by_day 来确认其内容
+st.write("Events by Day:", events_by_day)
+
+# 设置本周的日期范围
 week_days = pd.date_range(start=start_of_week, end=end_of_week).strftime('%Y-%m-%d')
 
-# 計算每一天的事件數量
+# 计算每一天的事件数量
 week_events_count = [events_by_day.str.contains(day).sum() for day in week_days]
 
-# 將事件數量構造成 DataFrame
+# 将事件数量构造成 DataFrame
 weekly_events_df = pd.DataFrame({
     '日期': week_days,
-    '事件數量': week_events_count
+    '事件数量': week_events_count
 })
 
-# 顯示本週事件數量
+# 显示本周事件数量
 st.markdown("""
     <div class="section1">
-        <h2>本週事件數量（新日曆）</h2>
+        <h2>本周事件数量（新日历）</h2>
     </div>
 """, unsafe_allow_html=True)
 
