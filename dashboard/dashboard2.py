@@ -181,30 +181,28 @@ with col2:
 
 # 新日曆的本週每日事件顯示區塊
 new_calendar_id = 'd0svld4vlapgnsl2sau7puqi30@group.calendar.google.com'  # 替換為新的日曆 ID
-# 設置日期範圍為本週（從星期一到星期天）
-def get_week_events(calendar_id):
-    today = datetime.now()
-    start_of_week = today - timedelta(days=today.weekday())  # 本週星期一
-    end_of_week = start_of_week + timedelta(days=6)  # 本週星期天
+# 獲取本週的事件
+week_events, start_of_week, end_of_week = get_week_events(new_calendar_id)  # 獲取本週的事件
 
-    start_time = datetime.combine(start_of_week, datetime.min.time()).isoformat() + 'Z'
-    end_time = datetime.combine(end_of_week, datetime.max.time()).isoformat() + 'Z'
-
-    events = get_calendar_events(calendar_id, start_time, end_time)
-    return events, start_of_week, end_of_week
-
+# 安全地處理 week_events 並檢查 'start' 是否存在
 events_by_day = pd.Series([
     event['start'].get('date', event['start'].get('dateTime', '')).split('T')[0]
     for event in week_events if 'start' in event
 ])
+
+# 設置本週的日期範圍
 week_days = pd.date_range(start=start_of_week, end=end_of_week).strftime('%Y-%m-%d')
+
+# 計算每一天的事件數量
 week_events_count = [events_by_day.str.contains(day).sum() for day in week_days]
 
+# 將事件數量構造成 DataFrame
 weekly_events_df = pd.DataFrame({
     '日期': week_days,
     '事件數量': week_events_count
 })
 
+# 顯示本週事件數量
 st.markdown("""
     <div class="section1">
         <h2>本週事件數量（新日曆）</h2>
