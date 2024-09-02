@@ -193,7 +193,10 @@ def get_week_events(calendar_id):
     events = get_calendar_events(calendar_id, start_time, end_time)
     return events, start_of_week, end_of_week
 
-events_by_day = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in week_events])
+events_by_day = pd.Series([
+    event['start'].get('date', event['start'].get('dateTime', '')).split('T')[0]
+    for event in week_events if 'start' in event
+])
 week_days = pd.date_range(start=start_of_week, end=end_of_week).strftime('%Y-%m-%d')
 week_events_count = [events_by_day.str.contains(day).sum() for day in week_days]
 
