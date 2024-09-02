@@ -181,7 +181,17 @@ with col2:
 
 # 新日曆的本週每日事件顯示區塊
 new_calendar_id = 'd0svld4vlapgnsl2sau7puqi30@group.calendar.google.com'  # 替換為新的日曆 ID
-week_events, start_of_week, end_of_week = get_week_events(new_calendar_id)
+# 設置日期範圍為本週（從星期一到星期天）
+def get_week_events(calendar_id):
+    today = datetime.now()
+    start_of_week = today - timedelta(days=today.weekday())  # 本週星期一
+    end_of_week = start_of_week + timedelta(days=6)  # 本週星期天
+
+    start_time = datetime.combine(start_of_week, datetime.min.time()).isoformat() + 'Z'
+    end_time = datetime.combine(end_of_week, datetime.max.time()).isoformat() + 'Z'
+
+    events = get_calendar_events(calendar_id, start_time, end_time)
+    return events, start_of_week, end_of_week
 
 events_by_day = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in week_events])
 week_days = pd.date_range(start=start_of_week, end=end_of_week).strftime('%Y-%m-%d')
