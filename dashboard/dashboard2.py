@@ -184,17 +184,21 @@ new_calendar_id = 'd0svld4vlapgnsl2sau7puqi30@group.calendar.google.com'  # 替�
 
 # 定義取得本週事件的函數
 def get_week_events(new_calendar_id):
-    # 設置本週的開始時間（週一）
     today = datetime.now().date()
-    start_of_week = today - timedelta(days=today.weekday())  # 取得本週一的日期
-    end_of_week = start_of_week + timedelta(days=6)  # 取得本週日的日期
+    start_of_week = today - timedelta(days=today.weekday())
+    end_of_week = start_of_week + timedelta(days=6)
 
     start_time = datetime.combine(start_of_week, datetime.min.time()).isoformat() + 'Z'
     end_time = datetime.combine(end_of_week, datetime.min.time()).isoformat() + 'Z'
 
-    # 獲取本週的事件
+    # Test retrieving events
     week_events = get_calendar_events(new_calendar_id, start_time, end_time)
-    
+    st.write("Week Events:", week_events)  # Print out events to verify
+
+    # Check event count
+    event_count = len(week_events)
+    st.write("Number of Events:", event_count)
+
     return week_events, start_of_week, end_of_week
 
 # 獲取本週的事件
