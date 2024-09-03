@@ -233,7 +233,7 @@ weekly_events_df = pd.DataFrame({
 st.markdown("""
     <style>
     .section3 {
-        background-color: #f9f9f9;  /* 白灰色背景 */
+        background-color:  #00FFFF;  /* 白灰色背景 */
         padding: 20px;
         border-radius: 10px;
         color: black;
@@ -247,7 +247,7 @@ st.markdown("""
 # 在網頁上新增顯示每週事件敘述的區塊
 st.markdown(f"""
     <div class="section3">
-        <h2>每週事件描述 (日曆ID: {calendar_id_weekly})</h2>
+        <h2>1306會議室本週借用情形</h2>
         <div class="dataframe centered-table">
             {weekly_events_df.to_html(classes='dataframe centered-table', index=False, border=0)}
         </div>
