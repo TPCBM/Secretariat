@@ -233,7 +233,7 @@ weekly_events_df = pd.DataFrame({
 st.markdown("""
     <style>
     .section3 {
-        background-color: #98FB98;  /* 白灰色背景 */
+        background-color: rgba(,255,204,0.2);  /* 白灰色背景 */
         padding: 20px;
         border-radius: 10px;
         color: black;
