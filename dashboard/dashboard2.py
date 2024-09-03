@@ -241,6 +241,11 @@ st.markdown("""
         text-align: center;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
+        .hide-index th, .hide-index td {
+        padding: 10px;
+        border: 1px solid black;
+        text-align: center;  /* 置中表格文字 */
+    }
     </style>
     """, unsafe_allow_html=True)
 
