@@ -200,7 +200,7 @@ start_week = datetime.combine(today, datetime.min.time()).isoformat() + 'Z'
 end_week = datetime.combine(end_of_week, datetime.min.time()).isoformat() + 'Z'
 
 # 獲取另一個日曆 ID 的每週事件
-calendar_id_weekly = '你的有效日曆ID@group.calendar.google.com'
+calendar_id_weekly = 'd0svld4vlapgnsl2sau7puqi30@group.calendar.google.com'
 weekly_events = get_weekly_calendar_events(calendar_id_weekly, start_week, end_week)
 
 # 將每週事件按日期分組並生成描述
