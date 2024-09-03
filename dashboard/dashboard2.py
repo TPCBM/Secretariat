@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
+from googleapiclient.errors import HttpError
 import gspread
 
 # Google API 設定
@@ -180,14 +181,18 @@ with col2:
 
 # 取得每週日曆事件
 def get_weekly_calendar_events(calendar_id, start_time, end_time):
-    events_result = service.events().list(
-        calendarId=calendar_id,
-        timeMin=start_time,
-        timeMax=end_time,
-        singleEvents=True,
-        orderBy='startTime'
-    ).execute()
-    return events_result.get('items', [])
+    try:
+        events_result = service.events().list(
+            calendarId=calendar_id,
+            timeMin=start_time,
+            timeMax=end_time,
+            singleEvents=True,
+            orderBy='startTime'
+        ).execute()
+        return events_result.get('items', [])
+    except HttpError as error:
+        st.error(f"An error occurred: {error}")
+        return []
 
 # 設置每週日期範圍 (今天至下週)
 end_of_week = today + timedelta(days=7)
