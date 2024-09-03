@@ -134,7 +134,7 @@ st.markdown("""
         font-size: 14px;  /* 調整字體大小 */
     }
     </style>
-    <h1 class="title">大樓管理組   儀表板</h1>
+    <h1 class="title">大樓管理組     儀表板</h1>
     """, unsafe_allow_html=True)
 
 # 更改 Series 的名稱
