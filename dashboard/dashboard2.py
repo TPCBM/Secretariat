@@ -134,7 +134,7 @@ st.markdown("""
         font-size: 14px;  /* 調整字體大小 */
     }
     </style>
-    <h1 class="title">大樓管理組 儀表板</h1>
+    <h1 class="title">大樓管理組   儀表板</h1>
     """, unsafe_allow_html=True)
 
 # 更改 Series 的名稱
@@ -247,7 +247,7 @@ st.markdown("""
 # 在網頁上新增顯示每週事件敘述的區塊
 st.markdown(f"""
     <div class="section3">
-        <h2>1306會議室本週借用情形</h2>
+        <h2>本週1306會議室概況</h2>
         <div class="dataframe centered-table">
             {weekly_events_df.to_html(classes='dataframe centered-table', index=False, border=0)}
         </div>
