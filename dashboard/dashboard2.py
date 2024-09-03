@@ -69,6 +69,33 @@ SHEET_NAME = '表單回應 1'  # 替換為你的工作表名稱
 # 顯示 Google Sheets 中的最新一筆資料
 latest_data = get_latest_sheet_data(SPREADSHEET_ID, SHEET_NAME)
 
+
+# 設置每週日期範圍 (今天至下週)
+end_of_week = today + timedelta(days=7)
+start_week = datetime.combine(today, datetime.min.time()).isoformat() + 'Z'
+end_week = datetime.combine(end_of_week, datetime.min.time()).isoformat() + 'Z'
+
+# 獲取另一個日曆 ID 的每週事件
+calendar_id_weekly = 'd0svld4vlapgnsl2sau7puqi30@group.calendar.google.com'
+weekly_events = get_weekly_calendar_events(calendar_id_weekly, start_week, end_week)
+
+# 將每週事件按日期分組
+weekly_events_by_day = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in weekly_events])
+
+# 生成本週的日期列表
+week_dates = [(today + timedelta(days=i)).isoformat() for i in range(7)]
+
+# 計算每一天的事件數量
+weekly_event_counts = [(weekly_events_by_day == day).sum() for day in week_dates]
+
+# 將每週的事件數量組成 DataFrame
+weekly_events_df = pd.DataFrame({
+    '日期': week_dates,
+    '事件數量': weekly_event_counts
+})
+
+
+
 # 使用 Streamlit 顯示標題
 st.markdown("""
     <style>
@@ -176,6 +203,32 @@ with col2:
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+
+# 使用 Streamlit 顯示每週的事件數量區塊
+st.markdown("""
+    <style>
+    .section3 {
+        background-color: #f9f9f9;  /* 白灰色背景 */
+        padding: 20px;
+        border-radius: 10px;
+        color: black;
+        max-width: 100%;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# 在網頁上新增顯示每週事件數量的區塊
+st.markdown(f"""
+    <div class="section3">
+        <h2>每週事件數量 (日曆ID: {calendar_id_weekly})</h2>
+        <div class="dataframe centered-table">
+            {weekly_events_df.to_html(classes='dataframe centered-table', index=False, border=0)}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 #... 保留原有的代碼
 # 新日历的本周每日事件显示区块
