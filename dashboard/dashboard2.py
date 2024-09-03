@@ -70,6 +70,17 @@ SHEET_NAME = '表單回應 1'  # 替換為你的工作表名稱
 latest_data = get_latest_sheet_data(SPREADSHEET_ID, SHEET_NAME)
 
 
+# 取得每週日曆事件
+def get_weekly_calendar_events(calendar_id, start_time, end_time):
+    events_result = service.events().list(
+        calendarId=calendar_id,
+        timeMin=start_time,
+        timeMax=end_time,
+        singleEvents=True,
+        orderBy='startTime'
+    ).execute()
+    return events_result.get('items', [])
+
 # 設置每週日期範圍 (今天至下週)
 end_of_week = today + timedelta(days=7)
 start_week = datetime.combine(today, datetime.min.time()).isoformat() + 'Z'
