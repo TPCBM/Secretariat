@@ -178,8 +178,11 @@ with col2:
         """, unsafe_allow_html=True)
 
 #... 保留原有的代碼
+# 新日历的本周每日事件显示区块
+new_calendar_id = 'd0svld4vlapgnsl2sau7puqi30@group.calendar.google.com'
+
 # 定义获取本周事件的函数
-def get_week_events(calendar_id):
+def get_week_events(new_calendar_id):
     today = datetime.now().date()
     start_of_week = today - timedelta(days=today.weekday())
     end_of_week = start_of_week + timedelta(days=6)
@@ -188,7 +191,7 @@ def get_week_events(calendar_id):
     end_time = datetime.combine(end_of_week, datetime.min.time()).isoformat() + 'Z'
 
     # 获取本周的事件
-    week_events = get_calendar_events(calendar_id, start_time, end_time)
+    week_events = get_calendar_events(new_calendar_id, start_time, end_time)
     
     # 打印事件以验证
     st.write("Week Events:", week_events)
@@ -198,9 +201,6 @@ def get_week_events(calendar_id):
     st.write("Number of Events:", event_count)
 
     return week_events, start_of_week, end_of_week
-
-# 新日历的本周每日事件显示区块
-new_calendar_id = 'd0svld4vlapgnsl2sau7puqi30@group.calendar.google.com'
 
 # 获取本周的事件
 week_events, start_of_week, end_of_week = get_week_events(new_calendar_id)
