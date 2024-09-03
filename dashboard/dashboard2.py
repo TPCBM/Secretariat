@@ -200,22 +200,33 @@ start_week = datetime.combine(today, datetime.min.time()).isoformat() + 'Z'
 end_week = datetime.combine(end_of_week, datetime.min.time()).isoformat() + 'Z'
 
 # 獲取另一個日曆 ID 的每週事件
-calendar_id_weekly = 'd0svld4vlapgnsl2sau7puqi30@group.calendar.google.com'
+calendar_id_weekly = '你的有效日曆ID@group.calendar.google.com'
 weekly_events = get_weekly_calendar_events(calendar_id_weekly, start_week, end_week)
 
-# 將每週事件按日期分組
-weekly_events_by_day = pd.Series([event['start'].get('date', event['start'].get('dateTime')).split('T')[0] for event in weekly_events])
+# 將每週事件按日期分組並生成描述
+weekly_event_descriptions = {}
+for event in weekly_events:
+    event_date = event['start'].get('date', event['start'].get('dateTime')).split('T')[0]
+    event_desc = event.get('summary', '無標題事件')
+    if event_date in weekly_event_descriptions:
+        weekly_event_descriptions[event_date].append(event_desc)
+    else:
+        weekly_event_descriptions[event_date] = [event_desc]
 
 # 生成本週的日期列表
 week_dates = [(today + timedelta(days=i)).isoformat() for i in range(7)]
 
-# 計算每一天的事件數量
-weekly_event_counts = [(weekly_events_by_day == day).sum() for day in week_dates]
+# 為每一天生成事件的敘述
+weekly_event_details = []
+for day in week_dates:
+    events = weekly_event_descriptions.get(day, [])
+    event_str = "\n".join(events) if events else "無事件"
+    weekly_event_details.append(event_str)
 
-# 將每週的事件數量組成 DataFrame
+# 將每週的事件敘述組成 DataFrame
 weekly_events_df = pd.DataFrame({
     '日期': week_dates,
-    '事件數量': weekly_event_counts
+    '事件描述': weekly_event_details
 })
 
 # 使用 Streamlit 顯示每週的事件數量區塊
@@ -233,18 +244,12 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 在網頁上新增顯示每週事件數量的區塊
+# 在網頁上新增顯示每週事件敘述的區塊
 st.markdown(f"""
     <div class="section3">
-        <h2>每週事件數量 (日曆ID: {calendar_id_weekly})</h2>
+        <h2>每週事件描述 (日曆ID: {calendar_id_weekly})</h2>
         <div class="dataframe centered-table">
             {weekly_events_df.to_html(classes='dataframe centered-table', index=False, border=0)}
         </div>
     </div>
     """, unsafe_allow_html=True)
-
-
-#... 保留原有的代碼
-# 新日历的本周每日事件显示区块
-# new_calendar_id = 'd0svld4vlapgnsl2sau7puqi30@group.calendar.google.com'
-
