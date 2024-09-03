@@ -178,12 +178,8 @@ with col2:
         """, unsafe_allow_html=True)
 
 #... 保留原有的代碼
-
-# 新日曆的本週每日事件顯示區塊
-new_calendar_id = 'd0svld4vlapgnsl2sau7puqi30@group.calendar.google.com'  # 替換為新的日曆 ID
-
-# 定義取得本週事件的函數
-def get_week_events(new_calendar_id):
+# 定义获取本周事件的函数
+def get_week_events(calendar_id):
     today = datetime.now().date()
     start_of_week = today - timedelta(days=today.weekday())
     end_of_week = start_of_week + timedelta(days=6)
@@ -191,18 +187,23 @@ def get_week_events(new_calendar_id):
     start_time = datetime.combine(start_of_week, datetime.min.time()).isoformat() + 'Z'
     end_time = datetime.combine(end_of_week, datetime.min.time()).isoformat() + 'Z'
 
-    # Test retrieving events
-    week_events = get_calendar_events(new_calendar_id, start_time, end_time)
-    st.write("Week Events:", week_events)  # Print out events to verify
+    # 获取本周的事件
+    week_events = get_calendar_events(calendar_id, start_time, end_time)
+    
+    # 打印事件以验证
+    st.write("Week Events:", week_events)
 
-    # Check event count
+    # 检查事件数量
     event_count = len(week_events)
     st.write("Number of Events:", event_count)
 
     return week_events, start_of_week, end_of_week
 
-# 獲取本週的事件
-week_events, start_of_week, end_of_week = get_week_events(new_calendar_id)  # 獲取本週的事件
+# 新日历的本周每日事件显示区块
+new_calendar_id = 'd0svld4vlapgnsl2sau7puqi30@group.calendar.google.com'
+
+# 获取本周的事件
+week_events, start_of_week, end_of_week = get_week_events(new_calendar_id)
 
 # 安全地处理 week_events 并检查 'start' 是否存在
 events_by_day = pd.Series([
