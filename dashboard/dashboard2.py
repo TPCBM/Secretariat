@@ -230,6 +230,7 @@ weekly_events_df = pd.DataFrame({
 })
 
 # 使用 Streamlit 顯示每週的事件數量區塊
+# 使用 Streamlit 顯示每週的事件數量區塊
 st.markdown("""
     <style>
     .section3 {
@@ -240,6 +241,11 @@ st.markdown("""
         max-width: 100%;
         text-align: center;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .dataframe th, .dataframe td {
+        text-align: center;  /* 將表格內容置中 */
+        padding: 10px;
+        border: 1px solid black;  /* 添加表格邊框 */
     }
     </style>
     """, unsafe_allow_html=True)
@@ -253,3 +259,4 @@ st.markdown(f"""
         </div>
     </div>
     """, unsafe_allow_html=True)
+
