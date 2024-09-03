@@ -141,7 +141,7 @@ st.markdown("""
 daily_events.name = '申請停放數量'
 
 # 使用 columns 並排顯示兩個區塊，調整寬度比例
-col1, col2 = st.columns([1, 1.5])  # col2 比 col1 寬
+col1, col2 = st.columns([1, 1.7])  # col2 比 col1 寬
 
 # 在第一列顯示「240巷車位概況」
 # 第一個區塊內的樣式和表格顯示
