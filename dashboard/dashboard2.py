@@ -74,6 +74,11 @@ latest_data = get_latest_sheet_data(SPREADSHEET_ID, SHEET_NAME)
 st.markdown("""
     <style>
     .title {
+:root{
+	--shadow-color: #BD2620;
+}
+
+h1{
 	--letter-spacing: 0.5vw;
 	width: 100%;
 	margin: 0;
@@ -96,6 +101,7 @@ st.markdown("""
 		font-size: 0.5em;
 		vertical-align: top;
 	}
+}	
 }	
     .section1 {
         background-color: #E0FFFF;  /* 淺灰色背景 */
