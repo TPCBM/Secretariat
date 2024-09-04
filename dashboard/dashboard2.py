@@ -240,8 +240,16 @@ st.markdown("""
         color: black;
         max-width: 100%;
         text-align: center;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 添加整體區塊的陰影 */
     }
+    .dataframe {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 0 auto;  /* 讓表格置中 */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);  /* 表格的陰影效果 */
+        background-color: #f9f9f9;  /* 表格背景色 */
+    }
+    
     .dataframe th, .dataframe td {
         text-align: center;  /* 將表格內容置中 */
         padding: 10px;
