@@ -82,7 +82,7 @@ st.markdown("""
     --letter-spacing: 0.5vw;
     width: 100%;
     margin: 0;
-    font-size: 10vw;
+    font-size: 5vw;
     line-height: 1;
     font-family: 'Teko', sans-serif;
     letter-spacing: var(--letter-spacing);
@@ -103,7 +103,7 @@ st.markdown("""
 	        }
         }
     </style>
-    <h1 class="title">大樓管理組 &nbsp&nbsp&nbsp儀表板</h1>
+    <h1 class="title">大樓管理組  儀表板</h1>
     """, unsafe_allow_html=True)
 
 st.markdown("""
