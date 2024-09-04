@@ -78,7 +78,6 @@ st.markdown("""
         font-size: 50px;
         font-weight: bold;
         background: -webkit-linear-gradient(#4169e1, #87ceeb); /* 漸變色 */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 添加陰影效果 */
         text-shadow: 1px 1px 3px black; /* text-shadow: 水平偏移 | 垂直偏移 | 模糊程度 | 顏色 */
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent; /* 文字填充透明 */
