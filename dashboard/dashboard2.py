@@ -73,6 +73,10 @@ latest_data = get_latest_sheet_data(SPREADSHEET_ID, SHEET_NAME)
 # 使用 Streamlit 顯示標題
 st.markdown("""
     <style>
+    :root{
+	--shadow-color: #BD2620;
+    }
+
     .title {
 	--letter-spacing: 0.5vw;
 	width: 100%;
@@ -96,7 +100,17 @@ st.markdown("""
 		font-size: 0.5em;
 		vertical-align: top;
 	}
-     }	
+}	
+
+/* other style */
+*{
+	box-sizing: border-box;
+}
+
+html{
+	height: 100%;
+	background-color: #55D4C5;
+}	
     .section1 {
         background-color: #E0FFFF;  /* 淺灰色背景 */
         padding: 20px;
