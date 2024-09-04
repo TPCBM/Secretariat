@@ -72,7 +72,8 @@ latest_data = get_latest_sheet_data(SPREADSHEET_ID, SHEET_NAME)
 
 # 使用 Streamlit 顯示標題
 st.markdown("""
-    <style>
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;700&display=swap" rel="stylesheet">
+<style>
 :root {
     --shadow-color: #BD2620;
 }
@@ -98,13 +99,11 @@ st.markdown("""
         0.05em 0.07em 0 var(--shadow-color);
 }
 
-/* small 標籤的樣式 */
 .title small {
     font-size: 0.5em;
     vertical-align: top;
 }
 
-/* 其他樣式 */
 * {
     box-sizing: border-box;
 }
