@@ -74,14 +74,29 @@ latest_data = get_latest_sheet_data(SPREADSHEET_ID, SHEET_NAME)
 st.markdown("""
     <style>
     .title {
-        text-align: center;
-        font-size: 50px;
-        font-weight: bold;
-        background: -webkit-linear-gradient(#4169e1, #87ceeb); /* 漸變色 */
-        text-shadow: 1px 1px 1px black; /* text-shadow: 水平偏移 | 垂直偏移 | 模糊程度 | 顏色 */
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent; /* 文字填充透明 */
-     }
+	--letter-spacing: 0.5vw;
+	width: 100%;
+	margin: 0;
+	font-size: 10vw;
+	line-height: 1;
+	font-family: 'Teko', sans-serif;
+	letter-spacing: var(--letter-spacing);
+	padding-left: var(--letter-spacing);
+	color: #FEA42A;
+	text-shadow:
+		0.03em 0.03em 0.05em rgba(0,0,0, .2),
+		0.01em 0.01em 0 var(--shadow-color),
+		0.02em 0.02em 0 var(--shadow-color),
+		0.03em 0.03em 0 var(--shadow-color),
+		0.03em 0.04em 0 var(--shadow-color),
+		0.05em 0.05em 0 var(--shadow-color),
+		0.05em 0.06em 0 var(--shadow-color),
+		0.05em 0.07em 0 var(--shadow-color);
+	& small{
+		font-size: 0.5em;
+		vertical-align: top;
+	}
+}	
     .section1 {
         background-color: #E0FFFF;  /* 淺灰色背景 */
         padding: 20px;
