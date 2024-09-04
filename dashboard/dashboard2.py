@@ -99,14 +99,11 @@ st.markdown("""
         0.05em 0.07em 0 var(--shadow-color);
         }
 
-.title small {
- font-size: 0.5em;
- vertical-align: top;
- }
+    .title small {
+     font-size: 0.5em;
+     vertical-align: top;
+     }
 
-* {
-   box-sizing: border-box;
-   }
     </style>
     <h1 class="title">大樓管理組 &nbsp&nbsp&nbsp儀表板</h1>
     """, unsafe_allow_html=True)
