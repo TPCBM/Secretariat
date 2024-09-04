@@ -73,44 +73,48 @@ latest_data = get_latest_sheet_data(SPREADSHEET_ID, SHEET_NAME)
 # 使用 Streamlit 顯示標題
 st.markdown("""
     <style>
-    :root{
-	--shadow-color: #BD2620;
-    }
-
-    .title {
-	--letter-spacing: 0.5vw;
-	width: 100%;
-	margin: 0;
-	font-size: 10vw;
-	line-height: 1;
-	font-family: 'Teko', sans-serif;
-	letter-spacing: var(--letter-spacing);
-	padding-left: var(--letter-spacing);
-	color: #FEA42A;
-	text-shadow:
-		0.03em 0.03em 0.05em rgba(0,0,0, .2),
-		0.01em 0.01em 0 var(--shadow-color),
-		0.02em 0.02em 0 var(--shadow-color),
-		0.03em 0.03em 0 var(--shadow-color),
-		0.03em 0.04em 0 var(--shadow-color),
-		0.05em 0.05em 0 var(--shadow-color),
-		0.05em 0.06em 0 var(--shadow-color),
-		0.05em 0.07em 0 var(--shadow-color);
-	& small{
-		font-size: 0.5em;
-		vertical-align: top;
-	}
-}	
-
-/* other style */
-*{
-	box-sizing: border-box;
+:root {
+    --shadow-color: #BD2620;
 }
 
-html{
-	height: 100%;
-	background-color: #55D4C5;
-}	
+.title {
+    --letter-spacing: 0.5vw;
+    width: 100%;
+    margin: 0;
+    font-size: 10vw;
+    line-height: 1;
+    font-family: 'Teko', sans-serif;
+    letter-spacing: var(--letter-spacing);
+    padding-left: var(--letter-spacing);
+    color: #FEA42A;
+    text-shadow:
+        0.03em 0.03em 0.05em rgba(0, 0, 0, 0.2),
+        0.01em 0.01em 0 var(--shadow-color),
+        0.02em 0.02em 0 var(--shadow-color),
+        0.03em 0.03em 0 var(--shadow-color),
+        0.03em 0.04em 0 var(--shadow-color),
+        0.05em 0.05em 0 var(--shadow-color),
+        0.05em 0.06em 0 var(--shadow-color),
+        0.05em 0.07em 0 var(--shadow-color);
+}
+
+/* small 標籤的樣式 */
+.title small {
+    font-size: 0.5em;
+    vertical-align: top;
+}
+
+/* 其他樣式 */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+    background-color: #55D4C5;
+}
+
+ 
     .section1 {
         background-color: #E0FFFF;  /* 淺灰色背景 */
         padding: 20px;
