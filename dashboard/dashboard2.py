@@ -84,6 +84,7 @@ st.markdown("""
     margin: 0;
     font-size: 5vw;
     line-height: 1;
+    text-align: center;
     font-family: 'Teko', sans-serif;
     letter-spacing: var(--letter-spacing);
     padding-left: var(--letter-spacing);
