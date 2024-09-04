@@ -104,7 +104,7 @@ st.markdown("""
 	        }
         }
     </style>
-    <h1 class="title">大樓管理組   儀表板</h1>
+    <h1 class="title">大樓管理組 &nbsp&nbsp&nbsp儀表板</h1>
     """, unsafe_allow_html=True)
 
 st.markdown("""
