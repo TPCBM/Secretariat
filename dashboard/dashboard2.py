@@ -107,8 +107,12 @@ st.markdown("""
 * {
    box-sizing: border-box;
    }
+    </style>
+    <h1 class="title">大樓管理組 &nbsp&nbsp&nbsp儀表板</h1>
+    """, unsafe_allow_html=True)
 
- 
+st.markdown("""
+<style>
     .section1 {
         background-color: #E0FFFF;  /* 淺灰色背景 */
         padding: 20px;
@@ -161,7 +165,6 @@ st.markdown("""
         font-size: 14px;  /* 調整字體大小 */
     }
     </style>
-    <h1 class="title">大樓管理組 &nbsp&nbsp&nbsp儀表板</h1>
     """, unsafe_allow_html=True)
 
 # 更改 Series 的名稱
