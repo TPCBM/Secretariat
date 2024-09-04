@@ -97,16 +97,16 @@ st.markdown("""
         0.05em 0.05em 0 var(--shadow-color),
         0.05em 0.06em 0 var(--shadow-color),
         0.05em 0.07em 0 var(--shadow-color);
-}
+    }
 
-.title small {
-    font-size: 0.5em;
-    vertical-align: top;
-}
+    .title small {
+        font-size: 0.5em;
+        vertical-align: top;
+    }
 
-* {
-    box-sizing: border-box;
-}
+    * {
+        box-sizing: border-box;
+    }
 
  
     .section1 {
