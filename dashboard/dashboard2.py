@@ -108,11 +108,6 @@ st.markdown("""
     box-sizing: border-box;
 }
 
-html {
-    height: 100%;
-    background-color: #55D4C5;
-}
-
  
     .section1 {
         background-color: #E0FFFF;  /* 淺灰色背景 */
