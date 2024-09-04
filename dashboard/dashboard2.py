@@ -75,7 +75,7 @@ st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-    --shadow-color: #BD2620;
+    --shadow-color: #008080; /* 標題陰影的顏色 暗紅色BD2620 */
 }
 
 .title {
@@ -88,7 +88,7 @@ st.markdown("""
     font-family: 'Teko', sans-serif;
     letter-spacing: var(--letter-spacing);
     padding-left: var(--letter-spacing);
-    color: #FEA42A;
+    color: #87ceeb; /* 標題字的顏色 橘色FEA42A */
     text-shadow:
         0.03em 0.03em 0.05em rgba(0, 0, 0, 0.2),
         0.01em 0.01em 0 var(--shadow-color),
