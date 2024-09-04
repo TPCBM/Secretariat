@@ -253,6 +253,9 @@ st.markdown("""
         background-color: #f1f1f1;  /* 標題背景色 */
         box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);  /* 標題的陰影效果 */
     }
+        .dataframe td {
+        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);  /* 表格內單元格的立體效果 */
+    }
     
     .dataframe th, .dataframe td {
         text-align: center;  /* 將表格內容置中 */
