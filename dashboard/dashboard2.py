@@ -77,7 +77,7 @@ st.markdown("""
         text-align: center;
         font-size: 50px;
         font-weight: bold;
-        background: -webkit-linear-gradient(#ff7e5f, #feb47b); /* 漸變色 */
+        background: -webkit-linear-gradient(#4169e1, #6495ed); /* 漸變色 */
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent; /* 文字填充透明 */
      }
