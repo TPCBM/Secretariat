@@ -82,7 +82,7 @@ st.markdown("""
     --letter-spacing: 0.5vw;
     width: 100%;
     margin: 0;
-    font-size: 5vw;
+    font-size: 50px;
     line-height: 1;
     text-align: center;
     font-family: 'Teko', sans-serif;
@@ -110,7 +110,7 @@ st.markdown("""
 st.markdown("""
 <style>
     .section1 {
-        background-color: #E0FFFF;  /* 淺灰色背景 */
+        background-color: #E0FFFF;  /* 淺藍色背景 */
         padding: 20px;
         border-radius: 10px;
         color: black;
@@ -125,7 +125,7 @@ st.markdown("""
         font-size: 20px;  /* 調整字體大小 */
     }    
     .section2 {
-        background-color: #f0f0f0;  /* 淺灰色背景 */
+        background-color: #fafad2;  /* 亮金橘背景 */
         padding: 20px;
         border-radius: 10px;
         color: black;
@@ -260,7 +260,7 @@ weekly_events_df = pd.DataFrame({
 st.markdown("""
     <style>
     .section3 {
-        background-color: rgba(152,251,152,0.2);  /* 白灰色背景 */
+        background-color: rgba(152,251,152,0.2);  /* 淺綠色背景 */
         padding: 20px;
         border-radius: 10px;
         color: black;
