@@ -75,7 +75,7 @@ st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-    --shadow-color: BD2620; /* 標題陰影的顏色 暗紅色BD2620 #008080*/
+    --shadow-color: #BD2620; /* 標題陰影的顏色 暗紅色BD2620 #008080*/
 }
 
 .title {
