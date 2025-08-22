@@ -71,41 +71,48 @@ SHEET_NAME = '表單回應 1'  # 替換為你的工作表名稱
 latest_data = get_latest_sheet_data(SPREADSHEET_ID, SHEET_NAME)
 
 # 使用 Streamlit 顯示標題
+# 先載入字型與樣式（不要用 <link>）
 st.markdown("""
-<link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;700&display=swap" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@400;700&display=swap');
+
 :root {
-    --shadow-color: #BD2620; /* 標題陰影的顏色 暗紅色BD2620 #008080*/
+  --shadow-color: #BD2620;
 }
 
 .title {
-    --letter-spacing: 0.5vw;
-    width: 100%;
-    margin: 0;
-    font-size: 50px;
-    line-height: 1;
-    text-align: center;
-    font-family: 'Teko', sans-serif;
-    letter-spacing: var(--letter-spacing);
-    padding-left: var(--letter-spacing);
-    color: #87ceeb; /* 標題字的顏色 橘色FEA42A */
-    text-shadow:
-        0.03em 0.03em 0.05em rgba(0, 0, 0, 0.2),
-        0.01em 0.01em 0 var(--shadow-color),
-        0.02em 0.02em 0 var(--shadow-color),
-        0.03em 0.03em 0 var(--shadow-color),
-        0.03em 0.04em 0 var(--shadow-color),
-        0.05em 0.05em 0 var(--shadow-color),
-        0.05em 0.06em 0 var(--shadow-color),
-        0.05em 0.07em 0 var(--shadow-color);
-        	& small{
-		    font-size: 0.5em;
-	     	vertical-align: top;
-	        }
-        }
-    </style>
-    <h1 class="title">大樓管理組 &nbsp;&nbsp;儀表板</h1>
-    """, unsafe_allow_html=True)
+  --letter-spacing: 0.5vw;
+  width: 100%;
+  margin: 0;
+  font-size: 50px;
+  line-height: 1;
+  text-align: center;
+  font-family: 'Teko', sans-serif;
+  letter-spacing: var(--letter-spacing);
+  padding-left: var(--letter-spacing);
+  color: #87ceeb;
+  text-shadow:
+    0.03em 0.03em 0.05em rgba(0,0,0,0.2),
+    0.01em 0.01em 0 var(--shadow-color),
+    0.02em 0.02em 0 var(--shadow-color),
+    0.03em 0.03em 0 var(--shadow-color),
+    0.03em 0.04em 0 var(--shadow-color),
+    0.05em 0.05em 0 var(--shadow-color),
+    0.05em 0.06em 0 var(--shadow-color),
+    0.05em 0.07em 0 var(--shadow-color);
+}
+
+/* 如果之後真的需要小字註記，請用標準選擇器寫 */
+.title small {
+  font-size: 0.5em;
+  vertical-align: top;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# 再單獨渲染標題（與 <style> 分開）
+st.markdown('<h1 class="title">大樓管理組&nbsp;&nbsp;儀表板</h1>', unsafe_allow_html=True)
+
 
 st.markdown("""
 <style>
