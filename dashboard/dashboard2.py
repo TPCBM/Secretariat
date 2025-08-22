@@ -77,7 +77,7 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Teko:wght@400;700&display=swap');
 
 :root {
-  --shadow-color: #BD2620;
+  --shadow-color: #20babd;
 }
 
 .title {
