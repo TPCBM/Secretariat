@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"><base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body { 
+      background-color: #f8f9fc; 
+      background-image: 
+        radial-gradient(circle at 0% 0%, rgba(13, 110, 253, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(13, 202, 240, 0.06) 0%, transparent 50%);
+      background-attachment: fixed;
+      font-family: 'Noto Sans TC', sans-serif; 
+      padding-bottom: 50px;
+    }
+    .main-container { max-width: 600px; margin: 20px auto; padding: 0 10px; }
+    
+    .card, .nav-container { 
+      border: 1px solid rgba(255, 255, 255, 0.8); 
+      border-radius: 16px; 
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.04); 
+      margin-bottom: 20px; 
+      transition: transform 0.2s; 
+    }
+    
+    .nav-pills .nav-link { border-radius: 50px; color: #6c757d; font-weight: bold; margin: 0 5px; transition: all 0.3s ease; }
+    .nav-pills .nav-link.active { background-color: #0d6efd; color: white; box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3); }
+    .nav-container { padding: 10px; display: flex; justify-content: space-around; }
+
+    .badge-status { font-size: 1rem; padding: 8px 12px; border-radius: 8px; font-weight: 600; letter-spacing: 0.5px; }
+    .badge-status-pending { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; } 
+    .badge-status-fixing { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    .badge-status-done { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .badge-status-nodamage { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; } 
+    
+    .admin-note { background-color: rgba(13, 110, 253, 0.04); border-left: 4px solid #0d6efd; padding: 10px 12px; font-size: 0.9em; margin-top: 12px; border-radius: 0 6px 6px 0; color: #495057; }
+
+    #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); backdrop-filter: blur(5px); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; display: none; }
+    .d-none { display: none !important; }
+
+    .modal-lightbox { background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); }
+    .lightbox-img { max-height: 80vh; object-fit: contain; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    
+    .custom-navbar {
+      background: linear-gradient(135deg, #0b5ed7 0%, #0dcaf0 100%);
+      box-shadow: 0 4px 20px rgba(13, 110, 253, 0.2);
+    }
+    
+    .form-label { color: #495057; font-weight: 600; font-size: 0.95rem; }
+    .form-control, .form-select { border: 1px solid #e2e8f0; border-radius: 8px; background-color: #f8fafc; transition: all 0.2s; }
+    .form-control:focus, .form-select:focus { background-color: #fff; border-color: #86b7fe; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15); }
+    .btn-primary { border-radius: 10px; font-weight: 600; letter-spacing: 1px; padding: 12px; transition: all 0.3s; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(13, 110, 253, 0.3) !important; }
+  </style>
+</head>
+<body>
+
+  <div id="loadingOverlay">
+    <div class="spinner-border text-primary" role="status"></div>
+    <div class="mt-3 fw-bold text-secondary" id="loadingText">資料處理中...</div>
+  </div>
+
+  <nav class="navbar navbar-dark mb-4 shadow-sm sticky-top custom-navbar" style="z-index: 1000;">
+    <div class="container-fluid justify-content-center py-1">
+      <span class="navbar-brand mb-0 h1 fw-bold" style="letter-spacing: 1px; font-size: 1.3rem;">
+        📝 總管理處設施修繕通報
+      </span>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <div class="nav-container shadow-sm">
+      <ul class="nav nav-pills w-100" id="pills-tab" role="tablist">
+        <li class="nav-item w-50 text-center" role="presentation">
+          <button class="nav-link active w-100 py-2" id="pills-report-tab" data-bs-toggle="pill" data-bs-target="#pills-report" type="button" role="tab"><i class="fas fa-tools me-2"></i>我要報修</button>
+        </li>
+        <li class="nav-item w-50 text-center" role="presentation">
+          <button class="nav-link w-100 py-2" id="pills-history-tab" data-bs-toggle="pill" data-bs-target="#pills-history" type="button" role="tab" onclick="switchTab('history')"><i class="fas fa-history me-2"></i>報修紀錄</button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="tab-content" id="pills-tabContent">
+      <div class="tab-pane fade show active" id="pills-report" role="tabpanel">
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <h5 class="card-title mb-4 text-primary fw-bold" style="letter-spacing: 0.5px;">填寫通報單</h5>
+            <form id="reportForm">
+              <div class="mb-3">
+                <label class="form-label">樓層 <span class="text-danger">*</span></label>
+                <select class="form-select" id="floor" required><option value="" selected disabled>載入中...</option></select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">地點 <span class="text-danger">*</span></label>
+                <select class="form-select" id="location" required disabled><option value="" selected disabled>請先選擇樓層</option></select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">報修項目 <span class="text-danger">*</span></label>
+                <select class="form-select" id="item" required disabled><option value="" selected disabled>請先選擇地點</option></select>
+                <input type="text" class="form-control d-none mt-2" id="customItem" placeholder="請輸入報修項目 (例：飲水機)">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">故障描述 <span class="text-danger">*</span></label>
+                <select class="form-select" id="descSelect" required disabled><option value="" selected disabled>請先選擇項目</option></select>
+                <textarea class="form-control d-none mt-2" id="customDescDirect" rows="3" placeholder="請詳細說明故障情形..."></textarea>
+              </div>
+              <div class="mb-3 d-none" id="customDescContainer">
+                <textarea class="form-control" id="customDesc" rows="3" placeholder="請詳細說明故障情形..."></textarea>
+              </div>
+              <div class="mb-4">
+                <label class="form-label">現場照片 <span class="text-danger">*</span></label>
+                <input class="form-control" type="file" id="photos" accept="image/*" multiple required>
+              </div>
+              <div class="d-grid gap-2 pt-2">
+                <button type="submit" id="submitBtn" class="btn btn-primary shadow-sm" disabled>確認送出</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="pills-history" role="tabpanel">
+        <h6 class="text-secondary fw-bold ms-2 mb-3"><i class="fas fa-clock me-2 text-warning"></i>目前待修繕</h6>
+        <div id="pendingList" class="mb-4"></div>
+        <hr class="my-4" style="opacity: 0.1;">
+        <h6 class="text-secondary fw-bold ms-2 mb-3"><i class="fas fa-check-circle me-2 text-success"></i>一週內結案</h6>
+        <div id="closedList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="lightboxModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content modal-lightbox border-0 rounded-4">
+        <div class="modal-header border-0 pb-0">
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-0 text-center">
+          <div id="lightboxCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner" id="lightboxInner"></div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#lightboxCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#lightboxCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+          <div id="lightboxIndicator" class="text-white mt-3 mb-2 fw-bold" style="letter-spacing: 2px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwwiPVPm1gOT_TzzDre05idIiifcwxrbAghK4IHMkzwqf6tzmJP9dL6DY_B9zi4RJUP/exec";
+
+    // API 替身引擎：把 google.script.run 轉換為對外連線的 fetch API
+    function createGasRunner() {
+      return {
+        _successCb: null, _failureCb: null,
+        withSuccessHandler: function(cb) { this._successCb = cb; return this; },
+        withFailureHandler: function(cb) { this._failureCb = cb; return this; },
+        _executeGet: function(action) {
+          fetch(GAS_URL + "?action=" + action)
+            .then(r => r.json()).then(d => { if(this._successCb) this._successCb(d); })
+            .catch(e => { if(this._failureCb) this._failureCb(e); });
+        },
+        _executePost: function(action, data) {
+          fetch(GAS_URL, {
+            method: "POST", body: JSON.stringify({action: action, payload: data}),
+            headers: {"Content-Type": "text/plain;charset=utf-8"}
+          })
+          .then(r => r.json()).then(d => { if(this._successCb) this._successCb(d); })
+          .catch(e => { if(this._failureCb) this._failureCb(e); });
+        },
+        getAdminData: function() { this._executeGet('getAdminData'); },
+        getHistoryData: function() { this._executeGet('getHistoryData'); },
+        getMappingData: function() { this._executeGet('getMappingData'); },
+        processForm: function(formObject) { this._executePost('processForm', formObject); },
+        updateRecord: function(rowIndex, newStatus, newDesc, newAdminNote) {
+          this._executePost('updateRecord', {rowIndex: rowIndex, newStatus: newStatus, newDesc: newDesc, newAdminNote: newAdminNote});
+        }
+      };
+    }
+    const google = { get script() { return { get run() { return createGasRunner(); } }; } };
+
+    // ==========================================
+    var mappingData = [];
+    var historyCache = null;
+    var isFetchingHistory = false;
+    var isUploading = false; 
+
+    window.onbeforeunload = function() {
+      if (isUploading) return "資料正在背景上傳中，請勿關閉視窗，以免資料遺失。";
+    };
+
+    function escapeHtml(unsafe) {
+      if(!unsafe) return "";
+      return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    window.onload = function() {
+      // 網頁一開，直接透過替身引擎去撈遠端的資料
+      showLoading(true, "資料讀取中，請稍後...");
+      
+      // 非同步請求：拿下拉選單資料
+      google.script.run
+        .withSuccessHandler(initDropdowns)
+        .withFailureHandler(handleError)
+        .getMappingData();
+        
+      // 非同步請求：拿歷史紀錄資料
+      loadHistory(false);
+
+      bindValidationEvents();
+      
+      document.getElementById('lightboxCarousel').addEventListener('slid.bs.carousel', function (e) {
+        var total = document.querySelectorAll('#lightboxInner .carousel-item').length;
+        document.getElementById('lightboxIndicator').innerText = (e.to + 1) + ' / ' + total;
+      });
+    };
+
+    function initDropdowns(data) {
+      mappingData = data; 
+      var floorSelect = document.getElementById('floor');
+      floorSelect.innerHTML = '<option value="" selected disabled>請選擇樓層...</option>';
+      var floors = data.filter(function(d){ return d[0] === "Root" || d[0] === "root"; }).map(function(d){ return d[1]; });
+      floors.forEach(function(f){ floorSelect.add(new Option(f, f)); });
+      showLoading(false);
+      checkFormValidity();
+    }
+
+    function switchTab(tabName) {
+      if (tabName === 'history') {
+        if (historyCache) renderHistory(historyCache); 
+        else if (isFetchingHistory) showLoading(true, "資料讀取中...");
+        else loadHistory(true);
+      }
+    }
+
+    function loadHistory(forceUpdate) {
+      if (historyCache && !forceUpdate) { renderHistory(historyCache); return; }
+      if (isFetchingHistory && !forceUpdate) return;
+      isFetchingHistory = true;
+      if (forceUpdate) showLoading(true, "資料讀取中，請稍後...");
+
+      google.script.run
+        .withSuccessHandler(function(data) {
+          historyCache = data; 
+          renderHistory(data); 
+          isFetchingHistory = false; 
+          if(forceUpdate) showLoading(false); 
+        })
+        .withFailureHandler(function(e) {
+          isFetchingHistory = false; 
+          showLoading(false);
+          if (forceUpdate) Swal.fire('讀取失敗', '無法取得紀錄，請重試', 'error');
+        })
+        .getHistoryData();
+    }
+
+    function renderHistory(data) {
+      try {
+        var pendingDiv = document.getElementById('pendingList');
+        var closedDiv = document.getElementById('closedList');
+        if (!data) return; 
+
+        var createCard = function(item, isClosed) {
+          var badgeClass = '';
+          if (item.status === '未完成') badgeClass = 'badge-status-pending'; 
+          else if (item.status === '修繕中') badgeClass = 'badge-status-fixing';
+          else if (item.status === '無損壞') badgeClass = 'badge-status-nodamage';
+          else badgeClass = 'badge-status-done';
+          
+          var borderClass = item.status === '無損壞' ? 'border border-2 border-danger' : (item.status === '已完成' ? 'border-start border-5 border-success' : '');
+          var textClass = item.status === '無損壞' ? 'text-danger' : 'text-dark';
+
+          var photoBtn = ''; 
+          if (item.photos && item.photos !== "無照片" && item.photos !== "") {
+            var isAlbum = false;
+            if (item.photos.indexOf("FAST_IDS:") === 0) {
+                isAlbum = item.photos.indexOf(",") > -1; 
+            } else {
+                isAlbum = item.photos.indexOf("folders") > -1;
+            }
+            var btnText = isAlbum ? "查看相簿" : "查看照片";
+            var btnIcon = isAlbum ? "fa-images" : "fa-image";
+            photoBtn = '<button data-url="' + escapeHtml(item.photos) + '" onclick="openLightbox(this.dataset.url)" class="btn btn-sm btn-outline-secondary rounded-pill px-3 ms-2 shadow-sm" style="font-size:0.8rem; border-color: #dee2e6;"><i class="fas ' + btnIcon + ' me-1 text-secondary"></i>' + btnText + '</button>';
+          }
+
+          var adminNoteHtml = item.adminNote ? '<div class="admin-note"><i class="fas fa-comment-dots me-1 text-primary"></i>' + escapeHtml(item.adminNote) + '</div>' : '';
+          var dateHtml = isClosed ? '<i class="fas fa-calendar-check me-1"></i>結案: ' + escapeHtml(item.opDate) : '<i class="fas fa-calendar-plus me-1"></i>通報: ' + escapeHtml(item.date);
+
+          return '<div class="card p-3 mb-2 shadow-sm ' + borderClass + '" id="' + escapeHtml(item.id) + '">' +
+                   '<div class="d-flex justify-content-between align-items-center mb-2">' +
+                     '<span class="badge ' + badgeClass + ' badge-status">' + escapeHtml(item.status) + '</span>' +
+                     '<small class="text-muted" style="font-size:0.85em;">' + dateHtml + '</small>' +
+                   '</div>' +
+                   '<div class="fw-bold ' + textClass + ' mb-1 fs-5">' + escapeHtml(item.place) + ' ' + photoBtn + '</div>' +
+                   '<div class="text-secondary mb-2" style="font-size: 0.95em;">' + escapeHtml(item.item) + ' - ' + escapeHtml(item.desc) + '</div>' +
+                   adminNoteHtml +
+                 '</div>';
+        };
+
+        var pendingHtml = data.pending.length === 0 ? '<div class="text-center text-muted py-3">目前無待修項目</div>' : data.pending.map(function(item) { return createCard(item, false); }).join('');
+        var closedHtml = data.closed.length === 0 ? '<div class="text-center text-muted py-3">近期無結案紀錄</div>' : data.closed.map(function(item) { return createCard(item, true); }).join('');
+        
+        pendingDiv.innerHTML = pendingHtml;
+        closedDiv.innerHTML = closedHtml;
+      } catch (e) { console.error(e); }
+    }
+
+    function renderLightbox(urls) {
+        var inner = document.getElementById('lightboxInner');
+        var prevBtn = document.querySelector('.carousel-control-prev');
+        var nextBtn = document.querySelector('.carousel-control-next');
+        var indicator = document.getElementById('lightboxIndicator');
+        
+        inner.innerHTML = '';
+        for(var i=0; i<urls.length; i++){
+          var active = i === 0 ? 'active' : '';
+          inner.innerHTML += '<div class="carousel-item ' + active + '"><img src="' + urls[i] + '" class="d-block w-100 rounded lightbox-img" loading="lazy"></div>';
+        }
+
+        if(urls.length > 1) {
+          prevBtn.style.display = 'flex'; nextBtn.style.display = 'flex';
+          indicator.innerText = '1 / ' + urls.length;
+        } else {
+          prevBtn.style.display = 'none'; nextBtn.style.display = 'none';
+          indicator.innerText = '';
+        }
+        
+        var modal = new bootstrap.Modal(document.getElementById('lightboxModal'));
+        modal.show();
+    }
+
+    function openLightbox(photoData) {
+      if(!photoData) return;
+
+      if (photoData.indexOf("FAST_IDS:") === 0) {
+         var idsStr = photoData.replace("FAST_IDS:", "");
+         var ids = idsStr.split(",");
+         var urls = ids.map(function(id){ return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w1000'; });
+         renderLightbox(urls);
+         return;
+      }
+
+      Swal.fire({
+        title: '相容模式讀取中', text: '正在尋找舊版照片...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); }
+      });
+
+      google.script.run.withSuccessHandler(function(res) {
+        if(res.success && res.urls && res.urls.length > 0) {
+          Swal.close();
+          renderLightbox(res.urls); 
+        } else {
+          Swal.fire('無法讀取', '請確認照片權限或連結是否正確', 'error');
+        }
+      }).withFailureHandler(function(err) {
+        Swal.fire('錯誤', '網路異常', 'error');
+      }).getLightboxImages(photoData);
+    }
+
+    function updateSelect(targetId, parentValue, isDescLayer) {
+      isDescLayer = isDescLayer || false;
+      var target = document.getElementById(targetId);
+      target.innerHTML = '<option value="" selected disabled>請選擇...</option>';
+      target.disabled = false;
+      var options = mappingData.filter(function(d){ return d[0] === parentValue; }).map(function(d){ return d[1]; });
+      if (options.length === 0) {
+        if(isDescLayer) { target.add(new Option("其他 (自行輸入)", "其他")); target.value = "其他"; target.dispatchEvent(new Event('change')); }
+        else { target.add(new Option("無相關選項", "")); target.disabled = true; }
+      } else {
+        options.forEach(function(o){ target.add(new Option(o, o)); });
+        if (isDescLayer) target.add(new Option("其他 (自行輸入)", "其他"));
+      }
+      checkFormValidity();
+    }
+
+    function resetSelect(id) { 
+      var sel = document.getElementById(id); 
+      sel.innerHTML = '<option value="" selected disabled>等待上方選擇...</option>'; 
+      sel.disabled = true; 
+      checkFormValidity();
+    }
+
+    function toggleLocationOther(isOther) {
+      var itemSelect = document.getElementById('item');
+      var customItem = document.getElementById('customItem');
+      var descSelect = document.getElementById('descSelect');
+      var customDescDirect = document.getElementById('customDescDirect');
+      var customDescContainer = document.getElementById('customDescContainer');
+
+      if (isOther) {
+        itemSelect.classList.add('d-none');
+        descSelect.classList.add('d-none');
+        itemSelect.required = false;
+        descSelect.required = false;
+
+        customItem.classList.remove('d-none');
+        customDescDirect.classList.remove('d-none');
+        customItem.required = true;
+        customDescDirect.required = true;
+
+        customDescContainer.classList.add('d-none');
+        document.getElementById('customDesc').required = false;
+        document.getElementById('customDesc').value = '';
+      } else {
+        itemSelect.classList.remove('d-none');
+        descSelect.classList.remove('d-none');
+        itemSelect.required = true;
+        descSelect.required = true;
+
+        customItem.classList.add('d-none');
+        customDescDirect.classList.add('d-none');
+        customItem.required = false;
+        customDescDirect.required = false;
+        customItem.value = '';
+        customDescDirect.value = '';
+      }
+    }
+
+    function checkFormValidity() {
+      var floor = document.getElementById('floor').value;
+      var location = document.getElementById('location').value;
+      var photos = document.getElementById('photos').files.length;
+      var isLocOther = (location === '其他');
+      var isValid = false;
+
+      if (floor && location && photos > 0) {
+        if (isLocOther) {
+          var customItemVal = document.getElementById('customItem').value.trim();
+          var customDescDirectVal = document.getElementById('customDescDirect').value.trim();
+          if (customItemVal !== '' && customDescDirectVal !== '') {
+            isValid = true;
+          }
+        } else {
+          var item = document.getElementById('item').value;
+          var descSelect = document.getElementById('descSelect').value;
+          if (item && descSelect) {
+            if (descSelect === '其他') {
+              var customDesc = document.getElementById('customDesc').value.trim();
+              if (customDesc !== '') isValid = true;
+            } else {
+              isValid = true;
+            }
+          }
+        }
+      }
+      document.getElementById('submitBtn').disabled = !isValid;
+    }
+
+    function bindValidationEvents() {
+      var inputs = ['floor', 'location', 'item', 'descSelect', 'customDesc', 'customItem', 'customDescDirect', 'photos'];
+      inputs.forEach(function(id) {
+        var el = document.getElementById(id);
+        el.addEventListener('change', checkFormValidity);
+        el.addEventListener('input', checkFormValidity);
+      });
+    }
+
+    document.getElementById('floor').addEventListener('change', function() { 
+      updateSelect('location', this.value); 
+      resetSelect('item'); 
+      resetSelect('descSelect'); 
+      document.getElementById('customDescContainer').classList.add('d-none'); 
+      toggleLocationOther(false); 
+    });
+
+    document.getElementById('location').addEventListener('change', function() { 
+      if (this.value === '其他') {
+        toggleLocationOther(true);
+      } else {
+        toggleLocationOther(false);
+        updateSelect('item', this.value); 
+        resetSelect('descSelect'); 
+        document.getElementById('customDescContainer').classList.add('d-none'); 
+      }
+      checkFormValidity();
+    });
+
+    document.getElementById('item').addEventListener('change', function() { 
+      updateSelect('descSelect', this.value, true); 
+      document.getElementById('customDescContainer').classList.add('d-none');
+    });
+
+    document.getElementById('descSelect').addEventListener('change', function() {
+      var container = document.getElementById('customDescContainer');
+      var customDesc = document.getElementById('customDesc');
+      if (this.value === '其他') { 
+        container.classList.remove('d-none'); 
+        customDesc.required = true; 
+      } else { 
+        container.classList.add('d-none'); 
+        customDesc.required = false; 
+        customDesc.value = ""; 
+      }
+      checkFormValidity();
+    });
+
+    function compressImage(file) {
+      return new Promise(function(resolve, reject) {
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function(event) {
+          var img = new Image();
+          img.src = event.target.result;
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var maxWidth = 1024; 
+            var scaleSize = maxWidth / img.width;
+            var width = (img.width > maxWidth) ? maxWidth : img.width;
+            var height = (img.width > maxWidth) ? img.height * scaleSize : img.height;
+            canvas.width = width;
+            canvas.height = height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            var compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            resolve({ base64: compressedDataUrl.split(',')[1], type: 'image/jpeg', name: file.name });
+          };
+          img.onerror = function(error) { reject(error); };
+        };
+        reader.onerror = function(error) { reject(error); };
+      });
+    }
+
+    document.getElementById('reportForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var btn = document.getElementById('submitBtn');
+      if (btn.disabled) return;
+
+      btn.disabled = true;
+      isUploading = true;
+      showLoading(true, "準備資料中..."); 
+      
+      var floorVal = document.getElementById('floor').value;
+      var locVal = document.getElementById('location').value;
+      var isLocOther = (locVal === '其他');
+      
+      var itemVal = isLocOther ? document.getElementById('customItem').value.trim() : document.getElementById('item').value;
+      
+      var descVal = '';
+      if (isLocOther) {
+        descVal = document.getElementById('customDescDirect').value.trim();
+      } else {
+        var dSelect = document.getElementById('descSelect').value;
+        descVal = (dSelect === '其他') ? document.getElementById('customDesc').value.trim() : dSelect;
+      }
+
+      var files = document.getElementById('photos').files;
+      var images = [];
+      try {
+        if(files.length > 0) {
+          images = await Promise.all(Array.from(files).map(compressImage));
+        }
+      } catch (err) {
+        showLoading(false);
+        Swal.fire('照片處理失敗', '請重新選擇照片', 'error');
+        btn.disabled = false;
+        isUploading = false;
+        return;
+      }
+      
+      var now = new Date();
+      var timeStr = now.getFullYear() + '/' + ('0' + (now.getMonth() + 1)).slice(-2) + '/' + ('0' + now.getDate()).slice(-2);
+      var tempId = 'temp_' + Date.now();
+
+      var optimisticItem = {
+        id: tempId,
+        date: timeStr,
+        place: floorVal + ' - ' + locVal,
+        item: itemVal,
+        desc: descVal,
+        status: '未完成', 
+        adminNote: '',    
+        photos: ''        
+      };
+
+      if (!historyCache) historyCache = { pending: [], closed: [] };
+      historyCache.pending.unshift(optimisticItem);
+      renderHistory(historyCache);
+
+      showLoading(false);
+      
+      var historyTabBtn = document.getElementById('pills-history-tab');
+      var historyTab = new bootstrap.Tab(historyTabBtn);
+      historyTab.show(); 
+
+      Swal.fire({
+        icon: 'success',
+        title: '通報成功',
+        text: '您的報修單已送出',
+        confirmButtonText: '我知道了',
+        confirmButtonColor: '#0d6efd',
+        allowOutsideClick: false
+      });
+
+      document.getElementById('reportForm').reset(); 
+      resetSelect('location'); 
+      resetSelect('item'); 
+      resetSelect('descSelect'); 
+      document.getElementById('customDescContainer').classList.add('d-none');
+      toggleLocationOther(false);
+      checkFormValidity();
+
+      google.script.run.withSuccessHandler(function(res) {
+        isUploading = false;
+        if (res.success) {
+          loadHistory(false); 
+        } else {
+          removeTempCard(tempId);
+          Swal.fire('上傳失敗', res.message, 'error');
+        }
+      })
+      .withFailureHandler(function(e) {
+        isUploading = false;
+        removeTempCard(tempId);
+        Swal.fire('系統錯誤', '網路異常或伺服器錯誤', 'error');
+      })
+      .processForm({
+        floor: floorVal,
+        location: locVal,
+        item: itemVal,
+        desc: descVal,
+        images: images
+      });
+    });
+
+    function removeTempCard(tempId) {
+      if (historyCache && historyCache.pending) {
+        historyCache.pending = historyCache.pending.filter(function(item) { return item.id !== tempId; });
+        renderHistory(historyCache);
+      }
+    }
+
+    function showLoading(show, text) { 
+      var overlay = document.getElementById('loadingOverlay'); 
+      var textElem = document.getElementById('loadingText');
+      if(show){ 
+        if(text && textElem) textElem.innerText = text; 
+        if(overlay) overlay.style.display='flex'; 
+      } else { 
+        if(overlay) overlay.style.display='none'; 
+      } 
+    }
+    
+    function handleError(e) { 
+      showLoading(false); 
+      Swal.fire('系統錯誤', e.toString(), 'error'); 
+    }
+  </script>
+</body>
+</html>
