@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>車位申請系統</title>
+  
+  <link rel="stylesheet" href="CalendarStyles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚗 車位申請系統</h1>
+      <p>台灣電力公司內部車位預約平台</p>
+    </div>
+    
+    <div class="card">
+      <div class="calendar-header">
+        <h2>選擇停車日期</h2>
+        <div class="month-nav">
+          <button class="nav-btn" id="prevBtn">◀ 上個月</button>
+          <div class="current-month" id="currentMonth"></div>
+          <button class="nav-btn" id="nextBtn">下個月 ▶</button>
+        </div>
+      </div>
+      
+      <div id="calendarContainer">
+        <div class="loading">載入中...</div>
+      </div>
+      
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-box available"></div>
+          <span>充足 (11+)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box limited"></div>
+          <span>剩餘 (1-10)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box full"></div>
+          <span>已滿</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box holiday"></div>
+          <span>假日/不開放</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="admin-link">
+      <a href="mybookings.html" target="_blank">📋 我的預約</a>
+    </div>
+  </div>
+
+  <script src="CalendarScript.js"></script>
+</body>
+</html>
