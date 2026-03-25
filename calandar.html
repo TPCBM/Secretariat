@@ -4,8 +4,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>車位申請系統</title>
-  
-  <link rel="stylesheet" href="CalendarStyles.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Microsoft JhengHei', 'Arial', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    .header { text-align: center; color: white; margin-bottom: 30px; }
+    .header h1 { font-size: 2.5rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+    .header p { font-size: 1.1rem; opacity: 0.9; }
+    .card { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 20px; }
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .calendar-header h2 { color: #333; font-size: 1.8rem; }
+    .month-nav { display: flex; gap: 10px; align-items: center; }
+    .nav-btn { background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s; }
+    .nav-btn:hover { background: #5568d3; transform: translateY(-2px); }
+    .current-month { font-size: 1.3rem; font-weight: 600; color: #667eea; min-width: 150px; text-align: center; }
+    .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+    .calendar-day-header { text-align: center; padding: 15px; font-weight: 600; color: #666; background: #f8f9fa; border-radius: 8px; }
+    .calendar-day { aspect-ratio: 1; border: 2px solid #e0e0e0; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s; background: white; }
+    .calendar-day:hover:not(.disabled):not(.past):not(.empty) { border-color: #667eea; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3); }
+    .calendar-day.empty { border: none; cursor: default; }
+    .calendar-day.past { background: #f5f5f5; cursor: not-allowed; opacity: 0.5; }
+    .calendar-day.today { border-color: #667eea; border-width: 3px; }
+    .calendar-day.disabled { background: #ffe6e6; cursor: not-allowed; }
+    .calendar-day.holiday { background: #fff3cd; }
+    .day-number { font-size: 1.5rem; font-weight: 600; color: #333; margin-bottom: 5px; }
+    .availability { font-size: 1rem; font-weight: 600; padding: 4px 12px; border-radius: 12px; }
+    .availability.available { background: #d4edda; color: #155724; }
+    .availability.limited { background: #fff3cd; color: #856404; }
+    .availability.full { background: #f8d7da; color: #721c24; }
+    .availability.none { color: #999; font-size: 0.9rem; }
+    .legend { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0e0e0; }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-box { width: 30px; height: 30px; border-radius: 6px; border: 2px solid #e0e0e0; }
+    .legend-box.available { background: #d4edda; }
+    .legend-box.limited { background: #fff3cd; }
+    .legend-box.full { background: #f8d7da; }
+    .legend-box.holiday { background: #fff3cd; border-color: #ffc107; }
+    .admin-link { text-align: center; margin-top: 20px; }
+    .admin-link a { color: white; text-decoration: none; font-weight: 600; padding: 10px 20px; background: rgba(255,255,255,0.2); border-radius: 8px; transition: all 0.3s; display: inline-block; margin: 0 5px; }
+    .admin-link a:hover { background: rgba(255,255,255,0.3); }
+    .loading { text-align: center; padding: 40px; color: #666; font-size: 1.2rem; }
+    @media (max-width: 768px) { body { padding: 8px; } .container { max-width: 100%; } .header h1 { font-size: 1.5rem; } .header p { font-size: 0.95rem; } .card { padding: 12px; border-radius: 12px; } .calendar-header { flex-direction: column; gap: 12px; } .calendar-header h2 { font-size: 1.2rem; } .month-nav { width: 100%; justify-content: center; } .nav-btn { padding: 8px 12px; font-size: 0.9rem; } .current-month { font-size: 1.1rem; min-width: 110px; } .calendar { gap: 2px; width: 100%; } .calendar-day-header { padding: 6px 1px; font-size: 0.7rem; } .calendar-day { min-height: 52px; padding: 2px; font-size: 0.75rem; } .day-number { font-size: 0.95rem; margin-bottom: 1px; } .availability { font-size: 0.65rem; padding: 1px 3px; white-space: nowrap; } .availability.none { font-size: 0.6rem; } .legend { gap: 6px; font-size: 0.8rem; margin-top: 20px; } .legend-item { flex: 0 0 calc(50% - 8px); font-size: 0.8rem; } .legend-box { width: 22px; height: 22px; flex-shrink: 0; } .admin-link { font-size: 0.85rem; } .admin-link a { display: block; margin: 5px 0; padding: 10px 12px; } .admin-link span { display: none; } }
+    @media (max-width: 390px) { body { padding: 6px; } .card { padding: 10px; } .calendar { gap: 1.5px; } .calendar-day { min-height: 48px; padding: 1px; } .day-number { font-size: 0.9rem; } .availability { font-size: 0.6rem; padding: 1px 2px; } .availability.none { font-size: 0.55rem; } }
+    @media (max-width: 375px) { body { padding: 5px; } .header h1 { font-size: 1.3rem; } .header p { font-size: 0.85rem; } .card { padding: 8px; } .calendar { gap: 1px; } .calendar-day-header { padding: 5px 0; font-size: 0.65rem; } .calendar-day { min-height: 45px; padding: 1px; } .day-number { font-size: 0.85rem; } .availability { font-size: 0.55rem; padding: 1px 2px; } .availability.none { font-size: 0.5rem; } .nav-btn { padding: 6px 10px; font-size: 0.85rem; } .current-month { font-size: 1rem; min-width: 100px; } .legend { flex-wrap: wrap; } .legend-item { flex: 0 0 calc(50% - 5px); font-size: 0.75rem; } .legend-box { width: 20px; height: 20px; } }
+    @media (max-width: 360px) { body { padding: 3px; } .header { margin-bottom: 15px; } .header h1 { font-size: 1.2rem; } .card { padding: 6px; } .calendar { gap: 1px; } .calendar-day { min-height: 42px; padding: 1px; } .day-number { font-size: 0.8rem; } .availability { font-size: 0.5rem; padding: 0 1px; } .availability.none { font-size: 0.45rem; } .calendar-header h2 { font-size: 1.1rem; } .nav-btn { padding: 5px 8px; font-size: 0.8rem; } .current-month { font-size: 0.9rem; min-width: 90px; } }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -53,6 +96,180 @@
     </div>
   </div>
 
-  <script src="CalendarScript.js"></script>
+  <script>
+    const TOTAL_SPOTS = 16;
+    let HOLIDAYS = [];  // 動態載入，由後端填入
+
+    let currentDate = new Date();
+    let availabilityData = {};
+
+    // ⭐ 新增共用 API：替換成你新部署的 Web App 網址
+    const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzeYWV2AYZIObL0IemO-r5rTI1Om3LJBOxr-3_2di1jFY99F8vkH1vg6P-zwLPaZ2RweQ/exec';
+
+    async function callGasApi(action, params = {}) {
+      try {
+        const response = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: action, ...params })
+        });
+        return await response.json();
+      } catch (error) {
+        console.error("API 請求失敗:", error);
+        throw error;
+      }
+    }
+
+    // 初始化
+    function init() {
+      console.log('Initializing calendar...');
+      
+      document.getElementById('prevBtn').addEventListener('click', function() {
+        changeMonth(-1);
+      });
+      
+      document.getElementById('nextBtn').addEventListener('click', function() {
+        changeMonth(1);
+      });
+      
+      // 直接載入資料，不需再等待 Google 載入
+      loadAvailability();
+    }
+
+    // ⭐ 修改載入資料：改用 fetch (callGasApi)
+    function loadAvailability() {
+      console.log('Loading availability...');
+      
+      callGasApi('getAvailability')
+        .then(result => {
+          console.log('Availability result:', result);
+          try {
+            const res = typeof result === 'string' ? JSON.parse(result) : result;
+            
+            if (res && res.success) {
+              availabilityData = res.availability || {};
+              HOLIDAYS = res.holidays || [];
+              console.log('Availability loaded:', availabilityData);
+              console.log('Holidays loaded:', HOLIDAYS);
+              renderCalendar();
+            } else {
+              document.getElementById('calendarContainer').innerHTML = 
+                '<div class="loading" style="color: #e74c3c;">載入失敗，請重新整理頁面</div>';
+            }
+          } catch (error) {
+            console.error('Parse error:', error);
+            document.getElementById('calendarContainer').innerHTML = 
+              '<div class="loading" style="color: #e74c3c;">資料解析錯誤</div>';
+          }
+        })
+        .catch(error => {
+          console.error('Load error:', error);
+          document.getElementById('calendarContainer').innerHTML = 
+            '<div class="loading" style="color: #e74c3c;">載入失敗：' + error.message + '</div>';
+        });
+    }
+
+    // 切換月份
+    function changeMonth(delta) {
+      currentDate.setMonth(currentDate.getMonth() + delta);
+      renderCalendar();
+    }
+
+    // 渲染日曆
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      
+      document.getElementById('currentMonth').textContent = year + '年 ' + (month + 1) + '月';
+      
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const firstDayOfWeek = firstDay.getDay();
+      const daysInMonth = lastDay.getDate();
+      
+      let html = '<div class="calendar">';
+      
+      ['日', '一', '二', '三', '四', '五', '六'].forEach(function(day) {
+        html += '<div class="calendar-day-header">' + day + '</div>';
+      });
+      
+      for (let i = 0; i < firstDayOfWeek; i++) {
+        html += '<div class="calendar-day empty"></div>';
+      }
+      
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const dateStr = formatDate(date);
+        const dayOfWeek = date.getDay();
+        
+        let classes = ['calendar-day'];
+        let availableSpots = TOTAL_SPOTS;
+        let availabilityHtml = '';
+        let clickable = true;
+        
+        if (date.toDateString() === today.toDateString()) {
+          classes.push('today');
+        }
+        
+        if (date < today) {
+          classes.push('past');
+          clickable = false;
+        }
+        
+        const isHoliday = dayOfWeek === 0 || dayOfWeek === 6 || HOLIDAYS.indexOf(dateStr) !== -1;
+        if (isHoliday) {
+          classes.push('holiday');
+          availabilityHtml = '<span class="availability none">不開放</span>';
+          clickable = false;
+        } else if (date >= today) {
+          const booked = availabilityData[dateStr] || 0;
+          availableSpots = TOTAL_SPOTS - booked;
+          
+          if (availableSpots <= 0) {
+            classes.push('disabled');
+            availabilityHtml = '<span class="availability full">已滿</span>';
+            clickable = false;
+          } else if (availableSpots <= 10) {
+            availabilityHtml = '<span class="availability limited">剩 ' + availableSpots + '</span>';
+          } else {
+            availabilityHtml = '<span class="availability available">剩 ' + availableSpots + '</span>';
+          }
+        }
+        
+        html += '<div class="' + classes.join(' ') + '" ';
+        if (clickable) {
+          html += 'onclick="selectDate(\'' + dateStr + '\')"';
+        }
+        html += '><div class="day-number">' + day + '</div>' + availabilityHtml + '</div>';
+      }
+      
+      html += '</div>';
+      document.getElementById('calendarContainer').innerHTML = html;
+    }
+
+    // ⭐ 修改跳轉邏輯：直接跳轉至實體網頁 (apply.html) 並附帶日期參數
+    function selectDate(dateStr) {
+      // 假設你的申請頁面叫做 apply.html
+      window.location.href = 'apply.html?date=' + dateStr;
+    }
+
+    // 格式化日期
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return year + '-' + month + '-' + day;
+    }
+
+    // 頁面載入時初始化
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
 </body>
 </html>
