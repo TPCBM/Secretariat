@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>車位申請系統</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Microsoft JhengHei', 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .tab {
+      padding: 12px 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #666;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .tab:hover {
+      color: #667eea;
+    }
+    
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      font-weight: bold;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+    
+    label .required {
+      color: #e74c3c;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .autocomplete-container {
+      position: relative;
+    }
+    
+    .autocomplete-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 2px solid #667eea;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+    
+    .autocomplete-item {
+      padding: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .autocomplete-item:hover {
+      background: #f0f0ff;
+    }
+    
+    .btn {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      width: 100%;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    
+    .btn-danger {
+      background: #e74c3c;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #c0392b;
+    }
+    
+    .booking-list {
+      margin-top: 20px;
+    }
+    
+    .booking-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .booking-item.pending {
+      border-left-color: #f39c12;
+    }
+    
+    .booking-item.approved {
+      border-left-color: #27ae60;
+    }
+    
+    .booking-item.rejected {
+      border-left-color: #e74c3c;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .status-approved {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status-rejected {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .alert {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .alert-info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    
+    .admin-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+    
+    .admin-link a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 8px;
+      transition: all 0.3s;
+      display: inline-block;
+    }
+    
+    .admin-link a:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    
+/* ⭐ 新增：Modal 彈窗樣式 */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 40px 30px;
+  border-radius: 15px;
+  text-align: center;
+  min-width: 320px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+  animation: iconPop 0.5s ease;
+}
+
+@keyframes iconPop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.modal-icon.success {
+  color: #27ae60;
+}
+
+.modal-icon.error {
+  color: #e74c3c;
+}
+
+.modal-icon.loading {
+  color: #667eea;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.modal-message {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.modal-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 14px 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 150px;
+}
+
+.modal-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.modal-button:active {
+  transform: translateY(0);
+}
+
+.loading-spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+    /* 自訂彈窗樣式 */
+    .custom-alert-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      animation: fadeIn 0.3s;
+    }
+    
+    .custom-alert-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s;
+    }
+    
+    .custom-alert-icon {
+      font-size: 3rem;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    
+    .custom-alert-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #e74c3c;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    
+    .custom-alert-message {
+      font-size: 1rem;
+      color: #333;
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+    
+    .custom-alert-button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.2s;
+    }
+    
+    .custom-alert-button:hover {
+      transform: translateY(-2px);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideIn {
+      from { 
+        opacity: 0;
+        transform: translate(-50%, -60%);
+      }
+      to { 
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 1.5rem;
+      }
+      
+      .header p {
+        font-size: 0.95rem;
+      }
+      
+      .card {
+        padding: 15px;
+      }
+      
+      .tabs {
+        flex-direction: row;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .tab {
+        flex: 1;
+        min-width: 120px;
+        padding: 12px 8px;
+        font-size: 0.9rem;
+        text-align: center;
+      }
+      
+      input, select {
+        font-size: 16px; /* 防止 iOS 放大 */
+        padding: 14px;
+      }
+      
+      label {
+        font-size: 0.95rem;
+      }
+      
+      .btn {
+        font-size: 1rem;
+        padding: 16px 24px;
+        touch-action: manipulation; /* 改善點擊響應 */
+      }
+      
+      .booking-item {
+        padding: 12px;
+      }
+      
+      .status-badge {
+        font-size: 0.8rem;
+      }
+      
+      .admin-link a {
+        display: block;
+        margin: 5px 0;
+        padding: 12px 15px;
+      }
+      .modal-content {
+        padding: 30px 20px;
+        min-width: 280px;
+      }
+
+      .modal-icon {
+        font-size: 50px;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+      }
+
+      .modal-message {
+        font-size: 1rem;
+      }
+    }
+    
+    /* 改善表單輸入體驗 */
+    input:focus, select:focus {
+      font-size: 16px; /* iOS 不會放大 */
+    }
+    
+    /* 極小螢幕 */
+    @media (max-width: 380px) {
+      body {
+        padding: 10px;
+      }
+      
+      .header h1 {
+        font-size: 1.3rem;
+      }
+      
+      .card {
+        padding: 12px;
+      }
+      
+      .form-group {
+        margin-bottom: 15px;
+      }
+      
+      .tab {
+        min-width: 100px;
+        padding: 10px 6px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚗 車位申請系統</h1>
+      <p>台灣電力公司內部車位預約平台</p>
+    </div>
+    
+    <div class="card">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('apply')">📝 申請車位</button>
+        <button class="tab" onclick="switchTab('myBookings')">📋 我的預約</button>
+      </div>
+      
+<!-- 申請車位 -->
+<div id="apply" class="tab-content active">
+  <!-- ⭐ 新增：返回按鈕 -->
+  <div style="margin-bottom: 20px;">
+    <button type="button" onclick="goBackToCalendar()" class="btn btn-secondary" style="width: auto; padding: 10px 30px; display: inline-flex; align-items: center; gap: 8px;">
+      <span style="font-size: 1.2rem;">←</span> 返回日曆
+    </button>
+  </div>
+  
+  <div id="applyMessage"></div>
+        
+        <form id="bookingForm">
+          <div class="form-group">
+            <label>申請單位 <span class="required">*</span></label>
+            <select id="department" required>
+              <option value="">請選擇單位</option>
+              <option value="000董事長室">000董事長室</option>
+              <option value="001總經理副總經理室">001總經理副總經理室</option>
+              <option value="002專業總工程(管理)師室">002專業總工程(管理)師室</option>
+              <option value="902水火力發電事業部執行長暨副執行長室">902水火力發電事業部執行長暨副執行長室</option>
+              <option value="903核能發電事業部執行長暨副執行長室">903核能發電事業部執行長暨副執行長室</option>
+              <option value="904輸供電事業部執行長暨副執行長室">904輸供電事業部執行長暨副執行長室</option>
+              <option value="905配售電事業部執行長暨副執行長室">905配售電事業部執行長暨副執行長室</option>
+              <option value="003企劃處">003企劃處</option>
+              <option value="004發電處">004發電處</option>
+              <option value="005供電處">005供電處</option>
+              <option value="006電力調度處">006電力調度處</option>
+              <option value="007業務處">007業務處</option>
+              <option value="008材料處">008材料處</option>
+              <option value="009燃料處">009燃料處</option>
+              <option value="010財務處">010財務處</option>
+              <option value="014秘書處">014秘書處</option>
+              <option value="015電源開發處">015電源開發處</option>
+              <option value="017營建處">017營建處</option>
+              <option value="018會計處">018會計處</option>
+              <option value="023系統規劃處">023系統規劃處</option>
+              <option value="024資訊系統處">024資訊系統處</option>
+              <option value="027核能技術處">027核能技術處</option>
+              <option value="029電驛室">029電驛室</option>
+              <option value="043核能發電廠緊急計劃執行委員會">043核能發電廠緊急計劃執行委員會</option>
+              <option value="051公眾服務處">051公眾服務處</option>
+              <option value="053法律事務室">053法律事務室</option>
+              <option value="054核能安全處">054核能安全處</option>
+              <option value="056核能發電處">056核能發電處</option>
+              <option value="057政風處">057政風處</option>
+              <option value="061環境保護處">061環境保護處</option>
+              <option value="062工業安全衛生處">062工業安全衛生處</option>
+              <option value="063新事業開發室">063新事業開發室</option>
+              <option value="077配電處">077配電處</option>
+              <option value="078核能後端營運處">078核能後端營運處</option>
+              <option value="079促進電力發展營運協助金審議委員會">079促進電力發展營運協助金審議委員會</option>
+              <option value="095董事會檢核室">095董事會檢核室</option>
+              <option value="096人力資源處">096人力資源處</option>
+              <option value="545電力通信處">545電力通信處</option>
+              <option value="546綜合研究所">546綜合研究所</option>
+              <option value="693再生能源處">693再生能源處</option>
+              <option value="952水火力發電事業部策劃室">952水火力發電事業部策劃室</option>
+              <option value="953核能發電事業部策劃室">953核能發電事業部策劃室</option>
+              <option value="954輸供電事業部策劃室">954輸供電事業部策劃室</option>
+              <option value="955配售電事業部策劃室">955配售電事業部策劃室</option>
+              <option value="995除役及選址溝通中心">995除役及選址溝通中心</option>
+              <option value="996台灣電力工會第一分會">996台灣電力工會第一分會</option>
+              <option value="997總處職工福利會">997總處職工福利會</option>
+              <option value="998職工福利委員會(總會)">998職工福利委員會(總會)</option>
+              <option value="999其他非總處台電單位">999其他非總處台電單位</option>
+            </select>
+          </div>
+          
+          <div class="form-group autocomplete-container">
+            <label>姓名 <span class="required">*</span></label>
+            <input type="text" id="name" required autocomplete="off" placeholder="陳小明">
+            <div id="nameAutocomplete" class="autocomplete-list"></div>
+          </div>
+          
+          <div class="form-group">
+            <label>姓名代號（6位數字） <span class="required">*</span></label>
+            <input type="text" id="employeeId" placeholder="6位數字不加u，如：234567" pattern="\d{6}" maxlength="6" required>
+          </div>
+          
+          <div class="form-group">
+            <label>電話分機 <span class="required">*</span></label>
+            <input type="text" id="extension" placeholder="純數字，如23661234，分機或手機皆可" pattern="\d+" required>
+          </div>
+          
+          <div class="form-group">
+            <label>車牌號碼 <span class="required">*</span></label>
+            <input type="text" id="licensePlate" placeholder="非半形英數字，如AAA1234" pattern="[A-Za-z0-9]+" required>
+          </div>
+          
+          <div class="form-group">
+            <label>停車日期 <span class="required">*</span></label>
+            <input type="date" id="parkingDate"  required value="<?= preselectedDate || '' ?>">
+          </div>
+          
+          <div class="form-group">
+            <label>進場時間（08:00-16:30） <span class="required">*</span></label>
+            <select id="entryTime" required>
+              <option value="">請選擇進場時間</option>
+              <option value="08:00">08:00</option>
+              <option value="08:30">08:30</option>
+              <option value="09:00">09:00</option>
+              <option value="09:30">09:30</option>
+              <option value="10:00">10:00</option>
+              <option value="10:30">10:30</option>
+              <option value="11:00">11:00</option>
+              <option value="11:30">11:30</option>
+              <option value="12:00">12:00</option>
+              <option value="12:30">12:30</option>
+              <option value="13:00">13:00</option>
+              <option value="13:30">13:30</option>
+              <option value="14:00">14:00</option>
+              <option value="14:30">14:30</option>
+              <option value="15:00">15:00</option>
+              <option value="15:30">15:30</option>
+              <option value="16:00">16:00</option>
+              <option value="16:30">16:30</option>
+            </select>
+          </div>
+          
+          <button type="submit" class="btn btn-primary">🚀 送出申請</button>
+        </form>
+      </div>
+      
+      <!-- 我的預約 -->
+      <div id="myBookings" class="tab-content">
+        <div id="myBookingsMessage"></div>
+        
+        <div class="form-group">
+          <label>輸入您的預約編號查詢</label>
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="searchBookingId" placeholder="例如：BK17618963732056VY01">
+            <button onclick="searchMyBooking()" class="btn btn-secondary">🔍 查詢</button>
+          </div>
+        </div>
+        
+        <div id="bookingsList" class="booking-list"></div>
+      </div>
+    </div>
+  </div>
+  
+<!-- ⭐ 新增：成功/失敗 Modal 彈窗 -->
+<div class="modal-overlay" id="resultModal">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div id="modalIcon" class="modal-icon"></div>
+    <div id="modalTitle" class="modal-title"></div>
+    <div id="modalMessage" class="modal-message"></div>
+    <button class="modal-button" id="modalButton" style="display: none;">確定</button>
+    <div class="loading-spinner" id="modalSpinner" style="display: none;"></div>
+  </div>
+</div>
+
+  <!-- 自訂彈窗 -->
+  <div id="customAlertOverlay" class="custom-alert-overlay" onclick="closeCustomAlert()">
+    <div class="custom-alert-box" onclick="event.stopPropagation()">
+      <div class="custom-alert-icon">⚠️</div>
+      <div class="custom-alert-title">無法送出申請</div>
+      <div class="custom-alert-message" id="customAlertMessage"></div>
+      <button class="custom-alert-button" onclick="closeCustomAlert()">確定</button>
+    </div>
+  </div>
+
+<script>
+  let userHistory = [];
+  
+  // ⚠️ 注意：這裡的網址目前是你原本的舊部署網址
+  // 在你修改完 GAS 的 doPost 並重新部署「新版本」後，請記得將這個網址換成新的！
+  const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzeYWV2AYZIObL0IemO-r5rTI1Om3LJBOxr-3_2di1jFY99F8vkH1vg6P-zwLPaZ2RweQ/exec'; 
+
+  // ⭐ 新增：共用的 API 呼叫函數 (取代 google.script.run)
+  async function callGasApi(action, params = {}) {
+    try {
+      const response = await fetch(GAS_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8", // 避開 CORS 限制
+        },
+        body: JSON.stringify({
+          action: action,
+          ...params
+        })
+      });
+      // 自動將回傳的 JSON 轉回物件
+      return await response.json(); 
+    } catch (error) {
+      console.error("API 請求失敗:", error);
+      throw error;
+    }
+  }
+
+  // 自訂彈窗函數
+  function showCustomAlert(message) {
+    document.getElementById('customAlertMessage').textContent = message;
+    document.getElementById('customAlertOverlay').style.display = 'block';
+  }
+  
+  function closeCustomAlert() {
+    document.getElementById('customAlertOverlay').style.display = 'none';
+  }
+  
+  // ⭐ 返回日曆函數 (改為導向 GitHub 的實體 HTML 檔案)
+  function goBackToCalendar() {
+    // 假設你的日曆首頁叫做 index.html
+    window.location.href = 'index.html'; 
+  }
+
+  // ⭐ 頁面載入處理
+  window.addEventListener('load', function() {
+    console.log('Page loaded');
+    
+    // ⭐ 從網址抓取 date 參數 (取代 GAS 的預設填入)
+    // 適用於從日曆點擊跳轉過來時的網址，例如：apply.html?date=2026-03-25
+    const urlParams = new URLSearchParams(window.location.search);
+    const dateParam = urlParams.get('date');
+    const parkingDateInput = document.getElementById('parkingDate');
+    
+    if (dateParam && parkingDateInput) {
+      parkingDateInput.value = dateParam;
+      console.log('Preselected date from URL:', dateParam);
+    }
+    
+    // ⭐ 載入使用者歷史記錄 (改用 callGasApi)
+    callGasApi('getUserHistory')
+      .then(result => {
+        // 為了保險，相容 GAS 轉字串的情境
+        const res = typeof result === 'string' ? JSON.parse(result) : result;
+        if (res.success) {
+          userHistory = res.history;
+        }
+      })
+      .catch(error => console.error('取得歷史紀錄失敗:', error));
+    
+    // 初始化 Modal
+    initializeModal();
+  });
+
+  // Modal 彈窗功能（完全修正版）
+  function initializeModal() {
+    const modal = document.getElementById('resultModal');
+    const modalIcon = document.getElementById('modalIcon');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalButton = document.getElementById('modalButton');
+    const modalSpinner = document.getElementById('modalSpinner');
+    
+    if (!modal || !modalButton) {
+      console.error('Modal elements not found!');
+      return;
+    }
+    
+    // ⭐ 點擊確定後返回日曆 (改為實體檔案跳轉)
+    modalButton.addEventListener('click', function() {
+      console.log('Modal button clicked');
+      modal.classList.remove('show');
+      window.location.href = 'index.html'; // 跳回首頁
+    });
+    
+    // 防止點擊 Modal 外部關閉
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        const content = modal.querySelector('.modal-content');
+        content.style.animation = 'none';
+        setTimeout(() => {
+          content.style.animation = 'shake 0.5s';
+        }, 10);
+      }
+    });
+    
+    // 添加震動動畫
+    if (!document.getElementById('shakeAnimation')) {
+      const style = document.createElement('style');
+      style.id = 'shakeAnimation';
+      style.textContent = `
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+          20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    
+    // 將 Modal 函數掛載到 window
+    window.showModalLoading = function(message) {
+      modal.classList.add('show');
+      modalIcon.className = 'modal-icon loading';
+      modalIcon.innerHTML = '⏳';
+      modalTitle.textContent = '處理中';
+      modalMessage.textContent = message || '處理中，請稍候...';
+      modalButton.style.display = 'none';
+      modalSpinner.style.display = 'block';
+    };
+    
+    window.showModalSuccess = function(message) {
+      modalIcon.className = 'modal-icon success';
+      modalIcon.innerHTML = '✓';
+      modalTitle.textContent = '申請成功！';
+      modalMessage.textContent = message;
+      modalSpinner.style.display = 'none';
+      modalButton.style.display = 'inline-block';
+      modalButton.textContent = '確定';
+    };
+    
+    window.showModalError = function(message) {
+      modalIcon.className = 'modal-icon error';
+      modalIcon.innerHTML = '✕';
+      modalTitle.textContent = '申請失敗';
+      modalMessage.textContent = message;
+      modalSpinner.style.display = 'none';
+      modalButton.style.display = 'inline-block';
+      modalButton.textContent = '確定';
+    };
+  }
+  
+  // 分頁切換
+  function switchTab(tabName) {
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    event.target.classList.add('active');
+    document.getElementById(tabName).classList.add('active');
+  }
+  
+  // Autocomplete 功能
+  const nameInput = document.getElementById('name');
+  const autocompleteList = document.getElementById('nameAutocomplete');
+  
+  if (nameInput && autocompleteList) {
+    nameInput.addEventListener('input', function() {
+      const value = this.value.toLowerCase();
+      autocompleteList.innerHTML = '';
+      
+      if (value.length < 1) {
+        autocompleteList.style.display = 'none';
+        return;
+      }
+      
+      const matches = userHistory.filter(item => 
+        item.name.toLowerCase().includes(value)
+      );
+      
+      if (matches.length > 0) {
+        matches.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'autocomplete-item';
+          div.textContent = `${item.name} (${item.employeeId})`;
+          div.onclick = function() {
+            document.getElementById('name').value = item.name;
+            document.getElementById('employeeId').value = item.employeeId;
+            document.getElementById('extension').value = item.extension;
+            document.getElementById('licensePlate').value = item.licensePlate;
+            autocompleteList.style.display = 'none';
+          };
+          autocompleteList.appendChild(div);
+        });
+        autocompleteList.style.display = 'block';
+      } else {
+        autocompleteList.style.display = 'none';
+      }
+    });
+  }
+  
+  // 點擊外部關閉 autocomplete
+  document.addEventListener('click', function(e) {
+    if (autocompleteList && !e.target.closest('.autocomplete-container')) {
+      autocompleteList.style.display = 'none';
+    }
+  });
+  
+  // ⭐ 送出申請 (改用 callGasApi)
+  const bookingForm = document.getElementById('bookingForm');
+  if (bookingForm) {
+    bookingForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const data = {
+        department: document.getElementById('department').value,
+        name: document.getElementById('name').value,
+        employeeId: document.getElementById('employeeId').value,
+        extension: document.getElementById('extension').value,
+        licensePlate: document.getElementById('licensePlate').value.toUpperCase(),
+        parkingDate: document.getElementById('parkingDate').value,
+        entryTime: document.getElementById('entryTime').value
+      };
+      
+      window.showModalLoading('正在處理您的申請...');
+      
+      callGasApi('createBooking', { data: data })
+        .then(result => {
+          // 防護措施：確保拿到的是物件
+          const res = typeof result === 'string' ? JSON.parse(result) : result;
+          
+          if (res.success) {
+            window.showModalSuccess(res.message || '預約申請已送出，等待管理者審核');
+          } else {
+            if (res.message && (res.message.includes('已達申請上限') || res.message.includes('請聯絡管理部門'))) {
+              document.getElementById('resultModal').classList.remove('show');
+              showCustomAlert(res.message);
+            } else {
+              window.showModalError(res.message || '申請失敗，請稍後再試');
+            }
+          }
+        })
+        .catch(error => {
+          window.showModalError('系統錯誤：' + error.message);
+        });
+    });
+  }
+  
+  // ⭐ 查詢單筆預約 (改用 callGasApi)
+  function searchMyBooking() {
+    const bookingId = document.getElementById('searchBookingId').value.trim();
+
+    if (!bookingId) {
+      showMessage('myBookingsMessage', '請輸入預約編號', 'error');
+      return;
+    }
+
+    showMessage('myBookingsMessage', '查詢中...', 'info');
+
+    callGasApi('getBookingById', { bookingId: bookingId })
+      .then(result => {
+        console.log('getBookingById result:', result);
+        try {
+          const res = typeof result === 'string' ? JSON.parse(result) : result;
+          
+          if (res.success && res.booking) {
+            displayBookings([res.booking]);
+            document.getElementById('myBookingsMessage').innerHTML = '';
+          } else {
+            showMessage('myBookingsMessage', res.message || '找不到此預約編號', 'error');
+            document.getElementById('bookingsList').innerHTML = '';
+          }
+        } catch (parseError) {
+          console.error('Parse error:', parseError);
+          showMessage('myBookingsMessage', 'JSON 解析錯誤', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('getBookingById error:', error);
+        showMessage('myBookingsMessage', '查詢失敗：' + error.message, 'error');
+      });
+  }
+  
+  // 顯示預約列表
+  function displayBookings(bookings) {
+    const list = document.getElementById('bookingsList');
+    if (!list) return;
+    list.innerHTML = '';
+    
+    bookings.forEach(booking => {
+      const div = document.createElement('div');
+      div.className = `booking-item ${booking.status.toLowerCase()}`;
+      
+      const statusText = {
+        'Pending': '待審核',
+        'Approved': '已核准',
+        'Rejected': '已駁回'
+      }[booking.status] || booking.status;
+      
+      const statusClass = {
+        'Pending': 'status-pending',
+        'Approved': 'status-approved',
+        'Rejected': 'status-rejected'
+      }[booking.status] || '';
+      
+      div.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+          <div>
+            <strong>${booking.name}</strong> | ${booking.department}
+            <br>
+            <small>預約編號：${booking.bookingId}</small>
+          </div>
+          <span class="status-badge ${statusClass}">${statusText}</span>
+        </div>
+        <div style="color: #666; font-size: 0.9rem;">
+          📅 日期：${booking.parkingDate}<br>
+          ⏰ 時間：${booking.entryTime}<br>
+          🚙 車牌：${booking.licensePlate}
+        </div>
+        ${booking.status === 'Pending' || booking.status === 'Approved' ? 
+          `<button onclick="cancelBooking('${booking.bookingId}', '${booking.employeeId}')" 
+                  class="btn btn-danger" style="margin-top: 10px; width: 100%;">
+            ❌ 取消預約
+          </button>` : ''}
+      `;
+      
+      list.appendChild(div);
+    });
+  }
+  
+  // 取消預約
+  function cancelBooking(bookingId, employeeId) {
+    showCancelConfirm(bookingId);
+  }
+
+  // 顯示取消確認彈窗
+  function showCancelConfirm(bookingId) {
+    const overlay = document.createElement('div');
+    overlay.className = 'custom-alert-overlay';
+    overlay.style.display = 'block';
+    
+    overlay.innerHTML = `
+      <div class="custom-alert-box" onclick="event.stopPropagation()">
+        <div class="custom-alert-icon">❓</div>
+        <div class="custom-alert-title">確認取消預約</div>
+        <div class="custom-alert-message">確定要取消此預約嗎？</div>
+        <div style="display: flex; gap: 10px;">
+          <button class="custom-alert-button" style="background: #6c757d; width: 48%;" onclick="this.closest('.custom-alert-overlay').remove()">取消</button>
+          <button class="custom-alert-button" style="width: 48%;" onclick="confirmCancelBooking('${bookingId}')">確定</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(overlay);
+  }
+
+  // ⭐ 確認取消預約 (改用 callGasApi)
+  function confirmCancelBooking(bookingId) {
+    document.querySelector('.custom-alert-overlay').remove();
+    
+    showMessage('myBookingsMessage', '正在取消預約...', 'info');
+    
+    callGasApi('cancelBookingById', { bookingId: bookingId })
+      .then(result => {
+        console.log('cancelBooking result:', result);
+        try {
+          const res = typeof result === 'string' ? JSON.parse(result) : result;
+          if (res.success) {
+            showMessage('myBookingsMessage', res.message, 'success');
+            setTimeout(() => { searchMyBooking(); }, 1500);
+          } else {
+            showMessage('myBookingsMessage', res.message, 'error');
+          }
+        } catch (parseError) {
+          console.error('Parse error:', parseError);
+          showMessage('myBookingsMessage', '操作失敗', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('cancelBooking error:', error);
+        showMessage('myBookingsMessage', '取消失敗：' + error.message, 'error');
+      });
+  }
+  
+  // 顯示訊息
+  function showMessage(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    element.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+    
+    if (type === 'success' || type === 'error') {
+      setTimeout(() => { element.innerHTML = ''; }, 5000);
+    }
+  }
+  
+  // 設定最小日期為今天
+  const today = new Date();
+  const parkingDateEl = document.getElementById('parkingDate');
+  if (parkingDateEl) {
+    parkingDateEl.min = today.toISOString().split('T')[0];
+  }
+</script>
+</body>
+</html>
