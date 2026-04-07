@@ -7,7 +7,6 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
   <title>總管理處設施修繕通報</title>
-</head>
   <style>
     body { 
       background-color: #f8f9fc; 
@@ -59,7 +58,6 @@
     .btn-primary { border-radius: 10px; font-weight: 600; letter-spacing: 1px; padding: 12px; transition: all 0.3s; }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(13, 110, 253, 0.3) !important; }
   </style>
-</head>
 <body>
 
   <div id="loadingOverlay">
@@ -166,7 +164,6 @@
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwHxk4M9WXyy7C5hHN0hvO0j7H-ywjPSfCkGdtGSTq-85UkPmEShCQeTJUO3u13xLUK/exec";
 
-    // API 替身引擎：把 google.script.run 轉換為對外連線的 fetch API
     function createGasRunner() {
       return {
         _successCb: null, _failureCb: null,
@@ -217,18 +214,13 @@
     }
 
     window.onload = function() {
-      // 網頁一開，直接透過替身引擎去撈遠端的資料
       showLoading(true, "資料讀取中，請稍後...");
-      
-      // 非同步請求：拿下拉選單資料
       google.script.run
         .withSuccessHandler(initDropdowns)
         .withFailureHandler(handleError)
         .getMappingData();
         
-      // 非同步請求：拿歷史紀錄資料
       loadHistory(false);
-
       bindValidationEvents();
       
       document.getElementById('lightboxCarousel').addEventListener('slid.bs.carousel', function (e) {
@@ -378,18 +370,26 @@
       }).getLightboxImages(photoData);
     }
 
-    function updateSelect(targetId, parentValue, isDescLayer) {
-      isDescLayer = isDescLayer || false;
+    // ★ 修改：在需要時自動補上 "其他 (自行輸入)" 選項
+    function updateSelect(targetId, parentValue, allowOther) {
+      allowOther = allowOther || false;
       var target = document.getElementById(targetId);
       target.innerHTML = '<option value="" selected disabled>請選擇...</option>';
       target.disabled = false;
       var options = mappingData.filter(function(d){ return d[0] === parentValue; }).map(function(d){ return d[1]; });
+      
       if (options.length === 0) {
-        if(isDescLayer) { target.add(new Option("其他 (自行輸入)", "其他")); target.value = "其他"; target.dispatchEvent(new Event('change')); }
-        else { target.add(new Option("無相關選項", "")); target.disabled = true; }
+        if(allowOther) { 
+          target.add(new Option("其他 (自行輸入)", "其他")); 
+          target.value = "其他"; 
+          target.dispatchEvent(new Event('change')); 
+        } else { 
+          target.add(new Option("無相關選項", "")); 
+          target.disabled = true; 
+        }
       } else {
         options.forEach(function(o){ target.add(new Option(o, o)); });
-        if (isDescLayer) target.add(new Option("其他 (自行輸入)", "其他"));
+        if (allowOther) target.add(new Option("其他 (自行輸入)", "其他"));
       }
       checkFormValidity();
     }
@@ -437,11 +437,52 @@
       }
     }
 
+    // ★ 新增：當項目選擇「其他」時的介面切換邏輯
+    function toggleItemOther(isOther) {
+      var customItem = document.getElementById('customItem');
+      var descSelect = document.getElementById('descSelect');
+      var customDescDirect = document.getElementById('customDescDirect');
+      var customDescContainer = document.getElementById('customDescContainer');
+
+      if (isOther) {
+        // 顯示項目自填框
+        customItem.classList.remove('d-none');
+        customItem.required = true;
+        
+        // 隱藏描述下拉選單
+        descSelect.classList.add('d-none');
+        descSelect.required = false;
+        
+        // 顯示描述自填框
+        customDescDirect.classList.remove('d-none');
+        customDescDirect.required = true;
+        
+        // 隱藏並清空原本掛在描述下拉選單底下的備用框
+        customDescContainer.classList.add('d-none');
+        document.getElementById('customDesc').required = false;
+        document.getElementById('customDesc').value = '';
+      } else {
+        // 恢復正常狀態
+        customItem.classList.add('d-none');
+        customItem.required = false;
+        customItem.value = '';
+        
+        descSelect.classList.remove('d-none');
+        descSelect.required = true;
+        
+        customDescDirect.classList.add('d-none');
+        customDescDirect.required = false;
+        customDescDirect.value = '';
+      }
+    }
+
     function checkFormValidity() {
       var floor = document.getElementById('floor').value;
       var location = document.getElementById('location').value;
+      var item = document.getElementById('item').value;
       var photos = document.getElementById('photos').files.length;
       var isLocOther = (location === '其他');
+      var isItemOther = (item === '其他');
       var isValid = false;
 
       if (floor && location && photos > 0) {
@@ -451,15 +492,23 @@
           if (customItemVal !== '' && customDescDirectVal !== '') {
             isValid = true;
           }
-        } else {
-          var item = document.getElementById('item').value;
-          var descSelect = document.getElementById('descSelect').value;
-          if (item && descSelect) {
-            if (descSelect === '其他') {
-              var customDesc = document.getElementById('customDesc').value.trim();
-              if (customDesc !== '') isValid = true;
-            } else {
+        } else if (item) {
+          if (isItemOther) {
+            // 項目選其他時的驗證邏輯
+            var customItemVal = document.getElementById('customItem').value.trim();
+            var customDescDirectVal = document.getElementById('customDescDirect').value.trim();
+            if (customItemVal !== '' && customDescDirectVal !== '') {
               isValid = true;
+            }
+          } else {
+            var descSelect = document.getElementById('descSelect').value;
+            if (descSelect) {
+              if (descSelect === '其他') {
+                var customDesc = document.getElementById('customDesc').value.trim();
+                if (customDesc !== '') isValid = true;
+              } else {
+                isValid = true;
+              }
             }
           }
         }
@@ -482,6 +531,7 @@
       resetSelect('descSelect'); 
       document.getElementById('customDescContainer').classList.add('d-none'); 
       toggleLocationOther(false); 
+      toggleItemOther(false);
     });
 
     document.getElementById('location').addEventListener('change', function() { 
@@ -489,7 +539,8 @@
         toggleLocationOther(true);
       } else {
         toggleLocationOther(false);
-        updateSelect('item', this.value); 
+        // ★ 修改：這裡帶入 true，允許項目下拉選單長出「其他 (自行輸入)」
+        updateSelect('item', this.value, true); 
         resetSelect('descSelect'); 
         document.getElementById('customDescContainer').classList.add('d-none'); 
       }
@@ -497,8 +548,15 @@
     });
 
     document.getElementById('item').addEventListener('change', function() { 
-      updateSelect('descSelect', this.value, true); 
-      document.getElementById('customDescContainer').classList.add('d-none');
+      // ★ 修改：加入選擇「其他」的攔截器
+      if (this.value === '其他') {
+        toggleItemOther(true);
+      } else {
+        toggleItemOther(false);
+        updateSelect('descSelect', this.value, true); 
+        document.getElementById('customDescContainer').classList.add('d-none');
+      }
+      checkFormValidity();
     });
 
     document.getElementById('descSelect').addEventListener('change', function() {
@@ -554,12 +612,21 @@
       var locVal = document.getElementById('location').value;
       var isLocOther = (locVal === '其他');
       
-      var itemVal = isLocOther ? document.getElementById('customItem').value.trim() : document.getElementById('item').value;
+      var itemDropdownVal = document.getElementById('item').value;
+      var isItemOther = (itemDropdownVal === '其他');
       
+      var itemVal = '';
       var descVal = '';
+
+      // ★ 修改：在傳送前正確抓取值
       if (isLocOther) {
+        itemVal = document.getElementById('customItem').value.trim();
+        descVal = document.getElementById('customDescDirect').value.trim();
+      } else if (isItemOther) {
+        itemVal = document.getElementById('customItem').value.trim();
         descVal = document.getElementById('customDescDirect').value.trim();
       } else {
+        itemVal = itemDropdownVal;
         var dSelect = document.getElementById('descSelect').value;
         descVal = (dSelect === '其他') ? document.getElementById('customDesc').value.trim() : dSelect;
       }
@@ -618,6 +685,7 @@
       resetSelect('descSelect'); 
       document.getElementById('customDescContainer').classList.add('d-none');
       toggleLocationOther(false);
+      toggleItemOther(false); // ★ 確保完全重置狀態
       checkFormValidity();
 
       google.script.run.withSuccessHandler(function(res) {
