@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>總管理處避難點名</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <section id="view-login" class="view view-login">
+      <div class="login-card">
+        <h1>總管理處避難點名</h1>
+        <p class="eyebrow">輸入避難引導班長姓名代號</p>
+        <form id="login-form" autocomplete="off">
+          <input id="login-code" type="text" inputmode="text" placeholder="姓名代號" autofocus>
+          <button type="submit" id="login-btn">開始點名</button>
+        </form>
+        <p id="login-error" class="error-text" hidden></p>
+      </div>
+    </section>
+
+    <section id="view-roster" class="view view-roster" hidden>
+      <div class="frozen-header" id="frozen-header">
+        <header class="tally-bar">
+          <div class="tally-top">
+            <button id="btn-logout" class="icon-btn" aria-label="登出">‹</button>
+            <div class="floor-switch" id="floor-switch"></div>
+            <span id="sync-indicator" class="sync-indicator" hidden></span>
+          </div>
+          <div class="tally-main">
+            <span id="tally-present">0</span><span class="tally-slash">/</span><span id="tally-total">0</span>
+            <span class="tally-label">實到／應到 <span id="tally-floor-name"></span></span>
+          </div>
+        </header>
+
+        <div class="search-row">
+          <input id="search-input" type="search" placeholder="搜尋姓名或姓名代號…" autocomplete="off">
+        </div>
+
+        <nav class="segmented" id="segmented">
+          <button class="seg-btn active" data-tab="absent">未到名單 <span id="count-absent">0</span></button>
+          <button class="seg-btn" data-tab="present">已到名單 <span id="count-present">0</span></button>
+        </nav>
+      </div>
+
+      <main id="roster-list" class="roster-list"></main>
+
+      <footer class="action-bar" id="action-bar" hidden>
+        <span id="pending-label">已變更 0 人</span>
+        <button id="btn-submit">送出更新</button>
+      </footer>
+    </section>
+
+    <div id="toast" class="toast" hidden></div>
+    <div id="overlay" class="overlay" hidden><div class="spinner"></div></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
