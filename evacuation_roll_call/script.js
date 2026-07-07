@@ -3,7 +3,7 @@
 
   // ========== 替換為你的 GAS 網頁應用程式部署網址 ==========
   // 請確認網址結尾是 /exec
-  const API_URL = 'https://script.google.com/macros/s/你的_DEPLOY_ID/exec';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxH-dc7ItqjLUybgRkOWg7URCBPuwv9x8lqtikgZFd1a9tRs0NYTkZDZFc5GARvUBhp/exec';
 
   // ---------- 改用 fetch 呼叫 GAS API ----------
   function apiLogin(code) {
