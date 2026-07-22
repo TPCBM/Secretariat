@@ -1,49 +1,74 @@
+<script>
 (function () {
   'use strict';
+  var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwy-zZ1mXmmn9l9Bz0YxhubVrpdNYtNErOQ-siOKnVBs3dE6_Ip69Duc3IWJVydwej0/exec';
 
-  // ========== 替換為你的 GAS 網頁應用程式部署網址 ==========
-  // 請確認網址結尾是 /exec
-  const API_URL = 'https://script.google.com/macros/s/AKfycbxH-dc7ItqjLUybgRkOWg7URCBPuwv9x8lqtikgZFd1a9tRs0NYTkZDZFc5GARvUBhp/exec';
+  function gsRun(fnName) {
+    return function () {
+      var args = Array.prototype.slice.call(arguments);
+      
+      // 自動將 api_login 轉成 login，以對應後端 Code.gs 裡的 switch(action)
+      var actionName = fnName.replace('api_', ''); 
+      var payload = { action: actionName };
 
-  // ---------- 改用 fetch 呼叫 GAS API ----------
-  function apiLogin(code) {
-    return fetch(`${API_URL}?action=login&code=${encodeURIComponent(code)}`)
-      .then(function(res) { return res.json(); });
-  }
+      // 將原本的陣列參數，轉換成後端接收的 JSON 鍵值對
+      if (fnName === 'api_login') {
+        payload.code = args[0];
+      } else if (fnName === 'api_adminGetFloorStatus') {
+        payload.adminCode = args[0];
+        payload.floor = args[1];
+      } else if (fnName === 'api_getRoster') {
+        payload.code = args[0];
+        payload.floor = args[1];
+      } else if (fnName === 'api_submitChanges') {
+        payload.code = args[0];
+        payload.floor = args[1];
+        payload.changes = args[2];
+      }
 
-  function apiGetRoster(code, floor) {
-    return fetch(`${API_URL}?action=getRoster&code=${encodeURIComponent(code)}&floor=${encodeURIComponent(floor)}`)
-      .then(function(res) { return res.json(); });
-  }
-
-  function apiSubmitChanges(code, floor, changes) {
-    const payload = {
-      action: 'submitChanges',
-      code: code,
-      floor: floor,
-      changes: changes
+      // 呼叫 API 並回傳 Promise，完美銜接您原本寫好的 then/catch 邏輯
+      return fetch(GAS_API_URL, {
+        method: 'POST',
+        // 🌟 關鍵：必須使用 text/plain，才能繞過瀏覽器的 CORS 預檢 (OPTIONS) 限制
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        redirect: 'follow'
+      }).then(function(response) {
+        if (!response.ok) throw new Error('伺服器連線異常，請確認網路狀態');
+        return response.json();
+      });
     };
-
-    return fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8'
-      },
-      body: JSON.stringify(payload)
-    }).then(function(res) { return res.json(); });
   }
+  
+  var apiLogin = gsRun('api_login');
+  var apiGetRoster = gsRun('api_getRoster');
+  var apiSubmitChanges = gsRun('api_submitChanges');
+  var apiAdminGetFloorStatus = gsRun('api_adminGetFloorStatus');
 
-  // ---------- 狀態 ----------
   var state = {
-    leader: null,   // { code, name, floors: [...] }
+    leader: null,   
     floor: null,
-    people: [],     // [{ code, name, unit, group, checked }] —— checked 一律代表「畫面上顯示的狀態」
-    pending: {},    // 分組頁籤裡尚未按「送出更新」的暫存變更： { 姓名代號: 期望的新狀態(boolean) }
+    people: [],     
+    pending: {},    
+    syncingCodes: {}, 
     tab: 'absent',
     query: '',
   };
 
-  // ---------- 背景同步佇列（樂觀更新的核心）----------
+  var adminState = {
+    code: null,
+    floors: [],
+    floor: null,
+    hasSession: false,
+    sessionState: '',
+    people: [],
+    loading: false,
+    query: '', 
+  };
+
+  // 🌟 新增：管理者專用的自動刷新計時器全域變數
+  var adminRefreshTimer = null; 
+
   var syncQueue = [];
   var syncBusy = false;
   var hasSyncError = false;
@@ -51,34 +76,43 @@
   function effectiveChecked(p) {
     return Object.prototype.hasOwnProperty.call(state.pending, p.code) ? state.pending[p.code] : p.checked;
   }
+  
   function rowStateClass(p) {
+    if (state.syncingCodes[p.code]) return 'state-syncing';
+
     var base = p.checked, eff = effectiveChecked(p);
     if (!base && !eff) return 'state-off';
     if (!base && eff) return 'state-off-pending';
     if (base && eff) return 'state-on';
     return 'state-on-pending';
   }
+
   function escapeHtml(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
 
-  // ---------- DOM 快取 ----------
   var el = {};
   function cacheEl() {
-    ['view-login', 'view-roster', 'login-form', 'login-code', 'login-btn', 'login-error',
+    ['view-login', 'view-roster', 'view-admin', 'login-form', 'login-code', 'login-btn', 'login-error',
       'floor-switch', 'sync-indicator', 'tally-present', 'tally-total', 'tally-floor-name',
-      'search-input', 'segmented', 'roster-list', 'action-bar', 'pending-label', 'btn-submit',
-      'btn-logout', 'count-absent', 'count-present', 'toast', 'overlay']
+      'search-input', 'segmented', 'roster-list', 'action-bar', 'pending-label', 'btn-submit', 'btn-logout',
+      'count-absent', 'count-present', 'toast', 'overlay',
+      'btn-admin-logout', 'admin-floor-select', 'btn-admin-refresh',
+      'admin-tally-present', 'admin-tally-total', 'admin-tally-label', 'admin-roster-list', 'admin-search-input']
       .forEach(function (id) { el[id] = document.getElementById(id); });
   }
 
   function showView(name) {
     el['view-login'].hidden = name !== 'login';
     el['view-roster'].hidden = name !== 'roster';
+    el['view-admin'].hidden = name !== 'admin';
   }
-  function setBusy(on) { el.overlay.hidden = !on; }
+  function setBusy(on) { 
+    el.overlay.hidden = !on; 
+    document.body.style.overflow = on ? 'hidden' : '';
+  }
   var toastTimer = null;
   function showToast(msg, isError) {
     el.toast.textContent = msg;
@@ -109,6 +143,10 @@
           el['login-error'].hidden = false;
           return;
         }
+        if (res.role === 'admin') {
+          enterAdminView(code, res.floors);
+          return;
+        }
         state.leader = { code: res.code, name: res.name, floors: res.floors };
         renderFloorSwitch();
         loadRoster(res.floors[0]);
@@ -122,12 +160,236 @@
 
     el['btn-logout'].addEventListener('click', function () {
       if (hasUnsyncedWork()) {
-        if (!confirm('尚有點名資料還在背景同步中，確定要離開嗎？')) return;
+        if (!confirm('尚有點名資料還在同步中，確定要離開嗎？')) return;
       }
-      state = { leader: null, floor: null, people: [], pending: {}, tab: 'absent', query: '' };
+      
+      state = { leader: null, floor: null, people: [], pending: {}, syncingCodes: {}, tab: 'absent', query: '' };
       syncQueue = []; syncBusy = false; hasSyncError = false;
       el['login-code'].value = '';
       el['search-input'].value = '';
+      showView('login');
+    });
+  }
+
+  // ================= 管理者檢視 =================
+
+  function enterAdminView(code, floors) {
+    adminState.code = code;
+    adminState.floors = floors || [];
+    adminState.floor = adminState.floors[0] || null;
+    renderAdminFloorSelect();
+    showView('admin');
+    if (adminState.floor) {
+      loadAdminFloor(adminState.floor, false, false);
+      startAdminAutoRefresh(); // 🌟 新增：啟動自動刷新計時器
+    } else {
+      adminState.people = [];
+      adminState.hasSession = false;
+      renderAdminTally();
+      el['admin-roster-list'].innerHTML = '<div class="empty-state">今天目前還沒有任何樓層觸發點名</div>';
+    }
+  }
+
+  function renderAdminFloorSelect() {
+    var sel = el['admin-floor-select'];
+    if (adminState.floors.length === 0) {
+      sel.innerHTML = '<option value="">（今天尚無場次）</option>';
+      sel.disabled = true;
+      return;
+    }
+    sel.disabled = false;
+    sel.innerHTML = adminState.floors.map(function (f) {
+      var sel2 = f === adminState.floor ? ' selected' : '';
+      return '<option value="' + escapeHtml(f) + '"' + sel2 + '>' + escapeHtml(f) + '</option>';
+    }).join('');
+  }
+
+  // 🌟 修改：加入 isAutoRefresh 參數來判斷是否為背景靜默刷新
+  function loadAdminFloor(floor, isRefresh, isAutoRefresh) {
+    if (adminState.loading) return;
+    adminState.loading = true;
+    
+    // 如果是自動刷新，不顯示任何干擾畫面的動畫
+    if (!isAutoRefresh) {
+      if (isRefresh) {
+        el['btn-admin-refresh'].classList.add('spinning');
+      } else {
+        setBusy(true);
+      }
+    }
+
+    var fetchFloors = (isRefresh && !isAutoRefresh) ? apiLogin(adminState.code) : Promise.resolve(null);
+    var fetchStatus = floor ? apiAdminGetFloorStatus(adminState.code, floor) : Promise.resolve(null);
+    
+    Promise.all([fetchFloors, fetchStatus]).then(function (results) {
+      adminState.loading = false;
+      
+      if (!isAutoRefresh) {
+        setBusy(false);
+        el['btn-admin-refresh'].classList.remove('spinning');
+      }
+      
+      var loginRes = results[0];
+      var statusRes = results[1];
+      
+      if (loginRes && loginRes.ok && loginRes.role === 'admin') {
+        adminState.floors = loginRes.floors || [];
+        if (!floor && adminState.floors.length > 0) {
+          adminState.floor = adminState.floors[0];
+          renderAdminFloorSelect();
+          loadAdminFloor(adminState.floor, false, false);
+          startAdminAutoRefresh(); // 🌟 新增：抓到新樓層後啟動計時器
+          return;
+        }       
+        renderAdminFloorSelect();
+      }
+
+      if (statusRes) {
+        if (!statusRes.ok) { 
+          if (!isAutoRefresh) showToast(statusRes.message, true); 
+          return; 
+        }
+        
+        // 如果是「切換新樓層」，則目標高度就是 0 (最上方)
+        var targetScrollY = (isRefresh || isAutoRefresh) ? window.scrollY : 0;
+
+        adminState.floor = floor;
+        adminState.hasSession = statusRes.hasSession;
+        adminState.sessionState = statusRes.state;
+        adminState.people = statusRes.people || [];
+        
+        renderAdminTally();
+        renderAdminList();
+
+        window.scrollTo(0, targetScrollY);
+      }
+
+    }).catch(function (err) {
+      adminState.loading = false;
+      if (!isAutoRefresh) {
+        setBusy(false);
+        el['btn-admin-refresh'].classList.remove('spinning');
+        showToast('讀取失敗：' + (err && err.message ? err.message : err), true);
+      }
+    });
+  }
+
+  // 🌟 新增：啟動自動刷新計時器
+  function startAdminAutoRefresh() {
+    stopAdminAutoRefresh();
+    adminRefreshTimer = setInterval(function () {
+      if (adminState.floor) {
+        // 每 30 秒執行一次「靜默」刷新
+        loadAdminFloor(adminState.floor, true, true); 
+      }
+    }, 30000);
+  }
+
+  // 🌟 新增：停止自動刷新計時器
+  function stopAdminAutoRefresh() {
+    if (adminRefreshTimer) {
+      clearInterval(adminRefreshTimer);
+      adminRefreshTimer = null;
+    }
+  }
+
+  function renderAdminTally() {
+    var total = adminState.people.length;
+    var present = adminState.people.filter(function (p) { return p.checked; }).length;
+    el['admin-tally-present'].textContent = total ? present : 0;
+    el['admin-tally-total'].textContent = total;
+    el['admin-tally-label'].innerHTML = '實到／應到 ' + escapeHtml(adminState.floor || '');
+  }
+
+  function renderAdminList() {
+    var list = el['admin-roster-list'];
+
+    if (!adminState.floor) {
+      list.innerHTML = '<div class="empty-state">今天目前還沒有任何樓層觸發點名</div>';
+      return;
+    }
+    if (!adminState.hasSession) {
+      list.innerHTML = '<div class="admin-status-banner none">「' + escapeHtml(adminState.floor) + '」今天尚未觸發點名</div>';
+      return;
+    }
+
+    var bannerCls = adminState.sessionState === '已完成' ? 'done'
+      : adminState.sessionState === '已逾期結束' ? 'expired' : 'active';
+    var banner = '<div class="admin-status-banner ' + bannerCls + '">目前狀態：' + escapeHtml(adminState.sessionState) + '</div>';
+
+    var q = adminState.query.trim().toLowerCase();
+    var filtered = q
+      ? adminState.people.filter(function (p) {
+          return p.name.toLowerCase().indexOf(q) !== -1 || p.code.toLowerCase().indexOf(q) !== -1;
+        })
+      : adminState.people;
+
+    if (filtered.length === 0) {
+      var msg = q ? '找不到符合「' + escapeHtml(adminState.query.trim()) + '」的人員' : '本樓層尚無人員資料';
+      list.innerHTML = banner + '<div class="empty-state">' + msg + '</div>';
+      return;
+    }
+
+    var groups = groupPeople(filtered);
+    
+    var body = groups.map(function (g) {
+      var doneInGroup = g.items.filter(function (p) { return p.checked; }).length;
+      
+      var rows = g.items.map(function (p) {
+        var cls = p.checked ? 'state-on' : 'state-off';
+        return '<li class="person-row admin-readonly ' + cls + '">' +
+          '<span class="check-box"></span>' +
+          '<span class="person-name">' + escapeHtml(p.name) + '</span>' +
+          '<span class="person-code">' + escapeHtml(p.code) + '</span>' +
+          '</li>';
+      }).join('');
+      
+      return '<div class="group-card">' +
+        '<div class="group-head">' +
+        '<span class="group-name">' + escapeHtml(g.unit) + '－' + escapeHtml(g.group) + '</span>' +
+        '<span class="group-count">' + doneInGroup + '/' + g.items.length + '</span>' +
+        '</div>' +
+        '<ul class="person-list">' + rows + '</ul>' +
+        '</div>';
+    }).join('');
+
+    list.innerHTML = banner + body;
+  }
+
+  function bindAdminView() {
+    el['admin-search-input'].addEventListener('input', function () {
+      adminState.query = el['admin-search-input'].value;
+      renderAdminList();
+    });
+
+    el['admin-floor-select'].addEventListener('change', function () {
+      var floor = el['admin-floor-select'].value;
+      if (!floor || floor === adminState.floor) return;
+      
+      el['admin-search-input'].value = '';
+      adminState.query = '';
+      
+      // 切換樓層時，強制讓視窗捲回到最上方
+      window.scrollTo(0, 0);
+      
+      // 🌟 修改：切換樓層時，重置計時器，並帶入非靜默載入 (isAutoRefresh = false)
+      stopAdminAutoRefresh();
+      loadAdminFloor(floor, false, false);
+      startAdminAutoRefresh();
+    });
+
+    el['btn-admin-refresh'].addEventListener('click', function () {
+      // 🌟 修改：手動點擊刷新按鈕，傳入 isRefresh=true, isAutoRefresh=false
+      loadAdminFloor(adminState.floor, true, false);
+      // 重置計時器，避免剛手動點完，馬上又觸發一次 30 秒倒數
+      startAdminAutoRefresh();
+    });
+
+    el['btn-admin-logout'].addEventListener('click', function () {
+      adminState = { code: null, floors: [], floor: null, hasSession: false, sessionState: '', people: [], loading: false, query: '' };
+      el['login-code'].value = '';
+      el['admin-search-input'].value = ''; 
+      stopAdminAutoRefresh(); // 🌟 新增：登出時務必關閉計時器
       showView('login');
     });
   }
@@ -143,6 +405,7 @@
       return '<button class="' + active.trim() + '" data-floor="' + escapeHtml(f) + '">' + escapeHtml(f) + '</button>';
     }).join('');
   }
+  
   function bindFloorSwitch() {
     el['floor-switch'].addEventListener('click', function (e) {
       var btn = e.target.closest('button[data-floor]');
@@ -206,6 +469,8 @@
   }
 
   function togglePending(code) {
+    if (state.syncingCodes[code]) return;
+
     var p = state.people.find(function (x) { return x.code === code; });
     if (!p) return;
     var next = !effectiveChecked(p);
@@ -220,6 +485,7 @@
     var q = state.query.trim().toLowerCase();
     state.people.forEach(function (p) {
       if ((p.unit + '｜' + p.group) !== key) return;
+      if (state.syncingCodes[p.code]) return;
       if (p.checked !== tabBaseMatch) return;
       if (q && p.name.toLowerCase().indexOf(q) === -1 && p.code.toLowerCase().indexOf(q) === -1) return;
       if (effectiveChecked(p) === target) return;
@@ -234,10 +500,16 @@
       var changes = state.pending;
       var count = Object.keys(changes).length;
       if (count === 0) return;
+      
+      Object.keys(changes).forEach(function (code) {
+        state.syncingCodes[code] = true;
+      });
+
       applyOptimistic_(changes);
-      state.pending = {};
-      render();
-      showToast('已更新 ' + count + ' 人');
+      state.pending = {}; 
+      render(); 
+      
+      showToast('已更新 ' + count + ' 人，資料同步中…');
       enqueueSubmit(changes);
     });
   }
@@ -249,15 +521,27 @@
     });
   }
 
-  // ---------- 背景同步佇列 ----------
+// ---------- 背景同步佇列 ----------
   function enqueueSubmit(changes) {
     if (!changes || Object.keys(changes).length === 0) return;
-    syncQueue.push({
-      leaderCode: state.leader.code,
-      floor: state.floor,
-      changes: changes,
-      retries: 0,
+    
+    var pendingBatch = syncQueue.find(function(b) {
+      return b.floor === state.floor && !b.isProcessing;
     });
+
+    if (pendingBatch) {
+      Object.keys(changes).forEach(function(code) {
+        pendingBatch.changes[code] = changes[code];
+      });
+    } else {
+      syncQueue.push({
+        leaderCode: state.leader.code,
+        floor: state.floor,
+        changes: Object.assign({}, changes),
+        retries: 0,
+        isProcessing: false 
+      });
+    }
     pumpQueue();
   }
 
@@ -269,17 +553,37 @@
     }
     syncBusy = true;
     setSyncStatus('syncing');
+    
     var batch = syncQueue[0];
+    batch.isProcessing = true; 
+    
+    Object.keys(batch.changes).forEach(function (code) {
+      delete state.syncingCodes[code];
+    });
+    render(); 
+    
     apiSubmitChanges(batch.leaderCode, batch.floor, batch.changes).then(function (res) {
       syncBusy = false;
-      syncQueue.shift();
+      syncQueue.shift(); 
+      
+      if (typeof saveQueue_ === 'function') saveQueue_(); 
+
       if (!res.ok) {
         hasSyncError = true;
         setSyncStatus('error', res.message);
         return; 
       }
+      
       hasSyncError = false;
-      pumpQueue();
+      
+      if (syncQueue.length === 0 && Object.keys(state.pending).length === 0) {
+        if (res.people && batch.floor === state.floor) {
+          state.people = res.people;
+          render(); 
+        }
+      }
+      
+      pumpQueue(); 
     }).catch(function (err) {
       syncBusy = false;
       batch.retries += 1;
@@ -288,7 +592,7 @@
         setTimeout(pumpQueue, 1200 * batch.retries); 
       } else {
         hasSyncError = true;
-        setSyncStatus('error', '網路連線異常，尚有點名資料未同步成功');
+        setSyncStatus('error', '網路連線異常，部分點名資料將在背景重試');
       }
     });
   }
@@ -369,7 +673,7 @@
       if (q) {
         msg = '在「' + (state.tab === 'absent' ? '未到名單' : '已到名單') + '」裡找不到符合「' + escapeHtml(state.query.trim()) + '」的人員';
       } else {
-        msg = state.tab === 'absent' ? '🎉 全部人員都已完成點名' : '目前還沒有人完成點名';
+        msg = state.tab === 'absent' ? '🎉 全員到齊' : '目前還沒有人完成點名';
       }
       el['roster-list'].innerHTML = '<div class="empty-state">' + msg + '</div>';
       return;
@@ -413,6 +717,7 @@
     bindRosterList();
     bindSubmit();
     bindSyncIndicatorRetry();
+    bindAdminView();
     showView('login');
 
     window.addEventListener('beforeunload', function (e) {
@@ -423,3 +728,4 @@
     });
   });
 })();
+</script>
