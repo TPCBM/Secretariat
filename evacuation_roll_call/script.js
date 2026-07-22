@@ -1,4 +1,3 @@
-
 (function () {
   'use strict';
   var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwy-zZ1mXmmn9l9Bz0YxhubVrpdNYtNErOQ-siOKnVBs3dE6_Ip69Duc3IWJVydwej0/exec';
