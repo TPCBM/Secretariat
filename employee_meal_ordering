@@ -1,0 +1,2893 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>員工餐廳訂餐</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* ===== MOBILE-FIRST CSS DESIGN ===== */
+
+    /* 基礎樣式針對手機優化，使用 min-width 媒體查詢增強大螢幕 */
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
+
+    /* 防止 iOS 輸入框自動縮放 */
+
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+
+    html,
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow-x: hidden;
+      width: 100% !important;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Microsoft JhengHei", "PingFang TC", "Helvetica Neue", sans-serif;
+      background-color: #FAF8F5;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    /* ===== HEADER - Mobile First ===== */
+
+    header {
+      background: linear-gradient(135deg, #8B7355 0%, #6B5744 100%);
+      padding: 12px 14px;
+      color: white;
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(107, 87, 68, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .header-title {
+      font-size: 1.125rem;
+      letter-spacing: 0.5px;
+      flex: 1;
+      text-align: center;
+    }
+
+    .header-btn {
+      background: rgba(255, 255, 255, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      font-size: 1.5rem;
+      min-width: 40px;
+      min-height: 40px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      position: relative;
+      padding: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .header-btn:active {
+      background: rgba(255, 255, 255, 0.5);
+      transform: scale(0.95);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-badge {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: white;
+      color: #8B7355;
+      border-radius: 8px;
+      padding: 2px 5px;
+      font-size: 0.625rem;
+      font-weight: 700;
+      min-width: 16px;
+      text-align: center;
+    }
+
+    /* ===== PAGE LAYOUT - Mobile First ===== */
+
+    .page {
+      display: none;
+      padding: 16px;
+      padding-bottom: 24px;
+      width: 100%;
+      margin: 0;
+      min-height: calc(100vh - 64px);
+    }
+
+    .page.active { display: block; }
+
+    /* ===== BUTTONS - Mobile First ===== */
+
+    .btn {
+      background: linear-gradient(135deg, #A67C52 0%, #8B6F47 100%);
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 1rem;
+      width: 100%;
+      margin: 12px 0 0 0;
+      cursor: pointer;
+      touch-action: manipulation;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+      min-height: 44px;
+      box-shadow: 0 4px 12px rgba(139, 111, 71, 0.35);
+      letter-spacing: 0.3px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(139, 111, 71, 0.45);
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 8px rgba(139, 111, 71, 0.3);
+    }
+
+    .btn:disabled {
+      background: #e0e0e0;
+      cursor: not-allowed;
+      opacity: 0.7;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #B8654F 0%, #9A4F3C 100%);
+      box-shadow: 0 4px 12px rgba(154, 79, 60, 0.35);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #7A9B76 0%, #5F8055 100%);
+      box-shadow: 0 4px 12px rgba(95, 128, 85, 0.35);
+    }
+
+    /* ===== TYPOGRAPHY - Mobile First ===== */
+
+    h3 {
+      font-size: 1.25rem;
+      margin: 16px 0;
+      color: #8B7355;
+      word-wrap: break-word;
+      font-weight: 700;
+    }
+
+    /* ===== FORM ELEMENTS - Mobile First ===== */
+
+    input:not(#menuTable input),
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      margin: 8px 0 0 0;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      font-size: max(16px, 1rem);
+      touch-action: manipulation;
+      background: white;
+      transition: all 0.2s ease;
+      -webkit-appearance: none;
+      appearance: none;
+      color: #333;
+    }
+
+    select {
+      color: #333;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 40px;
+    }
+
+    input:not(#menuTable input):focus,
+    select:focus,
+    textarea:focus {
+      border-color: #A67C52;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(166, 124, 82, 0.15);
+    }
+
+    /* 必填欄位錯誤樣式 */
+
+    input.error,
+    select.error,
+    textarea.error {
+      border-color: #d32f2f !important;
+      background-color: #ffebee;
+    }
+
+    input.error:focus,
+    select.error:focus,
+    textarea.error:focus {
+      border-color: #d32f2f !important;
+      box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.15) !important;
+    }
+
+    .error-message {
+      color: #d32f2f;
+      font-size: 0.875rem;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      padding: 10px 14px;
+      background-color: #ffebee;
+      border-left: 4px solid #d32f2f;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 0 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      text-align: left;
+      color: #424242;
+    }
+
+    label small {
+      font-weight: 400;
+      color: #757575;
+      font-size: 0.8125rem;
+    }
+
+    /* ===== NOTICE BOX - Mobile First ===== */
+
+    .notice-box {
+      background: linear-gradient(135deg, #F5F1EB 0%, #EBE4D8 100%);
+      border-left: 4px solid #C9A882;
+      padding: 16px 18px;
+      margin: 12px 0;
+      border-radius: 10px;
+      line-height: 1.7;
+      box-shadow: 0 2px 8px rgba(201, 168, 130, 0.15);
+    }
+
+    .notice-box p {
+      margin: 8px 0;
+      font-size: 0.875rem;
+    }
+
+    .notice-box a {
+      color: #8B7355;
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .notice-box a:active {
+      border-bottom-color: #8B7355;
+    }
+
+    /* ===== MEAL CARD - Mobile First ===== */
+
+    .meal-card {
+      background: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      margin: 0 0 12px 0;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .meal-card:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .meal-card .meal-name {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    .meal-card .meal-type {
+      color: #757575;
+      font-size: 0.8125rem;
+      margin-top: 4px;
+    }
+
+    .meal-card .meal-price {
+      font-size: 1.125rem;
+      color: #A67C52;
+      font-weight: 700;
+    }
+
+    /* ===== CART ITEM - Mobile First ===== */
+
+    .cart-item {
+      border: none;
+      border-radius: 16px;
+      padding: 18px;
+      margin: 0 0 16px 0;
+      background: white;
+      text-align: left;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .cart-item .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .cart-item .item-name {
+      font-weight: 700;
+      font-size: 1.125rem;
+    }
+
+    .cart-item .item-price {
+      font-size: 1.125rem;
+      color: #A67C52;
+      font-weight: 700;
+    }
+
+    .cart-item .item-details {
+      color: #757575;
+      font-size: 0.9375rem;
+      margin: 6px 0;
+    }
+
+    .cart-item .item-actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .cart-item button {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      min-height: 52px;
+      transition: all 0.2s ease;
+      color: white;
+    }
+
+    .cart-item button:active {
+      transform: scale(0.97);
+    }
+
+    /* ===== CART SUMMARY - Mobile First ===== */
+
+    .cart-summary {
+      background: linear-gradient(135deg, #F5F1EB 0%, #EBE4D8 100%);
+      border: 2px solid #C9A882;
+      border-radius: 16px;
+      padding: 18px;
+      margin: 16px 0;
+      box-shadow: 0 4px 16px rgba(201, 168, 130, 0.2);
+    }
+
+    .cart-summary .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      font-size: 1.0625rem;
+    }
+
+    .cart-summary .summary-total {
+      font-weight: 700;
+      color: #8B7355;
+      font-size: 1.5rem;
+      border-top: 2px solid #C9A882;
+      padding-top: 14px;
+      margin-top: 14px;
+    }
+
+    /* ===== TABLE - Mobile First ===== */
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      border: 1px solid #e0e0e0;
+      padding: 10px 8px;
+      font-size: 0.875rem;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    th {
+      background: linear-gradient(135deg, #E8DCC8 0%, #D9C9B0 100%);
+      font-weight: 600;
+      white-space: nowrap;
+      font-size: 0.875rem;
+      padding: 12px 8px;
+      color: #333;
+    }
+
+    /* ===== MODAL - Mobile First ===== */
+
+    #orderModal {
+      display: none;
+      background: rgba(0, 0, 0, 0.65);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1000;
+      overflow-y: auto;
+      align-items: center;
+    }
+
+    #alertModal,
+    #confirmModal {
+      display: none;
+      background: rgba(0, 0, 0, 0.65);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1100;
+      overflow-y: auto;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .modal-content {
+      background: white;
+      padding: 26px;
+      border-radius: 20px;
+      width: calc(100% - 32px);
+      max-width: 550px;
+      margin: 16px;
+      text-align: left;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      animation: slideIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(40px) scale(0.95);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      font-size: 1.375rem;
+      color: #8B7355;
+      margin-bottom: 20px;
+    }
+
+    .modal-content label {
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    /* ===== ALERT CONTENT - Mobile First ===== */
+
+    .alert-content {
+      background: white;
+      padding: 28px;
+      border-radius: 20px;
+      width: calc(100% - 48px);
+      max-width: 360px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      animation: slideIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .alert-content p {
+      font-size: 1.0625rem;
+      margin: 0 0 24px 0;
+      line-height: 1.6;
+      color: #424242;
+    }
+
+    .alert-btn {
+      background: linear-gradient(135deg, #A67C52 0%, #8B6F47 100%);
+      color: white;
+      border: none;
+      padding: 16px 36px;
+      border-radius: 14px;
+      font-size: 1.0625rem;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(139, 111, 71, 0.35);
+      transition: all 0.2s ease;
+      min-height: 52px;
+    }
+
+    .alert-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* ===== LOADING & EMPTY STATES - Mobile First ===== */
+
+    .loading {
+      text-align: center;
+      padding: 32px 0;
+      color: #757575;
+      font-size: 1rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 16px;
+      color: #9e9e9e;
+      font-size: 1rem;
+    }
+
+    .btn.loading {
+      position: relative;
+      color: transparent;
+      pointer-events: none;
+    }
+
+    .btn.loading::after {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      top: 50%;
+      left: 50%;
+      margin-left: -12px;
+      margin-top: -12px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spinner 0.7s linear infinite;
+    }
+
+    @keyframes spinner {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ===== TABLET BREAKPOINT (768px+) ===== */
+
+    @media (min-width: 768px) {
+      header {
+        padding: 14px 20px;
+      }
+
+      .page {
+        padding: 20px;
+        padding-bottom: 32px;
+        max-width: 720px;
+        margin: 0 auto;
+      }
+
+      .meal-card {
+        padding: 16px;
+      }
+
+      .meal-card .meal-name {
+        font-size: 1.0625rem;
+      }
+
+      th,
+    td {
+        font-size: 0.9375rem;
+        padding: 12px 10px;
+      }
+    }
+
+    /* ===== DESKTOP BREAKPOINT (1024px+) ===== */
+
+    @media (min-width: 1024px) {
+      header {
+        padding: 16px 32px;
+      }
+
+      .page {
+        padding: 24px 32px;
+        padding-bottom: 36px;
+        max-width: 960px;
+      }
+
+      .btn {
+        font-size: 0.9375rem;
+        padding: 12px 20px;
+        min-height: 44px;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .meal-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      }
+
+      th,
+    td {
+        font-size: 0.9375rem;
+        padding: 12px 10px;
+      }
+
+      .modal-content {
+        margin: 20px auto;
+        width: 90%;
+      }
+    }
+
+    /* ===== LARGE DESKTOP BREAKPOINT (1280px+) ===== */
+
+    @media (min-width: 1280px) {
+      .page {
+        max-width: 1100px;
+      }
+    }
+
+    /* ===== SAFE AREA FOR NOTCHED DEVICES ===== */
+
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      .page {
+        padding-bottom: calc(24px + env(safe-area-inset-bottom));
+      }
+    }
+
+    /* ===== REDUCED MOTION ===== */
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ===== HOME PAGE - 方塊式選單 ===== */
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .menu-card {
+      background: white;
+      border-radius: 14px;
+      padding: 14px 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      text-align: center;
+      height: 160px;
+      position: relative;
+      border: 2px solid transparent;
+      overflow: hidden;
+    }
+
+    .menu-card:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .menu-card.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #f5f5f5;
+    }
+
+    .menu-card.disabled:active {
+      transform: none;
+    }
+
+    .menu-icon {
+      font-size: 2.25rem;
+      margin-top: 8px;
+      margin-bottom: 8px;
+      line-height: 1;
+      height: 2.25rem;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .menu-title {
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 6px;
+      line-height: 1.3;
+      height: 1.375rem;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .menu-desc {
+      font-size: 0.75rem;
+      color: #757575;
+      line-height: 1.25;
+      height: 2.5rem;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      flex-shrink: 0;
+      padding: 0 4px;
+    }
+
+    .menu-status {
+      margin-top: 6px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      height: 26px;
+      min-height: 26px;
+      width: 100%;
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-status.available {
+      background: linear-gradient(135deg, #E8EDDC 0%, #D4E0C1 100%);
+      color: #5F8055;
+    }
+
+    .menu-status.unavailable {
+      background: linear-gradient(135deg, #F5E8E4 0%, #EDD5CE 100%);
+      color: #9A4F3C;
+    }
+
+    .menu-status.pending {
+      background: linear-gradient(135deg, #F5F1EB 0%, #EBE4D8 100%);
+      color: #8B7355;
+    }
+
+    /* ===== 購物車預覽（在訂購餐點頁面底部） ===== */
+
+    .cart-preview {
+      background: linear-gradient(135deg, #F5F1EB 0%, #EBE4D8 100%);
+      border: 2px solid #C9A882;
+      border-radius: 16px;
+      padding: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(201, 168, 130, 0.2);
+    }
+
+    .cart-preview:active {
+      transform: scale(0.98);
+    }
+
+    #cartExpandIcon {
+      transition: transform 0.3s ease;
+    }
+
+    #cartExpandIcon.expanded {
+      transform: rotate(180deg);
+    }
+
+    /* ===== 平板以上：2列排版 ===== */
+
+    @media (min-width: 768px) {
+      .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+
+      .menu-card {
+        height: 180px;
+      }
+    }
+
+    /* ===== 桌面：3列排版 ===== */
+
+    @media (min-width: 1024px) {
+      .menu-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+      }
+
+      .menu-card {
+        justify-content: center;
+      }
+
+      .menu-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border-color: #C9A882;
+      }
+
+      .menu-card.disabled:hover {
+        transform: none;
+        border-color: transparent;
+      }
+    }
+
+    /* ===== 菜單圖 ===== */
+
+    .st-hint { color: #757575; font-size: 0.8125rem; margin-top: 6px; }
+
+    .st-warn {
+      margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+      background: #FFF8E1; border-left: 4px solid #F9A825; color: #6D4C00;
+      font-size: 0.875rem; display: none;
+    }
+
+    .st-warn.show { display: block; }
+
+    .st-warn div { margin: 2px 0; }
+
+    /* ===== 本週菜單頁 ===== */
+
+    .wm-meta { color: #6B5744; font-size: 0.9375rem; font-weight: 600; margin: 4px 0 0 0; }
+
+    .wm-sub { color: #757575; font-size: 0.8125rem; margin-top: 2px; }
+
+    .wm-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+
+    .wm-actions .btn { width: auto; flex: 1 1 130px; margin: 0; padding: 10px 12px; font-size: 0.9375rem; }
+
+    .wm-wrap { position: relative; min-height: 260px; background: #e9e5de; border-radius: 12px; overflow: auto; margin-top: 12px; border: 1px solid #e0e0e0; -webkit-overflow-scrolling: touch; }
+
+    .wm-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #8B7355; font-size: 0.9375rem; font-weight: 600; pointer-events: none; }
+
+    .wm-loading::before { content: ''; width: 20px; height: 20px; margin-right: 10px; border: 3px solid rgba(139, 115, 85, 0.25); border-top-color: #8B7355; border-radius: 50%; animation: spinner 0.7s linear infinite; }
+
+    .wm-wrap img { display: block; width: 100%; height: auto; }
+
+    .wm-wrap.zoom img { width: 240%; max-width: none; }
+
+    #weekMenuPage .st-warn { margin-top: 10px; }
+  </style>
+  <script>
+    /* ============================================================
+       後端連線設定
+       ・網頁放在別的地方（GitHub Pages、公司網站…）：把 Apps Script「部署 → 網頁應用程式」
+         產生的網址（結尾是 /exec）貼到下面的 GAS_URL，網頁就會用 fetch 呼叫後端。
+       ・網頁是由 Apps Script 自己提供：GAS_URL 留空即可，會直接用 google.script.run。
+       ============================================================ */
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxFVEujZfOvTelMKHDCmk027gUAaHCy81IslHRiw2w/dev";
+
+    // 只有這幾個唯讀功能用 GET（失敗會自動重試）；其他一律 POST，絕不自動重試（避免重複寫入）
+    const API_READ_ACTIONS = { ping: 1, getSettings: 1, getTodayMenuInfo: 1, getPublishedMeta: 1, getPublishedMenu: 1 };
+
+    function apiError(message, code, detail) {
+      const e = new Error(message);
+      e.code = code;
+      if (detail) e.detail = detail;
+      return e;
+    }
+
+    function apiCall(name, args) {
+      args = args || [];
+      if (!GAS_URL) return Promise.reject(apiError('尚未設定後端網址，請在 index.html 開頭填入 GAS_URL', 'CONFIG'));
+      const isRead = API_READ_ACTIONS[name] === 1;
+      const timeout = 30000;
+      const maxTries = isRead ? 3 : 1;
+
+      function once() {
+        const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+        const timer = ctl ? setTimeout(function () { ctl.abort(); }, timeout) : null;
+        const opt = { redirect: 'follow', credentials: 'omit', cache: 'no-store' };
+        if (ctl) opt.signal = ctl.signal;
+        let url = GAS_URL;
+        if (isRead) {
+          url += (url.indexOf('?') < 0 ? '?' : '&') + 'action=' + encodeURIComponent(name) + (args.length ? '&args=' + encodeURIComponent(JSON.stringify(args)) : '');
+        } else {
+          opt.method = 'POST';
+          opt.headers = { 'Content-Type': 'text/plain;charset=utf-8' };   // 不能用 application/json：會多一次預檢請求，Apps Script 不支援
+          opt.body = JSON.stringify({ action: name, args: args });
+        }
+        return fetch(url, opt).then(function (res) {
+          return res.text();
+        }, function (err) {
+          throw apiError(ctl && ctl.signal.aborted ? '伺服器回應逾時，請稍後再試' : '無法連線到伺服器，請檢查網路後再試', 'NETWORK', String(err));
+        }).then(function (text) {
+          if (timer) clearTimeout(timer);
+          let j = null;
+          try { j = JSON.parse(text); } catch (e) { j = null; }
+          if (!j || typeof j !== 'object') throw apiError('伺服器回應異常，請稍後再試（若一直發生，請確認後端部署的存取權限是「所有人」）', 'BAD_RESPONSE');
+          if (j.ok) return j.data;
+          throw apiError(j.error || '伺服器發生錯誤', j.code || 'ERROR');
+        }, function (err) {
+          if (timer) clearTimeout(timer);
+          throw err;
+        });
+      }
+
+      let attempt = 0;
+      function run() {
+        attempt++;
+        return once().catch(function (err) {
+          const retryable = isRead && attempt < maxTries && (err.code === 'NETWORK' || err.code === 'BAD_RESPONSE');
+          if (!retryable) throw err;
+          return new Promise(function (r) { setTimeout(r, attempt * 700); }).then(run);
+        });
+      }
+      return run();
+    }
+
+    // 頁面由 Apps Script 提供時會有 google.script.run；放在別處（GitHub）沒有，改用 fetch 模擬同樣的呼叫方式，
+    // 所以整支程式裡的 google.script.run.withSuccessHandler(...).withFailureHandler(...).函式名稱(...) 完全不用改。
+    (function () {
+      if (window.google && window.google.script && window.google.script.run) return;
+      window.__API_MODE = true;
+      function runner(onOk, onFail) {
+        return new Proxy({}, {
+          get: function (_, prop) {
+            if (typeof prop !== 'string' || prop === 'then') return undefined;
+            if (prop === 'withSuccessHandler') return function (fn) { return runner(fn, onFail); };
+            if (prop === 'withFailureHandler') return function (fn) { return runner(onOk, fn); };
+            return function () {
+              const args = Array.prototype.slice.call(arguments);
+              apiCall(prop, args).then(function (data) { if (onOk) onOk(data); }, function (err) {
+                if (onFail) onFail(err); else console.error(prop, err);
+              });
+            };
+          }
+        });
+      }
+      window.google = { script: { run: runner(null, null) } };
+    })();
+  </script>
+</head>
+<body>
+  <header id="headerTitle">
+    <button id="headerBackBtn" class="header-btn" onclick="headerBackAction()" style="display:none;" title="返回">&lt;</button>
+    <span class="header-title">員工餐廳訂餐</span>
+    <button id="headerCartBtn" class="header-btn" onclick="showPage('cartPage')" style="display:none;" title="購物車">
+      🛒
+      <span id="headerCartBadge" class="header-badge" style="display:none;"></span>
+    </button>
+  </header>
+
+  <!-- 首頁 -->
+  <div id="homePage" class="page active">
+    <!-- 公告區 -->
+    <div class="notice-box">
+      <p><strong>📅 訂餐時間：</strong><span id="orderTimeNotice">上班日 00:00 至 10:30</span></p>
+      <p><strong>🍱 取餐時間：</strong><span id="pickupTimeNotice">11:40起</span></p>
+      <p><strong>📞 服務專線：</strong><span id="servicePhoneNotice">如有其他特殊需求或問題，請撥打(02)2366-6433</span></p>
+    </div>
+
+    <!-- 方塊式選單 -->
+    <h3 style="margin-top: 24px;">功能選單</h3>
+    <div class="menu-grid">
+      <div class="menu-card" id="orderMenuCard" onclick="navigateToOrder()">
+        <div class="menu-icon">🍱</div>
+        <div class="menu-title">訂購餐點</div>
+        <div id="orderTimeStatus" class="menu-status" style="margin-top: 0; margin-bottom: 0; padding: 0; min-height: 3rem; border-radius: 0; background: transparent;"></div>
+      </div>
+
+      <div class="menu-card" onclick="navigateToQuery()">
+        <div class="menu-icon">🔎</div>
+        <div class="menu-title">查詢訂單</div>
+        <div class="menu-desc">查詢或修改您的訂單</div>
+        <div class="menu-status" style="display: none;"></div>
+      </div>
+
+      <div class="menu-card" id="bulkOrderMenuCard" onclick="openBulkOrderLink()">
+        <div class="menu-icon">📦</div>
+        <div class="menu-title">大量訂餐</div>
+        <div class="menu-desc">需訂購20份以上餐點，請下載表單進行訂購</div>
+        <div class="menu-status" style="display: none;"></div>
+      </div>
+
+      <div class="menu-card" id="weekMenuCard" onclick="navigateToWeekMenu()">
+        <div class="menu-icon">📋</div>
+        <div class="menu-title">本週菜單</div>
+        <div class="menu-desc">查看本週完整菜單</div>
+        <div class="menu-status" style="display: none;"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // 立即執行：在頁面載入時先顯示預設狀態，避免延遲感
+    (function() {
+      const statusDiv = document.getElementById('orderTimeStatus');
+      if (statusDiv && !statusDiv.textContent) {
+        // 先顯示載入中狀態
+        statusDiv.className = 'menu-status pending';
+        statusDiv.textContent = '檢查中...';
+      }
+    })();
+  </script>
+
+  <!-- 訂餐頁 -->
+  <div id="orderPage" class="page">
+    <h3>🍴 今日菜單</h3>
+    <div id="timeCheckNotice" style="display:none;"></div>
+    <div id="mealList">
+      <div class="loading">載入中...</div>
+    </div>
+
+    <!-- 購物車摘要區（整合到底部） -->
+    <div id="cartSummarySection" style="display:none; position: sticky; bottom: 0; background: white; padding: 16px 0; margin-top: 24px; border-top: 2px solid #e0e0e0; z-index: 50;">
+      <!-- 摺疊/展開的購物車摘要 -->
+      <div class="cart-preview" onclick="toggleCartExpand()">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-weight: 700; font-size: 1.125rem;">🛒 購物車</span>
+            <span id="cartPreviewBadge" style="color: #8B7355; font-weight: 700; margin-left: 8px;"></span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span id="cartPreviewTotal" style="font-size: 1.25rem; font-weight: 700; color: #A67C52;">$0</span>
+            <span id="cartExpandIcon" style="font-size: 1.5rem; transition: transform 0.3s;">▼</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 展開的購物車詳細內容 -->
+      <div id="cartExpandedContent" style="display: none; margin-top: 16px; max-height: 60vh; overflow-y: auto;">
+        <div id="cartListInOrder"></div>
+
+        <button class="btn" onclick="proceedToCheckout()">前往訂購</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 時間檢查已整合到 renderMealList 函數中，會在系統設定載入後執行
+  </script>
+
+  <!-- 購物車 -->
+  <div id="cartPage" class="page">
+    <h3>🛒 購物車</h3>
+    <div id="cartList"></div>
+
+    <div id="cartSummaryDiv" style="display:none;">
+      <div class="cart-summary">
+        <div class="summary-row">
+          <span>總數量：</span>
+          <span id="totalQty">0</span>
+        </div>
+        <div class="summary-row summary-total">
+          <span>總金額：</span>
+          <span id="totalPrice">$0</span>
+        </div>
+      </div>
+
+      <hr>
+
+      <label>姓名代號 *<small>（6位數字）</small></label>
+      <input id="cartCode" type="text" maxlength="6" placeholder="請輸入6位數字姓名代號">
+
+      <label>訂購人姓名 *<small>（可只填姓氏）</small></label>
+      <input id="cartName" type="text" placeholder="請輸入姓名">
+
+      <label>聯絡電話 *<small>（分機或手機號碼）</small></label>
+      <input id="cartPhone" type="text" placeholder="請輸入電話">
+
+      <div id="cartErrorMessage" class="error-message"></div>
+
+      <button class="btn" id="submitCartBtn" onclick="submitCart()">送出訂單</button>
+    </div>
+  </div>
+
+  <!-- 我的訂單 -->
+  <div id="myOrdersPage" class="page">
+    <h3>🔎 查詢訂單</h3>
+    <label>姓名代號</label>
+    <input id="queryCode" type="text" maxlength="6" placeholder="請輸入姓名代號">
+    <button class="btn" id="queryOrderBtn" onclick="loadMyOrders()">查詢</button>
+    <div id="ordersResult"></div>
+  </div>
+
+  <!-- 本週菜單（顯示最新發布的菜單圖） -->
+  <div id="weekMenuPage" class="page">
+    <h3>📋 本週菜單</h3>
+    <div id="wmStatus" class="loading">載入中...</div>
+    <div id="wmBody" style="display:none;">
+      <div class="wm-meta" id="wmMeta"></div>
+      <div class="wm-sub" id="wmSub"></div>
+      <div id="wmStale" class="st-warn"></div>
+      <div class="wm-actions">
+        <button class="btn" onclick="wmDownload()">⬇️ 下載菜單圖</button>
+        <button class="btn btn-secondary" onclick="wmToggleZoom()">🔍 放大／縮小</button>
+      </div>
+      <div class="wm-wrap" id="wmWrap"><div class="wm-loading" id="wmLoading">圖片載入中…</div><img id="wmImg" alt="本週菜單"></div>
+      <div class="st-hint">若無法下載，請長按（或按右鍵）圖片另存新檔。</div>
+    </div>
+  </div>
+
+  <!-- 自訂提示框 -->
+  <div id="alertModal">
+    <div class="alert-content">
+      <p id="alertMessage"></p>
+      <button class="alert-btn" onclick="closeAlert()">確定</button>
+    </div>
+  </div>
+
+  <!-- 確認對話框 -->
+  <div id="confirmModal" style="display: none;">
+    <div class="alert-content">
+      <p id="confirmMessage"></p>
+      <div style="display: flex; gap: 12px; margin-top: 24px;">
+        <button class="alert-btn btn-secondary" onclick="closeConfirm(false)" style="flex: 1;">取消</button>
+        <button class="alert-btn" onclick="closeConfirm(true)" style="flex: 1;">確定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 餐點彈窗 -->
+  <div id="orderModal" onclick="if(event.target === this) closeForm();">
+    <div class="modal-content">
+      <h3 id="mealTitle"></h3>
+
+      <!-- 餐點選擇器（僅在編輯時顯示） -->
+      <div id="mealSelectContainer" style="display:none;">
+        <label>餐點名稱 *</label>
+        <select id="mealNameSelect" onchange="onMealNameChange()">
+          <option value="">請選擇餐點名稱</option>
+        </select>
+      </div>
+
+      <label>內用/外帶 *</label>
+      <select id="dineOption">
+        <option value="">請選擇</option>
+        <option value="內用">內用</option>
+        <option value="外帶">外帶</option>
+      </select>
+
+      <label>數量 *</label>
+      <select id="quantity">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+        <option value="17">17</option>
+        <option value="18">18</option>
+        <option value="19">19</option>
+        <option value="20">20</option>
+      </select>
+
+      <label>備註</label>
+      <textarea id="note" placeholder="例如：半飯" style="height: 80px; overflow-y: scroll; resize: none;"></textarea>
+
+      <div id="formErrorMessage" class="error-message"></div>
+
+      <button id="submitBtn" class="btn" onclick="addToCart()">新增至購物車</button>
+      <button class="btn btn-secondary" onclick="closeForm()">取消</button>
+    </div>
+  </div>
+
+  <script>
+    // ========================================
+    // 全域變數
+    // ========================================
+
+    let App = {
+      cart: [],
+      settings: {},
+      todayMenu: [],
+      currentMeal: null,
+      editingIndex: -1,
+      todayInfo: null,
+      settingsReady: false,   // 系統設定是否已經取得（快取或伺服器）；沒取得前不顯示任何依設定判斷的文字
+      menuReady: false,       // 今日菜單是否已經從伺服器取得
+      menuLoading: false,     // 今日菜單正在向伺服器取得中
+      menuError: false        // 今日菜單取得失敗
+    };
+
+    // ========================================
+    // 初始化
+    // ========================================
+
+    // 使用 DOMContentLoaded 而非 window.onload 以加快初始化速度
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('===== 系統初始化開始 =====');
+
+      // 立即顯示首頁
+      showPage('homePage');
+
+      if (window.__API_MODE && !GAS_URL) {
+        showAlert('⚠️ 尚未設定後端網址\n\n請開啟 index.html，把 Apps Script 部署後的網址（結尾是 /exec）貼到最前面的 GAS_URL。');
+      }
+
+      // 其他初始化操作
+      loadSettings();  // loadSettings 會在成功後自動更新首頁狀態和載入菜單
+      renderCart();
+
+      // 每分鐘更新一次首頁狀態（確保時間限制即時更新）
+      setInterval(updateHomePageStatus, 60000);
+
+      // 添加表單欄位事件監聽器，當用戶修正錯誤時移除錯誤樣式
+      document.getElementById('dineOption').addEventListener('change', function() {
+        if (this.value.trim() !== '') {
+          this.classList.remove('error');
+          updateFormErrorMessage();
+        }
+      });
+
+      document.getElementById('mealNameSelect').addEventListener('change', function() {
+        if (this.value !== '') {
+          this.classList.remove('error');
+          updateFormErrorMessage();
+        }
+      });
+
+      // 購物車頁面欄位事件監聽器
+      document.getElementById('cartCode').addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+          this.classList.remove('error');
+          updateCartErrorMessage();
+        }
+      });
+
+      document.getElementById('cartName').addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+          this.classList.remove('error');
+          updateCartErrorMessage();
+        }
+      });
+
+      document.getElementById('cartPhone').addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+          this.classList.remove('error');
+          updateCartErrorMessage();
+        }
+      });
+    });
+
+    // 更新表單錯誤訊息
+    function updateFormErrorMessage() {
+      const errorElements = document.querySelectorAll('#orderModal .error');
+      if (errorElements.length === 0) {
+        document.getElementById('formErrorMessage').classList.remove('show');
+        document.getElementById('formErrorMessage').textContent = '';
+      }
+    }
+
+    // 更新購物車錯誤訊息
+    function updateCartErrorMessage() {
+      const errorElements = document.querySelectorAll('#cartPage .error');
+      if (errorElements.length === 0) {
+        document.getElementById('cartErrorMessage').classList.remove('show');
+        document.getElementById('cartErrorMessage').textContent = '';
+      }
+    }
+
+    // ========================================
+    // 系統設定與初始化
+    // ========================================
+
+    function loadSettings() {
+      console.log('開始載入系統設定...');
+
+      // 先嘗試從快取載入（即時顯示）
+      try {
+        const cachedSettings = localStorage.getItem('appSettings');
+        if (cachedSettings) {
+          const cached = JSON.parse(cachedSettings);
+          // 檢查快取是否在當天內（避免使用過期設定）
+          const cacheDate = cached._cacheDate || '';
+          const today = new Date().toISOString().split('T')[0];
+
+          if (cacheDate === today) {
+            console.log('使用快取設定（當日有效）:', cached);
+            App.settings = cached;
+            App.settingsReady = true;
+            updateNoticeBox();
+            updateHomePageStatus(); // 立即使用快取更新（< 0.1秒）
+          }
+        }
+      } catch (e) {
+        console.warn('載入快取設定失敗:', e);
+      }
+
+      // 背景載入最新設定
+      google.script.run
+        .withSuccessHandler(function(settings) {
+          console.log('系統設定載入成功:', settings);
+
+          // 儲存到快取
+          try {
+            const settingsWithCache = Object.assign({}, settings || {}, {
+              _cacheDate: new Date().toISOString().split('T')[0]
+            });
+            localStorage.setItem('appSettings', JSON.stringify(settingsWithCache));
+          } catch (e) {
+            console.warn('儲存設定快取失敗:', e);
+          }
+
+          App.settings = settings || {};
+          App.settingsReady = true;
+          updateNoticeBox();
+          updateHomePageStatus(); // 用最新設定更新
+          // 設定載入後載入菜單，確保時間檢查正確
+          console.log('準備載入今日菜單...');
+          loadTodayMenu();
+        })
+        .withFailureHandler(function(error) {
+          console.error('系統設定載入失敗:', error);
+
+          // 如果沒有快取，使用預設值
+          App.settingsReady = true;
+          if (!App.settings || Object.keys(App.settings).length === 0) {
+            App.settings = {};
+            updateNoticeBox();
+            updateHomePageStatus();
+          }
+
+          handleError(error);
+          // 即使設定載入失敗，仍載入菜單（使用預設設定）
+          console.log('設定載入失敗，仍載入菜單（使用預設設定）');
+          loadTodayMenu();
+        })
+        .getSettings();
+    }
+
+    function updateNoticeBox() {
+      const s = App.settings || {};
+      document.getElementById('orderTimeNotice').innerText =
+        `上班日 ${s['訂餐開始時間'] || '00:00'} 至 ${s['訂餐結束時間'] || '10:30'}`;
+      document.getElementById('pickupTimeNotice').innerText = `${s['取餐時間'] || '11:40'}起`;
+      document.getElementById('servicePhoneNotice').innerText = `如有其他特殊需求或問題，請撥打${s['服務專線'] || '(02)2366-6433'}`;
+    }
+
+    // 重新載入設定（用於更新提示框）
+    function reloadSettings() {
+      google.script.run
+        .withSuccessHandler(function(settings) {
+          // 更新快取
+          try {
+            const settingsWithCache = Object.assign({}, settings || {}, {
+              _cacheDate: new Date().toISOString().split('T')[0]
+            });
+            localStorage.setItem('appSettings', JSON.stringify(settingsWithCache));
+          } catch (e) {
+            console.warn('儲存設定快取失敗:', e);
+          }
+
+          App.settings = settings || {};
+          App.settingsReady = true;
+          updateNoticeBox();
+          updateHomePageStatus(); // 更新首頁訂餐狀態
+        })
+        .withFailureHandler(function(error) {
+          App.settings = {};
+          App.settingsReady = true;
+          updateNoticeBox();
+          updateHomePageStatus(); // 更新首頁訂餐狀態
+          handleError(error);
+        })
+        .getSettings();
+    }
+
+    // 檢查訂餐時間窗口（週末、開始/結束時間；不含休息日）
+    function checkTimeWindow() {
+      const now = new Date();
+      const currentDay = now.getDay(); // 0=週日, 1=週一, ..., 6=週六
+
+      // 檢查是否為上班日（週一至週五）
+      if (currentDay === 0 || currentDay === 6) {
+        return { allowed: false, reason: 'weekend' };
+      }
+
+      const s = App.settings || {};
+      const startTime = s['訂餐開始時間'] || '00:00';
+      const endTime = s['訂餐結束時間'] || '10:30';
+
+      // 將時間轉換為分鐘數以便比較
+      const timeToMinutes = (timeStr) => {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+      };
+
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+      const startMinutes = timeToMinutes(startTime);
+      const endMinutes = timeToMinutes(endTime);
+
+      if (currentMinutes < startMinutes) {
+        return { allowed: false, reason: 'before' };
+      }
+      if (currentMinutes > endMinutes) {
+        return { allowed: false, reason: 'after' };
+      }
+
+      return { allowed: true };
+    }
+
+    // 檢查是否可訂餐（時間窗口 + 今日是否為休息日）
+    function isOrderingTime() {
+      const windowStatus = checkTimeWindow();
+      if (!windowStatus.allowed) return windowStatus;
+
+      const info = App.todayInfo;
+      if (info && info.status === 'closed') {
+        return {
+          allowed: false,
+          reason: info.reason === 'holiday' ? 'holiday' : 'weekend',
+          note: info.note || ''
+        };
+      }
+
+      return { allowed: true };
+    }
+
+    function loadTodayMenu() {
+      console.log('開始載入今日菜單...');
+
+      // 先檢查時間窗口：非訂餐時間直接顯示提醒，不必向後端查詢
+      const windowStatus = checkTimeWindow();
+      if (!windowStatus.allowed) {
+        console.log('非訂餐時間，直接顯示提醒');
+        App.todayMenu = [];
+        App.menuReady = false;      // 菜單其實還沒載入；之後到了訂餐時間再進訂餐頁時會補載
+        App.menuError = false;
+        renderMealList();
+        return;
+      }
+
+      App.menuLoading = true;
+      google.script.run
+        .withSuccessHandler(function(info) {
+          console.log('今日菜單載入成功:', info);
+          App.menuLoading = false;
+          App.menuReady = true;
+          App.menuError = false;
+          App.todayInfo = info || null;
+          App.todayMenu = (info && info.status === 'open') ? (info.menu || []) : [];
+          renderMealList();
+          updateHomePageStatus(); // 休息日時，首頁訂餐方塊同步顯示「今日休息」
+        })
+        .withFailureHandler(function(error) {
+          console.error('今日菜單載入失敗:', error);
+          App.menuLoading = false;
+          App.menuReady = true;
+          App.menuError = true;     // 載入失敗不能說成「今日無菜單」，改顯示錯誤與重試
+          App.todayInfo = null;
+          App.todayMenu = [];
+          renderMealList();
+        })
+        .getTodayMenuInfo();
+    }
+
+    // 載入失敗後按「重新載入」
+    function retryTodayMenu() {
+      App.menuReady = false;
+      App.menuError = false;
+      renderMealList();      // 先回到「載入中」
+      loadTodayMenu();
+    }
+
+    function renderMealList() {
+      const container = document.getElementById('mealList');
+
+      // 資料還沒回來之前一律顯示「載入中」：避免網路慢時先閃出「今日無菜單」或用預設時間誤判的提醒
+      if (!App.settingsReady || (checkTimeWindow().allowed && !App.menuReady)) {
+        container.innerHTML = '<div class="loading">載入中...</div>';
+        return;
+      }
+
+      console.log('=== renderMealList 執行 ===');
+      console.log('App.settings:', App.settings);
+      console.log('App.todayMenu.length:', App.todayMenu.length);
+
+      // 優先檢查是否在訂餐時間內（在檢查菜單之前）
+      const orderingStatus = isOrderingTime();
+      console.log('訂餐時間檢查結果:', orderingStatus);
+
+      if (!orderingStatus.allowed) {
+        const s = App.settings || {};
+        const startTime = s['訂餐開始時間'] || '00:00';
+        const endTime = s['訂餐結束時間'] || '10:30';
+
+        console.log('非訂餐時間，原因:', orderingStatus.reason);
+        console.log('訂餐時間設定: ' + startTime + ' - ' + endTime);
+
+        let message = '';
+        if (orderingStatus.reason === 'weekend') {
+          message = `
+            <div class="notice-box" style="background: #F5E8E4; border-left-color: #B8654F;">
+              <p><strong>⏰ 目前不在訂餐時間內</strong></p>
+              <p>今天是週末，無法進行訂餐</p>
+              <p>請於上班日的訂餐時間內進行訂餐，謝謝！</p>
+            </div>
+          `;
+        } else if (orderingStatus.reason === 'holiday') {
+          message = `
+            <div class="notice-box" style="background: #F5E8E4; border-left-color: #B8654F;">
+              <p><strong>🌴 今日休息，不開放訂餐</strong></p>
+              ${orderingStatus.note ? `<p>${escapeHtml(orderingStatus.note)}</p>` : ''}
+              <p>請於下一個供餐日的訂餐時間內進行訂餐，謝謝！</p>
+            </div>
+          `;
+        } else if (orderingStatus.reason === 'before') {
+          message = `
+            <div class="notice-box" style="background: #F5F1EB; border-left-color: #C9A882;">
+              <p><strong>⏰ 尚未到訂餐時間</strong></p>
+              <p>請在 ${startTime} 之後開始訂餐，謝謝！</p>
+            </div>
+          `;
+        } else {
+          message = `
+            <div class="notice-box" style="background: #F5E8E4; border-left-color: #B8654F;">
+              <p><strong>⏰ 訂餐時間已結束</strong></p>
+              <p>今日訂餐時間已於 ${endTime} 結束</p>
+              <p>請於明日訂餐時間內進行訂餐，謝謝！</p>
+            </div>
+          `;
+        }
+
+        console.log('設定非訂餐時間提醒訊息');
+        container.innerHTML = message;
+        return;
+      }
+
+      console.log('在訂餐時間內，顯示菜單');
+
+      // 菜單載入失敗：顯示錯誤與重試（不是「今日無菜單」）
+      if (App.menuError) {
+        container.innerHTML = `
+          <div class="notice-box" style="background: #F5E8E4; border-left-color: #B8654F;">
+            <p><strong>⚠️ 菜單載入失敗</strong></p>
+            <p>請確認網路連線後再試一次。</p>
+          </div>
+          <button class="btn" onclick="retryTodayMenu()">重新載入</button>
+        `;
+        return;
+      }
+
+      // 訂餐時間內才檢查菜單並顯示
+      if (App.todayMenu.length === 0) {
+        container.innerHTML = '<div class="empty-state">今日無菜單，請聯絡管理員設定菜單</div>';
+        return;
+      }
+
+      container.innerHTML = App.todayMenu.map((meal, index) => `
+        <div class="meal-card" onclick='openFormByIndex(${index})'>
+          <div>
+            <div class="meal-name">${escapeHtml(meal.name)}</div>
+            <div class="meal-type">${escapeHtml(meal.type)}</div>
+          </div>
+          <div class="meal-price">${escapeHtml(meal.price)}</div>
+        </div>
+      `).join('');
+
+      console.log('已顯示 ' + App.todayMenu.length + ' 個餐點');
+    }
+
+    // ========================================
+    // 首頁導覽功能
+    // ========================================
+
+    // 檢查訂餐時間並更新首頁狀態
+    function updateHomePageStatus() {
+      const statusDiv = document.getElementById('orderTimeStatus');
+      const orderCard = document.getElementById('orderMenuCard');
+
+      // 確保元素存在
+      if (!statusDiv || !orderCard) return;
+
+      // 設定還沒取得時不要用預設時間亂判斷（會閃出「今日已截止」），維持「檢查中」
+      if (!App.settingsReady) {
+        statusDiv.className = 'menu-status pending';
+        statusDiv.textContent = '檢查中...';
+        return;
+      }
+
+      const orderingStatus = isOrderingTime();
+
+      if (!orderingStatus.allowed) {
+        // 非訂餐時間
+        orderCard.classList.add('disabled');
+        statusDiv.className = 'menu-status unavailable';
+
+        if (orderingStatus.reason === 'weekend') {
+          statusDiv.textContent = '⏰ 週末不開放';
+        } else if (orderingStatus.reason === 'holiday') {
+          statusDiv.textContent = '🌴 今日休息';
+        } else if (orderingStatus.reason === 'before') {
+          const s = App.settings || {};
+          const startTime = s['訂餐開始時間'] || '00:00';
+          statusDiv.textContent = `⏰ ${startTime} 後開放`;
+        } else {
+          statusDiv.textContent = '⏰ 今日已截止';
+        }
+      } else {
+        // 訂餐時間內
+        orderCard.classList.remove('disabled');
+        statusDiv.className = 'menu-status available';
+        statusDiv.textContent = '✓ 前往訂餐';
+      }
+    }
+
+    // 導覽到訂購餐點頁面
+    function navigateToOrder() {
+      if (!App.settingsReady) {
+        // 設定還在載入：不用預設時間誤判，先進訂餐頁，頁面會顯示「載入中」，載入完成後依真正的設定顯示
+        showPage('orderPage');
+        return;
+      }
+      const orderingStatus = isOrderingTime();
+
+      if (!orderingStatus.allowed) {
+        // 顯示詳細的時間限制提示
+        const s = App.settings || {};
+        const startTime = s['訂餐開始時間'] || '00:00';
+        const endTime = s['訂餐結束時間'] || '10:30';
+
+        let message = '';
+        if (orderingStatus.reason === 'weekend') {
+          message = '⏰ 週末不開放訂餐\n\n請於上班日的訂餐時間內進行訂餐。';
+        } else if (orderingStatus.reason === 'holiday') {
+          message = '🌴 今日休息，不開放訂餐' + (orderingStatus.note ? '\n\n' + orderingStatus.note : '') + '\n\n請於下一個供餐日進行訂餐。';
+        } else if (orderingStatus.reason === 'before') {
+          message = `⏰ 尚未到訂餐時間\n\n請在 ${startTime} 之後開始訂餐。`;
+        } else {
+          message = `⏰ 訂餐時間已結束\n\n今日訂餐時間已於 ${endTime} 結束\n請於明日訂餐時間內進行訂餐。`;
+        }
+
+        showAlert(message);
+        return;
+      }
+
+      // 訂餐時間內才允許進入
+      showPage('orderPage');
+    }
+
+    // 導覽到訂單查詢
+    function navigateToQuery() {
+      showPage('myOrdersPage');
+    }
+
+
+    // 開啟大量訂餐連結
+    function openBulkOrderLink() {
+      const s = App.settings || {};
+      const link = s['大量訂餐單連結'];
+
+      if (link && link.trim() !== '') {
+        // 在新分頁開啟，避免影響訂餐系統頁面
+        window.open(link, '_blank');
+      } else {
+        showAlert('⚠️ 尚未設定大量訂餐單連結\n\n請聯絡管理員設定連結。');
+      }
+    }
+
+    // ========================================
+    // Header 按鈕控制
+    // ========================================
+
+    // 更新 header 按鈕顯示
+    function updateHeaderButtons(pageId) {
+      const backBtn = document.getElementById('headerBackBtn');
+      const cartBtn = document.getElementById('headerCartBtn');
+
+      // 根據頁面決定按鈕顯示
+      if (pageId === 'homePage') {
+        // 首頁：不顯示任何按鈕
+        backBtn.style.display = 'none';
+        cartBtn.style.display = 'none';
+      } else if (pageId === 'orderPage') {
+        // 訂餐頁：顯示返回和購物車按鈕
+        backBtn.style.display = 'flex';
+        cartBtn.style.display = 'flex';
+      } else if (pageId === 'cartPage') {
+        // 購物車頁：只顯示返回按鈕
+        backBtn.style.display = 'flex';
+        cartBtn.style.display = 'none';
+      } else {
+        // 其他頁面：只顯示返回按鈕
+        backBtn.style.display = 'flex';
+        cartBtn.style.display = 'none';
+      }
+    }
+
+    // Header 返回按鈕動作
+    function headerBackAction() {
+      const currentPage = document.querySelector('.page.active');
+      if (!currentPage) {
+        showPage('homePage');
+        return;
+      }
+
+      const pageId = currentPage.id;
+      if (pageId === 'cartPage') {
+        // 購物車返回訂餐頁面
+        showPage('orderPage');
+      } else {
+        // 其他頁面返回首頁
+        showPage('homePage');
+      }
+    }
+
+    // ========================================
+    // 頁面切換
+    // ========================================
+
+    function showPage(pageId) {
+      console.log('切換到頁面:', pageId);
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+
+      // 更新 header 按鈕顯示
+      updateHeaderButtons(pageId);
+
+      if (pageId === 'homePage') {
+        updateHomePageStatus(); // 更新訂餐時間狀態
+      } else if (pageId === 'orderPage') {
+        console.log('顯示訂餐頁面，準備重新檢查訂餐時間');
+        // 切換到訂餐頁面時重新檢查訂餐時間；菜單還沒載入（例如開頁時還不到訂餐時間）就補載
+        if (App.settingsReady && !App.menuReady && !App.menuLoading && checkTimeWindow().allowed) loadTodayMenu();
+        renderMealList();
+        updateCartSummaryInOrder(); // 更新購物車摘要
+      } else if (pageId === 'cartPage') {
+        renderCart();
+      } else if (pageId === 'weekMenuPage') {
+        loadWeekMenuPage();
+      }
+    }
+
+    // ========================================
+    // 購物車整合功能
+    // ========================================
+
+    // 切換購物車展開/收合
+    let isCartExpanded = false;
+
+    function toggleCartExpand() {
+      isCartExpanded = !isCartExpanded;
+      const content = document.getElementById('cartExpandedContent');
+      const icon = document.getElementById('cartExpandIcon');
+
+      if (isCartExpanded) {
+        content.style.display = 'block';
+        icon.classList.add('expanded');
+      } else {
+        content.style.display = 'none';
+        icon.classList.remove('expanded');
+      }
+    }
+
+    // 更新購物車摘要（在訂購餐點頁面）
+    function updateCartSummaryInOrder() {
+      const summarySection = document.getElementById('cartSummarySection');
+      if (!summarySection) return; // 如果元素不存在則跳過
+
+      const badge = document.getElementById('cartPreviewBadge');
+      const total = document.getElementById('cartPreviewTotal');
+
+      if (App.cart.length === 0) {
+        summarySection.style.display = 'none';
+        return;
+      }
+
+      // 一次性計算總數和總價
+      let totalQty = 0;
+      let totalPrice = 0;
+      for (let i = 0; i < App.cart.length; i++) {
+        totalQty += App.cart[i].qty;
+        totalPrice += App.cart[i].qty * App.cart[i].price;
+      }
+
+      summarySection.style.display = 'block';
+      badge.textContent = `(${totalQty} 份)`;
+      total.textContent = `$${totalPrice}`;
+
+      // 更新展開內容
+      renderCartInOrder();
+    }
+
+    // 在訂購餐點頁面渲染購物車列表
+    function renderCartInOrder() {
+      const list = document.getElementById('cartListInOrder');
+
+      if (App.cart.length === 0) {
+        list.innerHTML = '<div class="empty-state">購物車是空的</div>';
+        return;
+      }
+
+      list.innerHTML = App.cart.map((c, i) => `
+        <div class="cart-item" style="margin-bottom: 12px;">
+          <div class="item-header">
+            <div class="item-name">${escapeHtml(c.mealName)}</div>
+            <div class="item-price">$${c.price * c.qty}</div>
+          </div>
+          <div class="item-details">${escapeHtml(c.mealType)} | ${escapeHtml(c.dine)} x ${escapeHtml(c.qty)}</div>
+          ${c.note ? `<div class="item-details">備註：${escapeHtml(c.note)}</div>` : ''}
+          <div class="item-actions">
+            <button onclick="editItem(${i})" class="btn-success">編輯</button>
+            <button onclick="removeItem(${i})" class="btn-danger">刪除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 前往結帳（切換到購物車頁面）
+    function proceedToCheckout() {
+      showPage('cartPage');
+    }
+
+    // ========================================
+    // 訂餐功能
+    // ========================================
+
+    // 通過索引打開餐點表單（避免 JSON.stringify 在 HTML 中的問題）
+    function openFormByIndex(index) {
+      if (index < 0 || index >= App.todayMenu.length) {
+        showAlert('⚠️ 餐點資料錯誤');
+        return;
+      }
+      const meal = App.todayMenu[index];
+      console.log('通過索引 ' + index + ' 打開餐點:', meal);
+      console.log('  - type: ' + meal.type);
+      console.log('  - name: ' + meal.name);
+      openForm(meal);
+    }
+
+    function openForm(meal) {
+      // 檢查是否在訂餐時間內
+      const orderingStatus = isOrderingTime();
+      if (!orderingStatus.allowed) {
+        showAlert('⏰ 目前不在訂餐時間內，無法進行訂餐');
+        return;
+      }
+
+      App.currentMeal = meal;
+      App.editingIndex = -1;
+
+      console.log('openForm 接收到的餐點:', meal);
+      console.log('  - type: ' + meal.type);
+      console.log('  - name: ' + meal.name);
+
+      document.getElementById('mealTitle').innerText = meal.name + ' - ' + meal.price;
+      document.getElementById('mealSelectContainer').style.display = 'none'; // 新增時隱藏餐點選擇器
+      document.getElementById('dineOption').value = '';
+      document.getElementById('quantity').value = '1';
+      document.getElementById('note').value = '';
+      document.getElementById('submitBtn').innerText = '新增至購物車';
+      document.getElementById('submitBtn').onclick = function() { addToCart(); };
+      document.getElementById('orderModal').style.display = 'flex';
+    }
+
+    function closeForm() {
+      document.getElementById('orderModal').style.display = 'none';
+      App.currentMeal = null;
+      App.editingIndex = -1;
+    }
+
+    // 填充餐點選擇器
+    function populateMealNameSelect() {
+      const select = document.getElementById('mealNameSelect');
+      select.innerHTML = '<option value="">請選擇餐點名稱</option>';
+
+      App.todayMenu.forEach(meal => {
+        const option = document.createElement('option');
+        option.value = meal.name;
+        option.textContent = meal.name + ' - ' + meal.price;
+        option.dataset.type = meal.type;
+        option.dataset.price = meal.price;
+        select.appendChild(option);
+      });
+    }
+
+    // 當餐點選擇器改變時更新當前餐點
+    function onMealNameChange() {
+      const select = document.getElementById('mealNameSelect');
+      const selectedOption = select.options[select.selectedIndex];
+
+      if (selectedOption && selectedOption.value) {
+        const meal = App.todayMenu.find(m => m.name === selectedOption.value);
+        if (meal) {
+          App.currentMeal = {
+            type: meal.type,
+            name: meal.name,
+            price: meal.price
+          };
+          console.log('選擇的餐點已更新:', App.currentMeal);
+        }
+      }
+    }
+
+
+    function addToCart() {
+      // 清除之前的錯誤狀態
+      document.getElementById('formErrorMessage').classList.remove('show');
+      document.getElementById('formErrorMessage').textContent = '';
+      document.getElementById('dineOption').classList.remove('error');
+      document.getElementById('mealNameSelect').classList.remove('error');
+
+      const dine = document.getElementById('dineOption').value.trim();
+      const qty = Number(document.getElementById('quantity').value);
+      const note = document.getElementById('note').value.trim();
+
+      let hasError = false;
+      const errors = [];
+
+      // 檢查是否顯示餐點選擇器（編輯模式）
+      const selectorVisible = document.getElementById('mealSelectContainer').style.display !== 'none';
+      if (selectorVisible) {
+        const selectedMealName = document.getElementById('mealNameSelect').value;
+        if (!selectedMealName) {
+          document.getElementById('mealNameSelect').classList.add('error');
+          errors.push('餐點名稱');
+          hasError = true;
+        } else {
+          // 確保 App.currentMeal 已更新為選擇的餐點
+          const selectedMeal = App.todayMenu.find(m => m.name === selectedMealName);
+          if (selectedMeal) {
+            App.currentMeal = {
+              type: selectedMeal.type,
+              name: selectedMeal.name,
+              price: selectedMeal.price
+            };
+          }
+        }
+      }
+
+      if (!dine) {
+        document.getElementById('dineOption').classList.add('error');
+        errors.push('內用/外帶');
+        hasError = true;
+      }
+
+      if (qty < 1) {
+        errors.push('數量');
+        hasError = true;
+      }
+
+      if (hasError) {
+        const errorMsg = document.getElementById('formErrorMessage');
+        errorMsg.textContent = `⚠️ 請填寫必填欄位：${errors.join('、')}`;
+        errorMsg.classList.add('show');
+        return;
+      }
+
+      // 計算總數量
+      let totalQty = App.cart.reduce((sum, i, idx) => {
+        if (App.editingIndex >= 0 && idx === App.editingIndex) return sum;
+        return sum + i.qty;
+      }, 0) + qty;
+
+      const maxQty = (App.settings && Number(App.settings['訂單數量上限'])) || 20;
+      if (totalQty > maxQty) {
+        showAlert(`⚠️ 購物車總數量不可超過 ${maxQty} 份`);
+        return;
+      }
+
+      // 移除價格中的 $ 符號並轉換為數字
+      const priceStr = String(App.currentMeal.price).replace(/\$/g, '').trim();
+      const priceNum = Number(priceStr) || 0;
+
+      // 調試：記錄當前餐點信息
+      console.log('當前餐點信息:', App.currentMeal);
+      console.log('餐點類型 (type):', App.currentMeal.type);
+      console.log('餐點名稱 (name):', App.currentMeal.name);
+
+      const item = {
+        mealType: App.currentMeal.type,  // 確保使用餐點類型（如「D麵食」）
+        mealName: App.currentMeal.name,  // 餐點名稱（如「義大利麵」）
+        price: priceNum,
+        dine: dine,
+        qty: qty,
+        note: note
+      };
+
+      // 調試：記錄要添加到購物車的項目
+      console.log('添加到購物車的項目:', item);
+      console.log('項目的 mealType:', item.mealType);
+
+      if (App.editingIndex >= 0) {
+        App.cart[App.editingIndex] = item;
+        showAlert('✅ 已更新餐點');
+      } else {
+        App.cart.push(item);
+        showAlert('✅ 已新增餐點至購物車');
+      }
+
+      closeForm();
+      renderCart(); // renderCart() 會自動調用 updateCartBadge() 和 updateCartSummaryInOrder()
+    }
+
+    // ========================================
+    // 購物車功能
+    // ========================================
+
+    function renderCart() {
+      const list = document.getElementById('cartList');
+      const summaryDiv = document.getElementById('cartSummaryDiv');
+
+      if (App.cart.length === 0) {
+        list.innerHTML = '<div class="empty-state">購物車是空的</div>';
+        summaryDiv.style.display = 'none';
+        updateCartBadge(); // 確保清空購物車時也更新 badge
+        updateCartSummaryInOrder(); // 同步更新
+        return;
+      }
+
+      // 一次性計算總數和總價
+      let totalQty = 0;
+      let totalPrice = 0;
+      const cartHTML = App.cart.map((c, i) => {
+        totalQty += c.qty;
+        totalPrice += c.qty * c.price;
+        return `
+        <div class="cart-item">
+          <div class="item-header">
+            <div class="item-name">${escapeHtml(c.mealName)}</div>
+            <div class="item-price">${c.price * c.qty}</div>
+          </div>
+          <div class="item-details">${escapeHtml(c.mealType)} | ${escapeHtml(c.dine)} x ${escapeHtml(c.qty)}</div>
+          ${c.note ? `<div class="item-details">備註：${escapeHtml(c.note)}</div>` : ''}
+          <div class="item-actions">
+            <button onclick="editItem(${i})" class="btn-success">編輯</button>
+            <button onclick="removeItem(${i})" class="btn-danger">刪除</button>
+          </div>
+        </div>
+      `;
+      }).join('');
+
+      list.innerHTML = cartHTML;
+      document.getElementById('totalQty').innerText = totalQty + ' 份';
+      document.getElementById('totalPrice').innerText = totalPrice;
+      summaryDiv.style.display = 'block';
+      updateCartBadge();
+      updateCartSummaryInOrder(); // 同步更新訂餐頁的購物車摘要
+    }
+
+    function updateCartBadge() {
+      // 一次性計算總數
+      let count = 0;
+      for (let i = 0; i < App.cart.length; i++) {
+        count += App.cart[i].qty;
+      }
+
+      // 更新 header 購物車按鈕徽章
+      const headerBadge = document.getElementById('headerCartBadge');
+      if (headerBadge) {
+        if (count > 0) {
+          headerBadge.textContent = count;
+          headerBadge.style.display = 'block';
+        } else {
+          headerBadge.style.display = 'none';
+        }
+      }
+    }
+
+    function removeItem(i) {
+      const item = App.cart[i];
+      const message = `🗑️ 確定要從購物車移除這個餐點嗎？\n\n【${item.mealName}】\n數量：${item.qty} 份`;
+      showConfirm(message, function(result) {
+        if (result) {
+          App.cart.splice(i, 1);
+          renderCart();
+          showAlert('✅ 已從購物車移除餐點');
+        }
+      });
+    }
+
+    function editItem(i) {
+      App.editingIndex = i;
+      const item = App.cart[i];
+
+      App.currentMeal = {
+        type: item.mealType,
+        name: item.mealName,
+        price: item.price
+      };
+
+      document.getElementById('mealTitle').innerText = '編輯餐點';
+
+      // 顯示並填充餐點選擇器
+      populateMealNameSelect();
+      document.getElementById('mealSelectContainer').style.display = 'block';
+      document.getElementById('mealNameSelect').value = item.mealName;
+
+      document.getElementById('dineOption').value = item.dine;
+      document.getElementById('quantity').value = String(item.qty);
+      document.getElementById('note').value = item.note;
+      document.getElementById('submitBtn').innerText = '確認修改';
+      document.getElementById('submitBtn').onclick = function() { addToCart(); };
+      document.getElementById('orderModal').style.display = 'flex';
+    }
+
+    // ========================================
+    // 訂單送出
+    // ========================================
+
+    let isSubmitting = false;
+
+    function submitCart() {
+      if (isSubmitting) return;
+
+      // 清除之前的錯誤狀態
+      document.getElementById('cartErrorMessage').classList.remove('show');
+      document.getElementById('cartErrorMessage').textContent = '';
+      document.getElementById('cartCode').classList.remove('error');
+      document.getElementById('cartName').classList.remove('error');
+      document.getElementById('cartPhone').classList.remove('error');
+
+      // 檢查是否在訂餐時間內
+      const orderingStatus = isOrderingTime();
+      if (!orderingStatus.allowed) {
+        showAlert('⏰ 目前不在訂餐時間內，無法送出訂單');
+        return;
+      }
+
+      if (App.cart.length === 0) {
+        showAlert('購物車是空的！');
+        return;
+      }
+
+      const code = document.getElementById('cartCode').value.trim();
+      const name = document.getElementById('cartName').value.trim();
+      const phone = document.getElementById('cartPhone').value.trim();
+
+      let hasError = false;
+      const errors = [];
+
+      if (!code) {
+        document.getElementById('cartCode').classList.add('error');
+        errors.push('姓名代號');
+        hasError = true;
+      } else if (!/^\d{6}$/.test(code)) {
+        document.getElementById('cartCode').classList.add('error');
+        const errorMsg = document.getElementById('cartErrorMessage');
+        errorMsg.textContent = '⚠️ 姓名代號必須為6位數字';
+        errorMsg.classList.add('show');
+        return;
+      }
+
+      if (!name) {
+        document.getElementById('cartName').classList.add('error');
+        errors.push('訂購人姓名');
+        hasError = true;
+      }
+
+      if (!phone) {
+        document.getElementById('cartPhone').classList.add('error');
+        errors.push('聯絡電話');
+        hasError = true;
+      }
+
+      if (hasError) {
+        const errorMsg = document.getElementById('cartErrorMessage');
+        errorMsg.textContent = `⚠️ 請填寫必填欄位：${errors.join('、')}`;
+        errorMsg.classList.add('show');
+        return;
+      }
+
+      const order = {
+        code: code,
+        name: name,
+        phone: phone,
+        items: App.cart
+      };
+      // 同一份訂單重送（網路不穩、重按）只會訂一次：同樣內容沿用同一個識別碼，後端認得就不會重複寫入
+      const sig = JSON.stringify(order);
+      if (!App.pendingOrder || App.pendingOrder.sig !== sig) {
+        App.pendingOrder = { sig: sig, id: 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10) };
+      }
+      order.requestId = App.pendingOrder.id;
+
+      // 記錄訂單數據（用於調試）
+      console.log('提交訂單:', order);
+      console.log('購物車項目:', order.items);
+
+      isSubmitting = true;
+      const btn = document.getElementById('submitCartBtn');
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      google.script.run
+        .withSuccessHandler(function(msg) {
+          isSubmitting = false;
+          btn.classList.remove('loading');
+          btn.disabled = false;
+          App.pendingOrder = null;                    // 後端已經明確回覆（成功或被拒絕），下一次是新訂單
+
+          showAlert(msg);
+          if (msg.includes('✅')) {
+            App.cart = [];
+            renderCart(); // renderCart() 會自動調用 updateCartBadge()
+            document.getElementById('cartCode').value = '';
+            document.getElementById('cartName').value = '';
+            document.getElementById('cartPhone').value = '';
+            showPage('homePage');
+          }
+        })
+        .withFailureHandler(function(err) {
+          isSubmitting = false;
+          btn.classList.remove('loading');
+          btn.disabled = false;
+          if (err && err.code === 'NETWORK') {
+            // 不確定後端有沒有收到：保留識別碼，再按一次送出不會重複訂餐
+            showAlert('⚠️ 網路不穩，無法確認訂單是否送出。\n\n請再按一次「確認訂購」：如果剛剛已經成功，不會重複訂餐。\n也可以到「查詢訂單」確認。');
+          } else {
+            showAlert('❌ 錯誤：' + (err.message || err));
+          }
+          console.error('提交訂單失敗:', err);
+        })
+        .createBooking(order);
+    }
+
+    // ========================================
+    // 查詢訂單
+    // ========================================
+
+    let isLoadingOrders = false;
+
+    function loadMyOrders() {
+      if (isLoadingOrders) return;
+
+      const code = document.getElementById('queryCode').value.trim();
+      if (!code) {
+        showAlert('請輸入姓名代號');
+        return;
+      }
+
+      if (!/^\d{6}$/.test(code)) {
+        showAlert('⚠️ 姓名代號必須為6位數字');
+        return;
+      }
+
+      isLoadingOrders = true;
+      const btn = document.getElementById('queryOrderBtn');
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      const resultDiv = document.getElementById('ordersResult');
+      resultDiv.innerHTML = '<div class="loading">查詢中...</div>';
+
+      google.script.run
+        .withSuccessHandler(function(orders) {
+          isLoadingOrders = false;
+          btn.classList.remove('loading');
+          btn.disabled = false;
+          App.ordersCode = code;                       // 修改／刪除時要一起送給後端核對是不是本人的訂單
+          App.orderRows = {};
+          (orders || []).forEach(function (o) { App.orderRows[o.rowIndex] = o; });
+          renderOrders(orders || [], code);
+        })
+        .withFailureHandler(function(err) {
+          isLoadingOrders = false;
+          btn.classList.remove('loading');
+          btn.disabled = false;
+          handleError(err);
+        })
+        .getMyOrders(code);
+    }
+
+    function renderOrders(orders) {
+      const container = document.getElementById('ordersResult');
+
+      if (orders.length === 0) {
+        container.innerHTML = '<div class="empty-state">❌無查詢結果</div>';
+        return;
+      }
+
+      // 檢查是否在訂餐時間內
+      const orderingStatus = isOrderingTime();
+      const canEdit = orderingStatus.allowed;
+
+      // 依流水號分組
+      const groupedOrders = {};
+      orders.forEach(o => {
+        if (!groupedOrders[o.seq]) {
+          groupedOrders[o.seq] = {
+            seq: o.seq,
+            time: o.time,
+            items: []
+          };
+        }
+        groupedOrders[o.seq].items.push(o);
+      });
+
+      // 為每個取餐編號建立獨立的方框
+      let html = '';
+      Object.values(groupedOrders).forEach(group => {
+        let total = 0;
+        html += `
+          <div class="cart-summary" style="margin-bottom: 16px;">
+            <div class="summary-row"><strong>取餐編號：</strong>${escapeHtml(group.seq)}</div>
+            <div class="summary-row"><strong>訂餐時間：</strong>${escapeHtml(group.time)}</div>
+            <hr>`;
+
+        group.items.forEach(o => {
+          // 使用後端返回的價格，如果沒有則嘗試從前端菜單查找
+          let price = o.price || getPrice(o.meal);
+          // 確保價格是數字格式
+          if (typeof price === 'string') {
+            price = Number(String(price).replace(/\$/g, '').trim()) || 0;
+          }
+          price = Number(price) || 0;
+          const qty = Number(o.qty) || 0;
+          const subtotal = qty * price;
+          total += subtotal;
+
+          html += `
+            <div class="cart-item" style="margin-bottom: 10px;">
+              <div class="item-header">
+                <div class="item-name">${escapeHtml(o.meal)}</div>
+                <div class="item-price">$${subtotal}</div>
+              </div>
+              <div class="item-details">${escapeHtml(o.dine)} x ${escapeHtml(o.qty)}${o.note ? ` | 備註：${escapeHtml(o.note)}` : ''}</div>
+              ${canEdit ? `
+                <div class="item-actions">
+                  <button onclick="editOrderRow(${Number(o.rowIndex)})" class="btn-success">修改</button>
+                  <button onclick="deleteOrderItem(${Number(o.rowIndex)})" class="btn-danger">刪除</button>
+                </div>
+              ` : `
+                <div style="font-size: 18px; color: #999; margin-top: 8px;">⏰ 已超過訂餐時間，無法修改</div>
+              `}
+            </div>`;
+        });
+
+        html += `
+            <div class="summary-row summary-total">
+              <span>小計：</span>
+              <span>$${total}</span>
+            </div>
+          </div>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function getPrice(mealName) {
+      // 從今日菜單中根據餐點名稱查找價格
+      const meal = App.todayMenu.find(m => m.name === mealName || m.type === mealName);
+      if (!meal) {
+        // 如果找不到，嘗試從菜單中模糊匹配
+        const fuzzyMeal = App.todayMenu.find(m =>
+          mealName.includes(m.type) || mealName.includes(m.name)
+        );
+        if (fuzzyMeal) {
+          const priceStr = String(fuzzyMeal.price).replace(/\$/g, '').trim();
+          return Number(priceStr) || 0;
+        }
+        // 如果還是找不到，返回 0（可能是舊的菜單資料）
+        return 0;
+      }
+
+      // 移除價格中的 $ 符號並轉換為數字
+      const priceStr = String(meal.price).replace(/\$/g, '').trim();
+      return Number(priceStr) || 0;
+    }
+
+    function escapeQuotes(str) {
+      return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    // 從剛查到的訂單清單取資料（不把訂單文字塞進 onclick，避免備註裡的特殊字元被當成程式執行）
+    function editOrderRow(rowIndex) {
+      const o = (App.orderRows || {})[rowIndex];
+      if (!o) { showAlert('⚠️ 找不到這筆訂單，請重新查詢'); return; }
+      editOrder(o.rowIndex, o.meal, o.dine, o.qty, o.note || '');
+    }
+
+    function editOrder(rowIndex, meal, dine, qty, note) {
+      // 開啟修改對話框
+      App.currentMeal = { name: meal, price: getPrice(meal), type: '' };
+      App.editingOrderRowIndex = rowIndex;
+
+      document.getElementById('mealTitle').innerText = '修改訂單';
+
+      // 顯示並填充餐點選擇器
+      populateMealNameSelect();
+      document.getElementById('mealSelectContainer').style.display = 'block';
+      document.getElementById('mealNameSelect').value = meal;
+
+      document.getElementById('dineOption').value = dine;
+      document.getElementById('quantity').value = String(qty);
+      document.getElementById('note').value = note;
+      document.getElementById('submitBtn').innerText = '確認修改';
+      document.getElementById('submitBtn').onclick = function() { updateOrderItem(); };
+      document.getElementById('orderModal').style.display = 'flex';
+    }
+
+    function updateOrderItem() {
+      const dine = document.getElementById('dineOption').value.trim();
+      const qty = Number(document.getElementById('quantity').value);
+      const note = document.getElementById('note').value.trim();
+
+      // 檢查是否顯示餐點選擇器（編輯模式）
+      const selectorVisible = document.getElementById('mealSelectContainer').style.display !== 'none';
+      if (selectorVisible) {
+        const selectedMealName = document.getElementById('mealNameSelect').value;
+        if (!selectedMealName) {
+          showAlert('⚠️ 請選擇餐點名稱');
+          return;
+        }
+        // 確保 App.currentMeal 已更新為選擇的餐點
+        const selectedMeal = App.todayMenu.find(m => m.name === selectedMealName);
+        if (selectedMeal) {
+          App.currentMeal = {
+            type: selectedMeal.type,
+            name: selectedMeal.name,
+            price: selectedMeal.price
+          };
+        }
+      }
+
+      if (!dine || qty < 1) {
+        showAlert('⚠️ 請確認內用/外帶、數量');
+        return;
+      }
+
+      const updatedData = {
+        meal: App.currentMeal.name,
+        dine: dine,
+        qty: qty,
+        note: note
+      };
+
+      google.script.run
+        .withSuccessHandler(function(msg) {
+          showAlert(msg);
+          if (msg.includes('✅')) {
+            closeForm();
+            // 重新載入訂單
+            loadMyOrders();
+          }
+        })
+        .withFailureHandler(function(err) {
+          showAlert('❌ 錯誤：' + (err.message || err));
+        })
+        .updateOrder(App.editingOrderRowIndex, updatedData, App.ordersCode);
+    }
+
+    function deleteOrderItem(rowIndex) {
+      showConfirm('🗑️ 確定要刪除這筆訂單嗎？\n\n刪除後將無法恢復。', function(result) {
+        if (!result) return;
+
+        google.script.run
+          .withSuccessHandler(function(msg) {
+            showAlert(msg);
+            if (msg.includes('✅')) {
+              // 重新載入訂單
+              loadMyOrders();
+            }
+          })
+          .withFailureHandler(function(err) {
+            showAlert('❌ 錯誤：' + (err.message || err));
+          })
+          .deleteOrder(rowIndex, App.ordersCode);
+      });
+    }
+
+    // ========================================
+    // 共用小工具
+    // ========================================
+
+    // HTML 轉義函數
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function addDaysYmd(ymd, n) {
+      const p = ymd.split('-').map(Number);
+      const d = new Date(Date.UTC(p[0], p[1] - 1, p[2] + n));
+      const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+      const dd = String(d.getUTCDate()).padStart(2, '0');
+      return d.getUTCFullYear() + '-' + mm + '-' + dd;
+    }
+
+    function formatMD(ymd) {
+      if (!ymd) return '';
+      const p = ymd.split('-');
+      return Number(p[1]) + '/' + Number(p[2]);
+    }
+
+    // ========================================
+    // 本週菜單（顯示最新發布的菜單圖）
+    // ----------------------------------------
+    // 最快的路徑：伺服器開頁面時就把「最新發布資訊」寫進 PUBLISHED_BOOT，
+    // 點進「本週菜單」時不必等任何伺服器呼叫，瀏覽器直接從 Google 圖片伺服器載入圖片。
+    // 沿途自動退回：lh3 連結 → drive 縮圖連結 → 由 Apps Script 傳圖（較慢，有本機快取）
+    // ========================================
+    const PUBLISHED_BOOT = /*__PUBLISHED_META__*/null;
+    const WM_CACHE_KEY = 'cafeteriaWeekMenuV2';
+    const WM_META_KEY = 'cafeteriaWmMetaV1';
+    // 靜態網頁不是由 Apps Script 開頁，沒有 PUBLISHED_BOOT；改成記住上次的發布資訊，開頁後再到背景確認有沒有新版本
+    function wmMetaCacheRead() {
+      if (!window.__API_MODE) return null;
+      try {
+        const m = JSON.parse(localStorage.getItem(WM_META_KEY) || 'null');
+        return m && m.fileId && !m.empty ? m : null;
+      } catch (e) { return null; }
+    }
+    function wmMetaCacheWrite(m) {
+      if (!window.__API_MODE || !m || m.empty) return;
+      try { localStorage.setItem(WM_META_KEY, JSON.stringify(m)); } catch (e) { /* 存不下來也不影響顯示 */ }
+    }
+    function wmBootCheck() {
+      if (!window.__API_MODE) return;
+      google.script.run
+        .withSuccessHandler(function (m) {
+          if (!m || m.empty) return;
+          const changed = !WM.meta || WM.meta.version !== m.version;
+          wmMetaCacheWrite(m);
+          if (changed) { WM.meta = m; wmPrefetch(); }
+        })
+        .withFailureHandler(function () { /* 背景預載失敗不用提示；點進本週菜單時會再試 */ })
+        .getPublishedMeta();
+    }
+    const WM = { meta: PUBLISHED_BOOT || wmMetaCacheRead(), shown: null, data: null, token: 0, mem: null, imgKey: '', fetch: null, domainBlocked: false };
+
+    function navigateToWeekMenu() { showPage('weekMenuPage'); }
+
+    function wmEl(id) { return document.getElementById(id); }
+
+    // 檔案分享方式：public＝知道連結的任何人；domain＝組織內知道連結的人（靠瀏覽器登入的公司帳號）；none＝不分享
+    function wmAccess(meta) {
+      if (!meta || meta.empty || !meta.fileId) return 'none';
+      if (meta.access) return meta.access;
+      return meta.direct ? 'public' : 'none';
+    }
+
+    // 拿著檔案 ID 組出圖片網址，依序嘗試，哪個載得到就用哪個
+    //  公開：lh3 最快；組織內：drive 縮圖（靠瀏覽器登入的公司帳號）最先試
+    function wmImageUrls(meta) {
+      const id = encodeURIComponent(meta.fileId);
+      const lh3 = 'https://lh3.googleusercontent.com/d/' + id;
+      const thumb = 'https://drive.google.com/thumbnail?id=' + id + '&sz=w1600';
+      const view = 'https://drive.google.com/uc?export=view&id=' + id;
+      return wmAccess(meta) === 'domain' ? [thumb, lh3, view] : [lh3, thumb];
+    }
+
+    const WM_MIN_W = 400;                                  // 菜單圖寬度遠大於此；太小代表拿到的是圖示或錯誤頁
+    const WM_DOMAIN_FAIL_KEY = 'cafeteriaWmDomainFail';
+    const WM_DOMAIN_RETRY_MS = 7 * 24 * 3600 * 1000;       // 這台裝置載不到組織內圖片時，7 天內不再嘗試
+
+    // 這台裝置要不要嘗試用 ID 直接載圖
+    function wmCanDirect(meta) {
+      const a = wmAccess(meta);
+      if (a === 'none') return false;
+      if (a === 'domain') {
+        if (WM.domainBlocked) return false;
+        try {
+          const t = Number(localStorage.getItem(WM_DOMAIN_FAIL_KEY) || 0);
+          if (t && Date.now() - t < WM_DOMAIN_RETRY_MS) return false;
+        } catch (e) { /* 讀不到就當作可以嘗試 */ }
+      }
+      return true;
+    }
+    function wmDomainBlock() {
+      WM.domainBlocked = true;
+      try { localStorage.setItem(WM_DOMAIN_FAIL_KEY, String(Date.now())); } catch (e) { /* 存不下來就只在這次使用中記住 */ }
+    }
+
+    // 首頁載入完成後先把圖片準備好，點進「本週菜單」時幾乎是瞬間顯示
+    //  - 有公開連結：讓瀏覽器先下載圖片（進瀏覽器快取）
+    //  - 沒有公開連結：在背景請 Apps Script 傳圖，存進本機快取（同一版本每台裝置只下載一次）
+    function wmPrefetch() {
+      const m = WM.meta;
+      if (!m || m.empty) return;
+      if (m.fileId && wmCanDirect(m)) {
+        // 試載入：失敗就換下一個網址，全部失敗（組織內分享載不到時會記住）就改在背景請 Apps Script 傳圖
+        wmProbe(wmImageUrls(m), 0, function () {
+          if (wmAccess(m) === 'domain') wmDomainBlock();
+          wmScriptPrefetch(m);
+        });
+        return;
+      }
+      wmScriptPrefetch(m);
+    }
+
+    function wmScriptPrefetch(m) {
+      if (!wmStorageOk()) return;                 // 存不下來就不要白白下載，等使用者點進去再載
+      wmFetchViaScript(m, function () { /* 只是預載 */ });
+    }
+
+    function wmProbe(urls, idx, onFail) {
+      const i = new Image();
+      const next = function () { if (idx + 1 < urls.length) wmProbe(urls, idx + 1, onFail); else onFail(); };
+      i.onload = function () { if (i.naturalWidth < WM_MIN_W) next(); };
+      i.onerror = next;
+      i.src = urls[idx];
+    }
+
+    function wmStorageOk() {
+      try { localStorage.setItem('cafeteriaProbe', '1'); localStorage.removeItem('cafeteriaProbe'); return true; } catch (e) { return false; }
+    }
+
+    // 台北時間今天的日期 yyyy-MM-dd
+    function wmTodayTpe() {
+      try {
+        const p = {};
+        new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Taipei', year: 'numeric', month: '2-digit', day: '2-digit' })
+          .formatToParts(new Date()).forEach(function (x) { p[x.type] = x.value; });
+        return p.year + '-' + p.month + '-' + p.day;
+      } catch (e) { return ''; }
+    }
+
+    function wmCacheRead() {
+      try { const t = localStorage.getItem(WM_CACHE_KEY); return t ? JSON.parse(t) : null; } catch (e) { return null; }
+    }
+    function wmCacheWrite(d) {
+      try { localStorage.setItem(WM_CACHE_KEY, JSON.stringify(d)); }
+      catch (e) { try { localStorage.removeItem(WM_CACHE_KEY); } catch (e2) { /* 儲存空間不足或被瀏覽器封鎖，不影響顯示 */ } }
+    }
+
+    function wmShowMessage(text, isError) {
+      const st = wmEl('wmStatus');
+      st.style.display = 'block';
+      st.className = isError ? 'error-message show' : 'empty-state';
+      st.textContent = text;
+      wmEl('wmBody').style.display = 'none';
+    }
+
+    function loadWeekMenuPage() {
+      const tok = ++WM.token;
+      if (WM.meta && !WM.meta.empty) {
+        wmShow(WM.meta, tok);          // 立刻顯示，不等伺服器
+        wmCheckUpdate(tok);            // 背景確認有沒有更新的版本
+        return;
+      }
+      const st = wmEl('wmStatus');
+      st.style.display = 'block';
+      st.className = 'loading';
+      st.textContent = '載入中...';
+      wmEl('wmBody').style.display = 'none';
+      google.script.run
+        .withSuccessHandler(function (m) {
+          if (tok !== WM.token) return;
+          if (!m || m.empty) { wmShowMessage('目前還沒有發布的菜單，請稍後再來看看。'); return; }
+          WM.meta = m;
+          wmMetaCacheWrite(m);
+          wmShow(m, tok);
+        })
+        .withFailureHandler(function (e) { if (tok === WM.token) wmShowMessage('❌ 載入失敗：' + ((e && e.message) || e), true); })
+        .getPublishedMeta();
+    }
+
+    // 很小的呼叫：只在版本真的變了才換圖
+    function wmCheckUpdate(tok) {
+      google.script.run
+        .withSuccessHandler(function (m) {
+          if (tok !== WM.token || !m || m.empty || !WM.meta || m.version === WM.meta.version) return;
+          WM.meta = m;
+          wmMetaCacheWrite(m);
+          wmShow(m, tok);
+          wmPrefetch();
+        })
+        .withFailureHandler(function () { /* 背景檢查失敗就維持目前顯示的圖片 */ })
+        .getPublishedMeta();
+    }
+
+    function wmShow(meta, tok) {
+      WM.shown = meta;
+      WM.data = null;
+      const fri = addDaysYmd(meta.monday, 4);
+      wmEl('wmStatus').style.display = 'none';
+      wmEl('wmBody').style.display = 'block';
+      wmEl('wmMeta').textContent = formatMD(meta.monday) + ' ～ ' + formatMD(fri) + ' 菜單';
+      wmEl('wmSub').textContent = '發布時間：' + meta.publishedAt;
+      const stale = wmEl('wmStale');
+      const today = wmTodayTpe();
+      if (today && today > addDaysYmd(meta.monday, 6)) {
+        stale.textContent = '⚠️ 目前顯示的是 ' + formatMD(meta.monday) + ' ～ ' + formatMD(fri) + ' 的菜單，新一週的菜單還沒有發布。';
+        stale.classList.add('show');
+      } else {
+        stale.textContent = '';
+        stale.classList.remove('show');
+      }
+      if (wmCanDirect(meta)) wmSetDirect(meta, 0, tok);
+      else wmLoadViaScript(meta, tok);
+    }
+
+    // 直接讓瀏覽器拿檔案 ID 載入圖片；失敗就換下一個網址，最後退回由 Apps Script 傳圖
+    function wmSetDirect(meta, idx, tok) {
+      const urls = wmImageUrls(meta);
+      const img = wmEl('wmImg');
+      const loading = wmEl('wmLoading');
+      if (img.getAttribute('src') === urls[idx] && img.complete && img.naturalWidth >= WM_MIN_W) { loading.style.display = 'none'; return; }
+      loading.style.display = 'flex';
+      WM.imgKey = '';
+      const next = function () {
+        if (WM.shown !== meta) return;
+        if (idx + 1 < urls.length) { wmSetDirect(meta, idx + 1, tok); return; }
+        if (wmAccess(meta) === 'domain') wmDomainBlock();   // 這台裝置讀不到組織內的圖，之後直接走背景預載
+        wmLoadViaScript(meta, tok);
+      };
+      img.onload = function () {
+        if (WM.shown !== meta) return;
+        if (img.naturalWidth < WM_MIN_W) { next(); return; }
+        loading.style.display = 'none';
+      };
+      img.onerror = next;
+      img.src = urls[idx];
+    }
+
+    // 由 Apps Script 傳圖：同一版本只傳一次（本機快取），預載與使用者點進來共用同一個進行中的請求
+    function wmFetchViaScript(meta, cb) {
+      const cached = wmCacheRead() || WM.mem;
+      if (cached && cached.dataUrl && cached.version === meta.version) { cb(null, cached); return; }
+      if (WM.fetch && WM.fetch.version === meta.version) { WM.fetch.waiters.push(cb); return; }
+      const job = WM.fetch = { version: meta.version, waiters: [cb] };
+      const finish = function (err, d) {
+        if (WM.fetch === job) WM.fetch = null;
+        job.waiters.forEach(function (f) { try { f(err, d); } catch (e) { /* 單一等待者出錯不影響其他人 */ } });
+      };
+      google.script.run
+        .withSuccessHandler(function (d) {
+          if (d && d.unchanged && cached && cached.dataUrl) { finish(null, cached); return; }
+          if (!d || d.empty || !d.dataUrl) { finish(null, null); return; }
+          WM.mem = d;
+          wmCacheWrite(d);
+          finish(null, d);
+        })
+        .withFailureHandler(function (e) { finish(e || new Error('載入失敗')); })
+        .getPublishedMenu(cached && cached.version ? cached.version : '');
+    }
+
+    // 退回方案的顯示
+    function wmLoadViaScript(meta, tok) {
+      const img = wmEl('wmImg');
+      const loading = wmEl('wmLoading');
+      loading.style.display = 'flex';
+      wmFetchViaScript(meta, function (err, d) {
+        if (tok !== WM.token || WM.shown !== meta) return;
+        if (err) { wmShowMessage('❌ 載入失敗：' + ((err && err.message) || err), true); return; }
+        if (!d || !d.dataUrl) { wmShowMessage('目前還沒有發布的菜單，請稍後再來看看。'); return; }
+        WM.data = d;
+        if (WM.imgKey === d.version && img.complete && img.naturalWidth > 0) { loading.style.display = 'none'; return; }   // 已經顯示著同一張
+        WM.imgKey = d.version;
+        img.onload = function () { loading.style.display = 'none'; };
+        img.onerror = null;
+        img.src = d.dataUrl;
+      });
+    }
+
+    function wmToggleZoom() { wmEl('wmWrap').classList.toggle('zoom'); }
+
+    function dataUrlToBlob(url) {
+      const i = url.indexOf(',');
+      const mime = url.slice(5, url.indexOf(';')) || 'image/jpeg';
+      const bin = atob(url.slice(i + 1));
+      const arr = new Uint8Array(bin.length);
+      for (let k = 0; k < bin.length; k++) arr[k] = bin.charCodeAt(k);
+      return new Blob([arr], { type: mime });
+    }
+
+    function wmDownload() {
+      const m = WM.shown;
+      if (!m) return;
+      try {
+        const a = document.createElement('a');
+        if (WM.data) {                       // 由 Apps Script 傳來的圖：直接用手上的資料存檔
+          const blob = dataUrlToBlob(WM.data.dataUrl);
+          a.href = URL.createObjectURL(blob);
+          a.download = '本週菜單_' + m.monday.replace(/-/g, '') + (blob.type === 'image/png' ? '.png' : '.jpg');
+        } else {                             // 公開連結：交給 Google 提供原檔下載
+          a.href = 'https://drive.google.com/uc?export=download&id=' + encodeURIComponent(m.fileId);
+          a.target = '_blank';
+          a.rel = 'noopener';
+        }
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        if (WM.data) setTimeout(function () { URL.revokeObjectURL(a.href); }, 30000);
+      } catch (e) {
+        showAlert('⚠️ 無法直接下載，請長按（或按右鍵）圖片另存新檔。');
+      }
+    }
+
+    window.addEventListener('load', function () { setTimeout(wmPrefetch, 1200); });
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(wmBootCheck, 800); });
+
+    // ========================================
+    // 通用功能
+    // ========================================
+
+    function showAlert(message) {
+      document.getElementById('alertMessage').innerText = message;
+      document.getElementById('alertModal').style.display = 'flex';
+    }
+
+    function closeAlert() {
+      document.getElementById('alertModal').style.display = 'none';
+    }
+
+    // 確認對話框
+    let confirmCallback = null;
+
+    function showConfirm(message, callback) {
+      document.getElementById('confirmMessage').innerText = message;
+      document.getElementById('confirmModal').style.display = 'flex';
+      confirmCallback = callback;
+    }
+
+    function closeConfirm(result) {
+      document.getElementById('confirmModal').style.display = 'none';
+      if (confirmCallback) {
+        confirmCallback(result);
+        confirmCallback = null;
+      }
+    }
+
+    function handleError(error) {
+      showAlert('❌ 錯誤：' + ((error && error.message) || error));
+      console.error(error);
+    }
+  </script>
+</body>
+</html>
