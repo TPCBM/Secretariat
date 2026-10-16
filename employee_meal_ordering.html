@@ -943,7 +943,7 @@
          產生的網址（結尾是 /exec）貼到下面的 GAS_URL，網頁就會用 fetch 呼叫後端。
        ・網頁是由 Apps Script 自己提供：GAS_URL 留空即可，會直接用 google.script.run。
        ============================================================ */
-    const GAS_URL = "";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxsCGN1RfzlmFFMho66NR93NvO4V1q6N3gLioAHtvQMyHHFkndaR5ap_m98gE-9Hr8T/exec";
 
     // 只有這幾個唯讀功能用 GET（失敗會自動重試）；其他一律 POST，絕不自動重試（避免重複寫入）
     const API_READ_ACTIONS = { ping: 1, getSettings: 1, getTodayMenuInfo: 1, getPublishedMeta: 1, getPublishedMenu: 1 };
