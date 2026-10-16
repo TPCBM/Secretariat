@@ -572,6 +572,34 @@
       font-size: 1rem;
     }
 
+    /* 查詢訂單：結單時間說明（結單前＝提醒；結單後＝已鎖定） */
+
+    .deadline-hint {
+      background: #fff4e0;
+      border: 1px solid #e8c88a;
+      color: #7a5418;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin: 16px 0 14px;
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .lock-notice {
+      background: #fdecea;
+      border: 1px solid #e3a8a1;
+      color: #8a2a21;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 16px 0 14px;
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+
+    .lock-notice strong { font-size: 1.05rem; }
+
+    .lock-tag { font-size: 0.9rem; color: #8a2a21; margin-top: 8px; }
+
     .empty-state {
       text-align: center;
       padding: 48px 16px;
@@ -915,7 +943,7 @@
          產生的網址（結尾是 /exec）貼到下面的 GAS_URL，網頁就會用 fetch 呼叫後端。
        ・網頁是由 Apps Script 自己提供：GAS_URL 留空即可，會直接用 google.script.run。
        ============================================================ */
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxsCGN1RfzlmFFMho66NR93NvO4V1q6N3gLioAHtvQMyHHFkndaR5ap_m98gE-9Hr8T/exec";
+    const GAS_URL = "";
 
     // 只有這幾個唯讀功能用 GET（失敗會自動重試）；其他一律 POST，絕不自動重試（避免重複寫入）
     const API_READ_ACTIONS = { ping: 1, getSettings: 1, getTodayMenuInfo: 1, getPublishedMeta: 1, getPublishedMenu: 1 };
@@ -930,6 +958,7 @@
     function apiCall(name, args) {
       args = args || [];
       if (!GAS_URL) return Promise.reject(apiError('尚未設定後端網址，請在 index.html 開頭填入 GAS_URL', 'CONFIG'));
+      if (/\/dev\/?(\?|$)/.test(String(GAS_URL).trim())) return Promise.reject(apiError('後端網址貼錯了：結尾是 /dev 的是「測試部署」網址，只有你本人登入時才連得上。請到 Apps Script「部署 → 管理部署作業」複製「網頁應用程式」網址（結尾是 /exec）', 'CONFIG'));
       const isRead = API_READ_ACTIONS[name] === 1;
       const timeout = 30000;
       const maxTries = isRead ? 3 : 1;
@@ -939,7 +968,7 @@
         const timer = ctl ? setTimeout(function () { ctl.abort(); }, timeout) : null;
         const opt = { redirect: 'follow', credentials: 'omit', cache: 'no-store' };
         if (ctl) opt.signal = ctl.signal;
-        let url = GAS_URL;
+        let url = String(GAS_URL).trim();   // 貼網址時常會多出空白或換行
         if (isRead) {
           url += (url.indexOf('?') < 0 ? '?' : '&') + 'action=' + encodeURIComponent(name) + (args.length ? '&args=' + encodeURIComponent(JSON.stringify(args)) : '');
         } else {
@@ -1015,6 +1044,7 @@
     <!-- 公告區 -->
     <div class="notice-box">
       <p><strong>📅 訂餐時間：</strong><span id="orderTimeNotice">上班日 00:00 至 10:30</span></p>
+      <p><strong>🔒 結單說明：</strong><span id="lockNotice">10:30 結單，結單後已送出的訂單無法再修改或刪除，請在結單前確認。</span></p>
       <p><strong>🍱 取餐時間：</strong><span id="pickupTimeNotice">11:40起</span></p>
       <p><strong>📞 服務專線：</strong><span id="servicePhoneNotice">如有其他特殊需求或問題，請撥打(02)2366-6433</span></p>
     </div>
@@ -1131,6 +1161,8 @@
 
       <div id="cartErrorMessage" class="error-message"></div>
 
+      <div class="deadline-hint" id="cartLockNote">💡 送出後，可在 10:30 結單前到「查詢訂單」修改或刪除；結單後訂單即送交餐廳備餐，無法再調整。</div>
+
       <button class="btn" id="submitCartBtn" onclick="submitCart()">送出訂單</button>
     </div>
   </div>
@@ -1198,6 +1230,7 @@
         <option value="">請選擇</option>
         <option value="內用">內用</option>
         <option value="外帶">外帶</option>
+        <option value="外帶(自備餐盒)">外帶(自備餐盒)</option>
       </select>
 
       <label>數量 *</label>
@@ -1256,12 +1289,30 @@
     // 初始化
     // ========================================
 
+    // 網址直接開到指定頁面：?page=query（查詢／修改／刪除訂單）、?page=week（本週菜單），也可以寫成 #query。
+    // 由 Apps Script 提供的頁面放在 iframe 裡，讀不到外面的網址，所以由伺服器把 page 參數寫進下面這一行（只認這兩個值）。
+    const START_PAGE = /*__START_PAGE__*/null;
+    function pickStartPage() {
+      let p = START_PAGE;
+      if (!p) {
+        try {
+          const m = location.search.match(/[?&]page=([^&#]*)/i) || location.hash.match(/^#([^&?]*)/);
+          if (m) p = decodeURIComponent(m[1]);
+        } catch (e) { p = ''; }
+      }
+      p = String(p || '').toLowerCase();
+      return p === 'query' || p === 'week' ? p : '';
+    }
+
     // 使用 DOMContentLoaded 而非 window.onload 以加快初始化速度
     document.addEventListener('DOMContentLoaded', function() {
       console.log('===== 系統初始化開始 =====');
 
-      // 立即顯示首頁
+      // 立即顯示首頁（網址有指定頁面就直接進去，返回鍵仍回到首頁）
       showPage('homePage');
+      const startPage = pickStartPage();
+      if (startPage === 'query') navigateToQuery();
+      else if (startPage === 'week') navigateToWeekMenu();
 
       if (window.__API_MODE && !GAS_URL) {
         showAlert('⚠️ 尚未設定後端網址\n\n請開啟 index.html，把 Apps Script 部署後的網址（結尾是 /exec）貼到最前面的 GAS_URL。');
@@ -1405,6 +1456,9 @@
       document.getElementById('orderTimeNotice').innerText =
         `上班日 ${s['訂餐開始時間'] || '00:00'} 至 ${s['訂餐結束時間'] || '10:30'}`;
       document.getElementById('pickupTimeNotice').innerText = `${s['取餐時間'] || '11:40'}起`;
+      const endT = s['訂餐結束時間'] || '10:30';
+      document.getElementById('lockNotice').innerText = `${endT} 結單，結單後已送出的訂單無法再修改或刪除，請在結單前確認。`;
+      document.getElementById('cartLockNote').innerText = `💡 送出後，可在 ${endT} 結單前到「查詢訂單」修改或刪除；結單後訂單即送交餐廳備餐，無法再調整。`;
       document.getElementById('servicePhoneNotice').innerText = `如有其他特殊需求或問題，請撥打${s['服務專線'] || '(02)2366-6433'}`;
     }
 
@@ -2333,6 +2387,33 @@
         .getMyOrders(code);
     }
 
+    // 結單時間說明：結單前提醒「到幾點為止」；結單後顯示「已鎖定、不能再調整」
+    function lockNoticeHtml(canEdit) {
+      const s = App.settings || {};
+      const endT = escapeHtml(s['訂餐結束時間'] || '10:30');
+      if (canEdit) {
+        return `<div class="deadline-hint">⏰ 訂單可修改、刪除到 <strong>${endT}</strong> 為止。<br>結單後訂單內容即送交餐廳備餐，無法再調整，請把握時間。</div>`;
+      }
+      const phone = escapeHtml(s['服務專線'] || '(02)2366-6433');
+      return `<div class="lock-notice"><strong>🔒 今日訂餐已於 ${endT} 結單</strong><br>訂單內容已送交餐廳備餐，無法再修改或刪除。<br>如有特殊狀況，請洽服務專線 ${phone}。</div>`;
+    }
+
+    // 查詢頁開著的時候剛好到結單時間：自動把「修改／刪除」鎖起來
+    let lockTimer = null;
+    function scheduleLockRefresh() {
+      if (lockTimer) { clearTimeout(lockTimer); lockTimer = null; }
+      const m = String((App.settings || {})['訂餐結束時間'] || '10:30').match(/^(\d{1,2}):(\d{2})$/);
+      if (!m) return;
+      const now = new Date();
+      const lockAt = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Number(m[1]), Number(m[2]) + 1, 0, 0);   // 超過結束時間那一分鐘起鎖定
+      const wait = lockAt.getTime() - now.getTime();
+      if (wait <= 0 || wait > 12 * 3600 * 1000) return;
+      lockTimer = setTimeout(function () {
+        lockTimer = null;
+        if (App.lastOrders && document.getElementById('myOrdersPage').classList.contains('active')) renderOrders(App.lastOrders);
+      }, wait + 300);
+    }
+
     function renderOrders(orders) {
       const container = document.getElementById('ordersResult');
 
@@ -2343,7 +2424,9 @@
 
       // 檢查是否在訂餐時間內
       const orderingStatus = isOrderingTime();
-      const canEdit = orderingStatus.allowed;
+      const canEdit = orderingStatus.allowed && !App.lockedByServer;   // lockedByServer：後端說已結單（例如手機時間不準）
+      App.lastOrders = orders;
+      scheduleLockRefresh();
 
       // 依流水號分組
       const groupedOrders = {};
@@ -2393,7 +2476,7 @@
                   <button onclick="deleteOrderItem(${Number(o.rowIndex)})" class="btn-danger">刪除</button>
                 </div>
               ` : `
-                <div style="font-size: 18px; color: #999; margin-top: 8px;">⏰ 已超過訂餐時間，無法修改</div>
+                <div class="lock-tag">🔒 已結單，無法修改或刪除</div>
               `}
             </div>`;
         });
@@ -2406,7 +2489,7 @@
           </div>`;
       });
 
-      container.innerHTML = html;
+      container.innerHTML = lockNoticeHtml(canEdit) + html;
     }
 
     function getPrice(mealName) {
@@ -2504,6 +2587,10 @@
             closeForm();
             // 重新載入訂單
             loadMyOrders();
+          } else if (msg.includes('🔒')) {
+            App.lockedByServer = true;              // 後端判定已結單：關掉修改視窗、把清單改成鎖定狀態
+            closeForm();
+            loadMyOrders();
           }
         })
         .withFailureHandler(function(err) {
@@ -2521,6 +2608,9 @@
             showAlert(msg);
             if (msg.includes('✅')) {
               // 重新載入訂單
+              loadMyOrders();
+            } else if (msg.includes('🔒')) {
+              App.lockedByServer = true;            // 後端判定已結單：把清單改成鎖定狀態
               loadMyOrders();
             }
           })
