@@ -565,7 +565,7 @@
 
     /* ===== LOADING & EMPTY STATES - Mobile First ===== */
 
-    .loading {
+    .loading:not(button) {
       text-align: center;
       padding: 32px 0;
       color: #757575;
@@ -607,13 +607,15 @@
       font-size: 1rem;
     }
 
-    .btn.loading {
+    .btn.loading,
+    .cart-item button.loading {
       position: relative;
       color: transparent;
       pointer-events: none;
     }
 
-    .btn.loading::after {
+    .btn.loading::after,
+    .cart-item button.loading::after {
       content: '';
       position: absolute;
       width: 24px;
@@ -631,6 +633,23 @@
     @keyframes spinner {
       to { transform: rotate(360deg); }
     }
+
+    /* 處理中：按鈕維持原本的顏色（不要被 disabled 的灰底蓋掉），轉圈圈才看得清楚 */
+
+    .btn.loading:disabled {
+      background: linear-gradient(135deg, #A67C52 0%, #8B6F47 100%);
+      opacity: 1;
+      cursor: progress;
+      box-shadow: 0 4px 12px rgba(139, 111, 71, 0.35);
+    }
+
+    .btn-success.loading:disabled { background: linear-gradient(135deg, #7A9B76 0%, #5F8055 100%); box-shadow: 0 4px 12px rgba(95, 128, 85, 0.35); }
+
+    .btn-danger.loading:disabled { background: linear-gradient(135deg, #B8654F 0%, #9A4F3C 100%); box-shadow: 0 4px 12px rgba(154, 79, 60, 0.35); }
+
+    .cart-item button.loading:disabled { opacity: 1; cursor: progress; }
+
+    .cart-item button:disabled:not(.loading) { opacity: 0.45; cursor: not-allowed; }
 
     /* ===== TABLET BREAKPOINT (768px+) ===== */
 
@@ -1171,7 +1190,9 @@
   <div id="myOrdersPage" class="page">
     <h3>🔎 查詢訂單</h3>
     <label>姓名代號</label>
-    <input id="queryCode" type="text" maxlength="6" placeholder="請輸入姓名代號">
+    <input id="queryCode" type="text" maxlength="6" inputmode="numeric" autocomplete="off" placeholder="請輸入姓名代號" onkeydown="if(event.key==='Enter')loadMyOrders()">
+    <label>訂購人姓名 <small>（須與訂餐時填寫的相同）</small></label>
+    <input id="queryName" type="text" maxlength="30" autocomplete="off" placeholder="請輸入訂餐時填寫的姓名" onkeydown="if(event.key==='Enter')loadMyOrders()">
     <button class="btn" id="queryOrderBtn" onclick="loadMyOrders()">查詢</button>
     <div id="ordersResult"></div>
   </div>
@@ -1980,6 +2001,7 @@
     }
 
     function closeForm() {
+      if (isUpdating) return;                       // 修改送出中不能關掉視窗（點背景也一樣），等結果出來
       document.getElementById('orderModal').style.display = 'none';
       App.currentMeal = null;
       App.editingIndex = -1;
@@ -2346,10 +2368,13 @@
 
     let isLoadingOrders = false;
 
-    function loadMyOrders() {
+    // fromStored：修改／刪除完成後重新整理清單，沿用剛剛查詢時的姓名代號與姓名（不受輸入框後來又被改掉影響）
+    function loadMyOrders(fromStored) {
       if (isLoadingOrders) return;
 
-      const code = document.getElementById('queryCode').value.trim();
+      const useStored = fromStored === true && App.ordersCode;
+      const code = useStored ? App.ordersCode : document.getElementById('queryCode').value.trim();
+      const name = useStored ? App.ordersName : document.getElementById('queryName').value.trim();
       if (!code) {
         showAlert('請輸入姓名代號');
         return;
@@ -2357,6 +2382,11 @@
 
       if (!/^\d{6}$/.test(code)) {
         showAlert('⚠️ 姓名代號必須為6位數字');
+        return;
+      }
+
+      if (!name) {
+        showAlert('請輸入訂餐時填寫的姓名');
         return;
       }
 
@@ -2374,6 +2404,7 @@
           btn.classList.remove('loading');
           btn.disabled = false;
           App.ordersCode = code;                       // 修改／刪除時要一起送給後端核對是不是本人的訂單
+          App.ordersName = name;
           App.orderRows = {};
           (orders || []).forEach(function (o) { App.orderRows[o.rowIndex] = o; });
           renderOrders(orders || [], code);
@@ -2382,9 +2413,28 @@
           isLoadingOrders = false;
           btn.classList.remove('loading');
           btn.disabled = false;
+          App.orderRows = {}; App.lastOrders = null;
+          if (isNameMismatch(err)) {                   // 姓名代號對、姓名和訂餐時填的不同：顯示特別說明（不顯示任何訂單內容）
+            resultDiv.innerHTML = nameMismatchHtml(err);
+            return;
+          }
+          resultDiv.innerHTML = '';
           handleError(err);
         })
-        .getMyOrders(code);
+        .getMyOrders(code, name);
+    }
+
+    function isNameMismatch(err) {
+      return !!err && (err.code === 'NAME_MISMATCH' || String(err.message || '').indexOf('與當初訂餐時填寫的姓名不相符') >= 0);
+    }
+
+    // 說明文字由後端提供（含窗口電話，要改只改 code.gs 一處）；第一段當標題
+    function nameMismatchHtml(err) {
+      const msg = String((err && err.message) || '').replace(/^(Error|Exception):\s*/, '').replace(/^⚠️\s*/, '');
+      const parts = msg.split(/\n\s*\n/);
+      const title = escapeHtml(parts.shift() || '您輸入的姓名，與當初訂餐時填寫的姓名不相符。');
+      const rest = escapeHtml(parts.join('\n')).replace(/\n/g, '<br>');
+      return `<div class="lock-notice name-notice"><strong>⚠️ ${title}</strong>${rest ? '<br>' + rest : ''}</div>`;
     }
 
     // 結單時間說明：結單前提醒「到幾點為止」；結單後顯示「已鎖定、不能再調整」
@@ -2472,8 +2522,8 @@
               <div class="item-details">${escapeHtml(o.dine)} x ${escapeHtml(o.qty)}${o.note ? ` | 備註：${escapeHtml(o.note)}` : ''}</div>
               ${canEdit ? `
                 <div class="item-actions">
-                  <button onclick="editOrderRow(${Number(o.rowIndex)})" class="btn-success">修改</button>
-                  <button onclick="deleteOrderItem(${Number(o.rowIndex)})" class="btn-danger">刪除</button>
+                  <button onclick="editOrderRow(${Number(o.rowIndex)})" class="btn-success" data-row="${Number(o.rowIndex)}">修改</button>
+                  <button onclick="deleteOrderItem(${Number(o.rowIndex)})" class="btn-danger" data-row="${Number(o.rowIndex)}">刪除</button>
                 </div>
               ` : `
                 <div class="lock-tag">🔒 已結單，無法修改或刪除</div>
@@ -2580,44 +2630,73 @@
         note: note
       };
 
+      if (isUpdating) return;
+      setUpdateBusy(true);                          // 按鈕立刻轉圈圈，結果回來之前不會被誤會成已經修改成功
+
       google.script.run
         .withSuccessHandler(function(msg) {
+          setUpdateBusy(false);
           showAlert(msg);
           if (msg.includes('✅')) {
             closeForm();
             // 重新載入訂單
-            loadMyOrders();
+            loadMyOrders(true);
           } else if (msg.includes('🔒')) {
             App.lockedByServer = true;              // 後端判定已結單：關掉修改視窗、把清單改成鎖定狀態
             closeForm();
-            loadMyOrders();
+            loadMyOrders(true);
           }
         })
         .withFailureHandler(function(err) {
+          setUpdateBusy(false);
           showAlert('❌ 錯誤：' + (err.message || err));
         })
-        .updateOrder(App.editingOrderRowIndex, updatedData, App.ordersCode);
+        .updateOrder(App.editingOrderRowIndex, updatedData, App.ordersCode, App.ordersName);
+    }
+
+    // 修改訂單送出中：確認按鈕轉圈圈，其他欄位與取消先鎖住，避免重複送出或中途關掉
+    let isUpdating = false;
+    function setUpdateBusy(busy) {
+      isUpdating = busy;
+      const btn = document.getElementById('submitBtn');
+      btn.classList.toggle('loading', busy);
+      btn.disabled = busy;
+      document.querySelectorAll('#orderModal .btn-secondary').forEach(function (b) { b.disabled = busy; });
+      ['mealNameSelect', 'dineOption', 'quantity', 'note'].forEach(function (id) {
+        const el = document.getElementById(id); if (el) el.disabled = busy;
+      });
+    }
+
+    // 刪除送出中：被按的「刪除」轉圈圈，清單裡其他按鈕先鎖住
+    function setListBusy(rowIndex, busy) {
+      document.querySelectorAll('#ordersResult .item-actions button').forEach(function (b) {
+        b.disabled = busy;
+        b.classList.toggle('loading', busy && b.classList.contains('btn-danger') && b.getAttribute('data-row') === String(Number(rowIndex)));
+      });
     }
 
     function deleteOrderItem(rowIndex) {
       showConfirm('🗑️ 確定要刪除這筆訂單嗎？\n\n刪除後將無法恢復。', function(result) {
         if (!result) return;
 
+        setListBusy(rowIndex, true);
         google.script.run
           .withSuccessHandler(function(msg) {
+            setListBusy(rowIndex, false);
             showAlert(msg);
             if (msg.includes('✅')) {
               // 重新載入訂單
-              loadMyOrders();
+              loadMyOrders(true);
             } else if (msg.includes('🔒')) {
               App.lockedByServer = true;            // 後端判定已結單：把清單改成鎖定狀態
-              loadMyOrders();
+              loadMyOrders(true);
             }
           })
           .withFailureHandler(function(err) {
+            setListBusy(rowIndex, false);
             showAlert('❌ 錯誤：' + (err.message || err));
           })
-          .deleteOrder(rowIndex, App.ordersCode);
+          .deleteOrder(rowIndex, App.ordersCode, App.ordersName);
       });
     }
 
