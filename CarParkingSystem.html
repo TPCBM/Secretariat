@@ -45,6 +45,19 @@
     .admin-link a { color: white; text-decoration: none; font-weight: 600; padding: 10px 20px; background: rgba(255,255,255,0.2); border-radius: 8px; transition: all 0.3s; display: inline-block; margin: 0 5px; }
     .admin-link a:hover { background: rgba(255,255,255,0.3); }
     .loading { text-align: center; padding: 40px; color: #666; font-size: 1.2rem; }
+    .nav-btn:disabled {
+  background: #cccccc;
+  color: #777777;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+.nav-btn:disabled:hover {
+  background: #cccccc;
+  transform: none;
+}
     @media (max-width: 768px) { body { padding: 8px; } .container { max-width: 100%; } .header h1 { font-size: 1.5rem; } .header p { font-size: 0.95rem; } .card { padding: 12px; border-radius: 12px; } .calendar-header { flex-direction: column; gap: 12px; } .calendar-header h2 { font-size: 1.2rem; } .month-nav { width: 100%; justify-content: center; } .nav-btn { padding: 8px 12px; font-size: 0.9rem; } .current-month { font-size: 1.1rem; min-width: 110px; } .calendar { gap: 2px; width: 100%; } .calendar-day-header { padding: 6px 1px; font-size: 0.7rem; } .calendar-day { min-height: 52px; padding: 2px; font-size: 0.75rem; } .day-number { font-size: 0.95rem; margin-bottom: 1px; } .availability { font-size: 0.65rem; padding: 1px 3px; white-space: nowrap; } .availability.none { font-size: 0.6rem; } .legend { gap: 6px; font-size: 0.8rem; margin-top: 20px; } .legend-item { flex: 0 0 calc(50% - 8px); font-size: 0.8rem; } .legend-box { width: 22px; height: 22px; flex-shrink: 0; } .admin-link { font-size: 0.85rem; } .admin-link a { display: block; margin: 5px 0; padding: 10px 12px; } .admin-link span { display: none; } }
     @media (max-width: 390px) { body { padding: 6px; } .card { padding: 10px; } .calendar { gap: 1.5px; } .calendar-day { min-height: 48px; padding: 1px; } .day-number { font-size: 0.9rem; } .availability { font-size: 0.6rem; padding: 1px 2px; } .availability.none { font-size: 0.55rem; } }
     @media (max-width: 375px) { body { padding: 5px; } .header h1 { font-size: 1.3rem; } .header p { font-size: 0.85rem; } .card { padding: 8px; } .calendar { gap: 1px; } .calendar-day-header { padding: 5px 0; font-size: 0.65rem; } .calendar-day { min-height: 45px; padding: 1px; } .day-number { font-size: 0.85rem; } .availability { font-size: 0.55rem; padding: 1px 2px; } .availability.none { font-size: 0.5rem; } .nav-btn { padding: 6px 10px; font-size: 0.85rem; } .current-month { font-size: 1rem; min-width: 100px; } .legend { flex-wrap: wrap; } .legend-item { flex: 0 0 calc(50% - 5px); font-size: 0.75rem; } .legend-box { width: 20px; height: 20px; } }
@@ -103,6 +116,27 @@
 
     let currentDate = new Date();
     let availabilityData = {};
+    // 一般使用者預約期限：今天起兩個月
+function getBookingDateRange() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const maxDate = new Date(today);
+  const day = today.getDate();
+
+  maxDate.setDate(1);
+  maxDate.setMonth(maxDate.getMonth() + 2);
+
+  const lastDay = new Date(
+    maxDate.getFullYear(),
+    maxDate.getMonth() + 1,
+    0
+  ).getDate();
+
+  maxDate.setDate(Math.min(day, lastDay));
+
+  return { today, maxDate };
+}
 
     // ⭐ 新增共用 API：替換成你新部署的 Web App 網址
     const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbybVXqYCBLSMvUYDDlH2EJPRFj3Bs0AVwS0l5R6fj6dxBG3clIHbnTmwfhnu1Mpny3pJg/exec';
@@ -171,10 +205,34 @@
     }
 
     // 切換月份
-    function changeMonth(delta) {
-      currentDate.setMonth(currentDate.getMonth() + delta);
-      renderCalendar();
-    }
+function changeMonth(delta) {
+  const { today, maxDate } = getBookingDateRange();
+
+  const target = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + delta,
+    1
+  );
+
+  const firstMonth = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    1
+  );
+
+  const lastMonth = new Date(
+    maxDate.getFullYear(),
+    maxDate.getMonth(),
+    1
+  );
+
+  if (target < firstMonth || target > lastMonth) {
+    return;
+  }
+
+  currentDate = target;
+  renderCalendar();
+}
 
     // 渲染日曆
     function renderCalendar() {
@@ -185,8 +243,18 @@
       
       const firstDay = new Date(year, month, 1);
       const lastDay = new Date(year, month + 1, 0);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+const { today, maxDate } = getBookingDateRange();
+
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+prevBtn.disabled =
+  year === today.getFullYear() &&
+  month === today.getMonth();
+
+nextBtn.disabled =
+  year === maxDate.getFullYear() &&
+  month === maxDate.getMonth();
       
       const firstDayOfWeek = firstDay.getDay();
       const daysInMonth = lastDay.getDate();
@@ -219,13 +287,23 @@
           classes.push('past');
           clickable = false;
         }
+        if (date > maxDate) {
+  classes.push('past');
+  clickable = false;
+  availabilityHtml =
+    '<span class="availability none">未開放</span>';
+}
         
         const isHoliday = dayOfWeek === 0 || dayOfWeek === 6 || HOLIDAYS.indexOf(dateStr) !== -1;
-        if (isHoliday) {
-          classes.push('holiday');
-          availabilityHtml = '<span class="availability none">不開放</span>';
-          clickable = false;
-        } else if (date >= today) {
+        if (date > maxDate) {
+  // 超過預約期限時，保留「未開放」文字
+  clickable = false;
+} else if (isHoliday) {
+  classes.push('holiday');
+  availabilityHtml = '<span class="availability none">不開放</span>';
+  clickable = false;
+} else if (date >= today) {
+          
           const booked = availabilityData[dateStr] || 0;
           availableSpots = TOTAL_SPOTS - booked;
           
@@ -252,10 +330,23 @@
     }
 
     // ⭐ 修改跳轉邏輯：直接跳轉至實體網頁 (apply.html) 並附帶日期參數
-    function selectDate(dateStr) {
-      // 假設你的申請頁面叫做 apply.html
-      window.location.href = 'apply.html?date=' + dateStr;
-    }
+function selectDate(dateStr) {
+  const { today, maxDate } = getBookingDateRange();
+  const selectedDate = new Date(dateStr + 'T00:00:00');
+
+  if (
+    !Number.isFinite(selectedDate.getTime()) ||
+    selectedDate < today ||
+    selectedDate > maxDate
+  ) {
+    alert('僅開放申請今天起兩個月內的停車日期');
+    return;
+  }
+
+  // 保留 GitHub 原本的申請頁面網址
+  window.location.href =
+    'apply.html?date=' + encodeURIComponent(dateStr);
+}
 
     // 格式化日期
     function formatDate(date) {
