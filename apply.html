@@ -691,7 +691,7 @@
           
           <div class="form-group">
             <label>停車日期 <span class="required">*</span></label>
-            <input type="date" id="parkingDate"  required value="<?= preselectedDate || '' ?>">
+            <input type="date" id="parkingDate"  required >
           </div>
           
           <div class="form-group">
@@ -804,6 +804,31 @@
     window.location.href = 'CarParkingSystem.html'; 
   }
 
+  // 一般申請日期範圍：今天起兩個日曆月（月底自動取最後一天）
+  function formatBookingDate(date) {
+    return date.getFullYear() + '-' +
+      String(date.getMonth() + 1).padStart(2, '0') + '-' +
+      String(date.getDate()).padStart(2, '0');
+  }
+
+  function getBookingDateLimits() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const max = new Date(today.getFullYear(), today.getMonth() + 2, 1);
+    const lastDay = new Date(max.getFullYear(), max.getMonth() + 1, 0).getDate();
+    max.setDate(Math.min(today.getDate(), lastDay));
+    return { min: formatBookingDate(today), max: formatBookingDate(max) };
+  }
+
+  function validBookingDate(value) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const [y, m, d] = value.split('-').map(Number);
+    const parsed = new Date(y, m - 1, d);
+    if (parsed.getFullYear() !== y || parsed.getMonth() !== m - 1 || parsed.getDate() !== d) return false;
+    const limits = getBookingDateLimits();
+    return value >= limits.min && value <= limits.max;
+  }
+
   // ⭐ 頁面載入處理
   window.addEventListener('load', function() {
     console.log('Page loaded');
@@ -814,9 +839,19 @@
     const dateParam = urlParams.get('date');
     const parkingDateInput = document.getElementById('parkingDate');
     
-    if (dateParam && parkingDateInput) {
-      parkingDateInput.value = dateParam;
-      console.log('Preselected date from URL:', dateParam);
+    if (parkingDateInput) {
+      const limits = getBookingDateLimits();
+      parkingDateInput.min = limits.min;
+      parkingDateInput.max = limits.max;
+      if (dateParam) {
+        if (validBookingDate(dateParam)) {
+          parkingDateInput.value = dateParam;
+          console.log('Preselected date from URL:', dateParam);
+        } else {
+          parkingDateInput.value = '';
+          showCustomAlert('僅開放申請今天起兩個月內的停車日期，請重新選擇。');
+        }
+      }
     }
     
     // ⭐ 載入使用者歷史記錄 (改用 callGasApi)
@@ -972,7 +1007,13 @@
   if (bookingForm) {
     bookingForm.addEventListener('submit', function(e) {
       e.preventDefault();
-      
+
+      const selectedDate = document.getElementById('parkingDate').value;
+      if (!validBookingDate(selectedDate)) {
+        showCustomAlert('僅開放申請今天起兩個月內的停車日期，請重新選擇。');
+        return;
+      }
+
       const data = {
         department: document.getElementById('department').value,
         name: document.getElementById('name').value,
@@ -1154,11 +1195,15 @@
     }
   }
   
-  // 設定最小日期為今天
-  const today = new Date();
+  // 設定日期選擇器可選範圍
   const parkingDateEl = document.getElementById('parkingDate');
   if (parkingDateEl) {
-    parkingDateEl.min = today.toISOString().split('T')[0];
+    const limits = getBookingDateLimits();
+    parkingDateEl.min = limits.min;
+    parkingDateEl.max = limits.max;
+    if (parkingDateEl.value && !validBookingDate(parkingDateEl.value)) {
+      parkingDateEl.value = '';
+    }
   }
 </script>
 </body>
