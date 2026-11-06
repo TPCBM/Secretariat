@@ -730,7 +730,7 @@
         <div class="form-group">
           <label>輸入您的預約編號查詢</label>
           <div style="display: flex; gap: 10px;">
-            <input type="text" id="searchBookingId" placeholder="例如：BK17618963732056VY01">
+            <input type="text" id="searchBookingId" placeholder="例如：210169AAA2233 或 210169AAA-2233（舊BK編號亦可）">
             <button onclick="searchMyBooking()" class="btn btn-secondary">🔍 查詢</button>
           </div>
         </div>
@@ -1059,14 +1059,14 @@
 
     showMessage('myBookingsMessage', '查詢中...', 'info');
 
-    callGasApi('getBookingById', { bookingId: bookingId })
+    callGasApi('getBookingsByQuery', { bookingId: bookingId })
       .then(result => {
         console.log('getBookingById result:', result);
         try {
           const res = typeof result === 'string' ? JSON.parse(result) : result;
           
-          if (res.success && res.booking) {
-            displayBookings([res.booking]);
+          if (res.success && res.bookings && res.bookings.length) {
+            displayBookings(res.bookings);
             document.getElementById('myBookingsMessage').innerHTML = '';
           } else {
             showMessage('myBookingsMessage', res.message || '找不到此預約編號', 'error');
@@ -1084,7 +1084,9 @@
   }
   
   // 顯示預約列表
+  let currentBookings = [];
   function displayBookings(bookings) {
+    currentBookings = bookings;
     const list = document.getElementById('bookingsList');
     if (!list) return;
     list.innerHTML = '';
@@ -1120,7 +1122,8 @@
           🚙 車牌：${booking.licensePlate}
         </div>
         ${booking.status === 'Pending' || booking.status === 'Approved' ? 
-          `<button onclick="cancelBooking('${booking.bookingId}', '${booking.employeeId}')" 
+          `<button onclick="editBooking('${booking.recordId}')" class="btn btn-secondary" style="margin-top:10px;width:100%;">✏️ 修改進場時間或車牌</button>
+          <button onclick="cancelBooking('${booking.recordId}', '${booking.employeeId}')" 
                   class="btn btn-danger" style="margin-top: 10px; width: 100%;">
             ❌ 取消預約
           </button>` : ''}
@@ -1130,6 +1133,30 @@
     });
   }
   
+  // 修改指定單筆預約（日期不可修改）
+  function editBooking(recordId) {
+    const booking=currentBookings.find(b=>b.recordId===recordId);
+    if (!booking) return showCustomAlert('請重新查詢預約');
+    const newEntryTime=prompt('修改進場時間（08:00～16:30，整點或半點）',booking.entryTime);
+    if (newEntryTime===null) return;
+    const newLicensePlate=prompt('修改車牌號碼（英文、數字或連字號）',booking.licensePlate);
+    if (newLicensePlate===null) return;
+    if (!/^(0[89]|1[0-6]):(00|30)$/.test(newEntryTime) || newEntryTime<'08:00' || newEntryTime>'16:30')
+      return showCustomAlert('進場時間必須為 08:00～16:30 的整點或半點');
+    if (!/^[A-Za-z0-9-]+$/.test(newLicensePlate.trim())) return showCustomAlert('車牌格式不正確');
+    if (!confirm('確定修改 '+booking.parkingDate+' 的預約嗎？')) return;
+    showMessage('myBookingsMessage','修改中...','info');
+    callGasApi('updateBookingByUser',{recordId,newEntryTime,newLicensePlate:newLicensePlate.trim()})
+      .then(result=>{
+        const res=typeof result==='string'?JSON.parse(result):result;
+        if(res.success){
+          document.getElementById('searchBookingId').value=res.bookingId;
+          searchMyBooking();
+          showMessage('myBookingsMessage','修改成功，查詢編號：'+res.bookingId,'success');
+        } else showMessage('myBookingsMessage',res.message||'修改失敗','error');
+      }).catch(e=>showMessage('myBookingsMessage','修改失敗：'+e.message,'error'));
+  }
+
   // 取消預約
   function cancelBooking(bookingId, employeeId) {
     showCancelConfirm(bookingId);
