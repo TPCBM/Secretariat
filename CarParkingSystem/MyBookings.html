@@ -166,9 +166,12 @@
       if (!bookingId) return showMessage('myBookingsMessage', '請輸入姓名代號＋車牌', 'error');
       showMessage('myBookingsMessage', '查詢中...', 'info');
       try {
-        const result = await requestBooking('getBookingById', {bookingId});
+        const result = await requestBooking('getBookingsByQuery', {bookingId});
         if (!result.success) throw new Error(result.message || '查無預約');
         currentBookings = Array.isArray(result.bookings) ? result.bookings : (result.booking ? [result.booking] : []);
+        if (currentBookings.some(b => typeof b.canChange !== 'boolean' || !/^\d{4}-\d{2}-\d{2} 15:00$/.test(String(b.changeDeadline || '')))) {
+          throw new Error('目前 GAS API 未回傳異動截止資訊（canChange／changeDeadline）。請重新部署最新版 code.gs，並確認本頁 GAS_API_URL 指向相同部署。');
+        }
         displayBookings(currentBookings);
         document.getElementById('myBookingsMessage').innerHTML = currentBookings.length ? '' : '<div class="alert alert-info">目前沒有符合條件的未來有效預約</div>';
       } catch (error) {
