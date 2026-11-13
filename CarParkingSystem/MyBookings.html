@@ -72,6 +72,7 @@
         </div>
       </div>
       
+      <div class="alert alert-info" style="line-height:1.7;">📢 <strong>預約異動提醒</strong>：修改或取消預約，須於停車日前一個上班日<strong>下午 3:00 前</strong>完成（週末及公告休假日不計）。逾期仍可查詢，但無法修改或取消。</div>
       <div id="bookingsList" class="booking-list"></div>
     </div>
     
@@ -97,7 +98,7 @@
     
     // ⭐ 調整 2：加入共用的 API 呼叫函數
     // ⚠️ 記得替換成你新部署的 Web App 網址！
-    const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzeYWV2AYZIObL0IemO-r5rTI1Om3LJBOxr-3_2di1jFY99F8vkH1vg6P-zwLPaZ2RweQ/exec'; 
+    const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbybVXqYCBLSMvUYDDlH2EJPRFj3Bs0AVwS0l5R6fj6dxBG3clIHbnTmwfhnu1Mpny3pJg/exec'; 
 
     async function callGasApi(action, params = {}) {
       try {
@@ -185,7 +186,10 @@
       bookings.forEach(booking => {
         const recordId = String(booking.recordId || '');
         const safeId = escapeHtml(recordId);
-        const editable = ['Pending','Approved'].includes(booking.status) && !!recordId;
+        // 後端依 Holidays 表及台灣時間判斷，前端只負責顯示及停用按鈕。
+        const editable = ['Pending','Approved'].includes(booking.status) && !!recordId && booking.canChange === true;
+        const deadlineText = booking.changeDeadline ? escapeHtml(booking.changeDeadline) : '請洽管理單位';
+        const expired = booking.canChange === false;
         const div = document.createElement('div');
         div.className = 'booking-item ' + String(booking.status || '').toLowerCase();
         div.innerHTML = `
@@ -197,8 +201,10 @@
           <div style="color:#666;font-size:.9rem;line-height:1.8;">
             📅 日期：${escapeHtml(booking.parkingDate)}<br>
             ⏰ 時間：${escapeHtml(booking.entryTime)}<br>
-            🚙 車牌：${escapeHtml(booking.licensePlate)}
+            🚙 車牌：${escapeHtml(booking.licensePlate)}<br>
+            🕒 修改／取消截止：${deadlineText}
           </div>
+          ${expired ? '<div class="alert alert-info" style="margin-top:12px;">🔒 已超過異動期限，仍可查詢預約資料，但不能修改或取消。</div>' : ''}
           ${editable ? `
             <div id="editForm_${safeId}" style="display:none;margin-top:15px;padding-top:15px;border-top:2px solid #e0e0e0;">
               <label>進場時間</label>
