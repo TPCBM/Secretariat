@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>240巷車位申請系統 - 我的預約</title>
+  <link rel="icon" href="https://www.taipower.com.tw/favicon.ico" type="image/x-icon">
+  <style>
+    /* 原本的 CSS 完全保留，不用動 */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Microsoft JhengHei', 'Arial', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .header { text-align: center; color: white; margin-bottom: 30px; }
+    .header h1 { font-size: 2.5rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+    .header p { font-size: 1.1rem; opacity: 0.9; }
+    .card { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 20px; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
+    input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s; }
+    input:focus { outline: none; border-color: #667eea; }
+    .btn { padding: 14px 28px; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: all 0.3s; font-weight: 600; }
+    .btn-secondary { background: #6c757d; color: white; }
+    .btn-secondary:hover { background: #5a6268; }
+    .btn-danger { background: #e74c3c; color: white; width: 100%; margin-top: 10px; }
+    .btn-danger:hover { background: #c0392b; }
+    .booking-list { margin-top: 20px; }
+    .booking-item { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #667eea; }
+    .booking-item.pending { border-left-color: #f39c12; }
+    .booking-item.approved { border-left-color: #27ae60; }
+    .booking-item.rejected { border-left-color: #e74c3c; }
+    .booking-item.cancelled { border-left-color: #95a5a6; }
+    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-approved { background: #d4edda; color: #155724; }
+    .status-rejected { background: #f8d7da; color: #721c24; }
+    .status-cancelled { background: #e2e3e5; color: #383d41; }
+    .alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    .back-link { text-align: center; margin-top: 20px; }
+    .back-link a { color: white; text-decoration: none; font-weight: 600; padding: 10px 20px; background: rgba(255,255,255,0.2); border-radius: 8px; transition: all 0.3s; display: inline-block; }
+    .back-link a:hover { background: rgba(255,255,255,0.3); }
+    .custom-alert-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; animation: fadeIn 0.3s; }
+    .custom-alert-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 15px; padding: 30px; max-width: 400px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.3); animation: slideIn 0.3s; }
+    .custom-alert-icon { font-size: 3rem; text-align: center; margin-bottom: 15px; }
+    .custom-alert-title { font-size: 1.3rem; font-weight: 600; text-align: center; margin-bottom: 15px; color: #333; }
+    .custom-alert-message { font-size: 1rem; color: #333; text-align: center; line-height: 1.6; margin-bottom: 25px; }
+    .custom-alert-button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+    .custom-alert-button:hover { transform: translateY(-2px); }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideIn { from { opacity: 0; transform: translate(-50%, -60%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+    @media (max-width: 768px) { body { padding: 10px; } .header h1 { font-size: 1.5rem; } .header p { font-size: 0.95rem; } .card { padding: 15px; } input { font-size: 16px; padding: 14px; } .btn { font-size: 1rem; padding: 14px 20px; white-space: nowrap; } .booking-item { padding: 12px; font-size: 0.95rem; } .status-badge { font-size: 0.8rem; padding: 3px 10px; } .btn-danger { font-size: 0.95rem; padding: 12px; } .back-link a { display: block; margin: 10px 0; padding: 12px 15px; } }
+    @media (max-width: 380px) { .header h1 { font-size: 1.3rem; } .card { padding: 12px; } .form-group > div { flex-direction: column; gap: 8px; } .form-group input, .form-group .btn { width: 100%; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📋 我的預約</h1>
+      <p>查詢與管理車位預約記錄</p>
+    </div>
+    
+    <div class="card">
+      <div id="myBookingsMessage"></div>
+      
+      <div class="form-group">
+        <label>輸入您的預約編號查詢(申請人姓名代號+車號)</label>
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="searchBookingId" placeholder="例如：999999AAA2233 或 999999AAA-2233">
+          <button onclick="searchMyBooking()" class="btn btn-secondary">🔍 查詢</button>
+        </div>
+      </div>
+      
+      <div class="alert alert-info" style="line-height:1.7;">📢 <strong>預約異動提醒</strong>：修改或取消預約，須於停車日前一個上班日<strong>下午 3:00 前</strong>完成（週末及公告休假日不計）。逾期仍可查詢，但無法修改或取消。</div>
+      <div id="bookingsList" class="booking-list"></div>
+    </div>
+    
+    <div class="back-link">
+      <a href="CarParkingSystem.html">← 返回日曆</a>
+    </div>
+  </div>
+
+  <div id="cancelConfirmOverlay" class="custom-alert-overlay">
+    <div class="custom-alert-box" onclick="event.stopPropagation()">
+      <div class="custom-alert-icon">❓</div>
+      <div class="custom-alert-title">確認取消預約</div>
+      <div class="custom-alert-message">確定要取消此預約嗎？</div>
+      <div style="display: flex; gap: 10px;">
+        <button class="custom-alert-button" style="background: #6c757d; width: 48%;" onclick="closeCancelConfirm()">取消</button>
+        <button class="custom-alert-button" style="width: 48%;" onclick="executeCancelBooking()">確定</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let pendingCancelData = null;
+    
+    // ⭐ 調整 2：加入共用的 API 呼叫函數
+    // ⚠️ 記得替換成你新部署的 Web App 網址！
+    const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzeYWV2AYZIObL0IemO-r5rTI1Om3LJBOxr-3_2di1jFY99F8vkH1vg6P-zwLPaZ2RweQ/exec'; 
+
+    async function callGasApi(action, params = {}) {
+      try {
+        const response = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: action, ...params })
+        });
+        return await response.json(); 
+      } catch (error) {
+        console.error("API 請求失敗:", error);
+        throw error;
+      }
+    }
+
+    // 多筆預約：查詢使用姓名代號＋車牌，修改與取消使用單筆 recordId
+    async function requestBooking(action, params) {
+      const response = await callGasApi(action, params);
+      return typeof response === 'string' ? JSON.parse(response) : response;
+    }
+
+    function escapeHtml(value) {
+      return String(value == null ? '' : value).replace(/[&<>"']/g, c =>
+        ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function normalizeLookup(value) {
+      return String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    }
+
+    function showEditForm(recordId) {
+      const node = document.getElementById('editForm_' + recordId);
+      if (node) node.style.display = 'block';
+    }
+    function hideEditForm(recordId) {
+      const node = document.getElementById('editForm_' + recordId);
+      if (node) node.style.display = 'none';
+    }
+
+    async function submitEdit(recordId) {
+      const newTime = document.getElementById('editTime_' + recordId).value;
+      const newPlate = document.getElementById('editPlate_' + recordId).value.trim().toUpperCase();
+      if (!newTime) return showMessage('myBookingsMessage', '請選擇進場時間', 'error');
+      if (!/^[A-Z0-9]+(?:-[A-Z0-9]+)*$/.test(newPlate))
+        return showMessage('myBookingsMessage', '車牌請輸入英文、數字或連字號', 'error');
+      showMessage('myBookingsMessage', '修改中...', 'info');
+      try {
+        const result = await requestBooking('updateBookingByUser', {
+          recordId, newEntryTime: newTime, newLicensePlate: newPlate
+        });
+        if (!result.success) throw new Error(result.message || '修改失敗');
+        // 若車牌變更，查詢編號也必須跟著更新
+        const booking = currentBookings.find(b => String(b.recordId) === String(recordId));
+        if (booking && normalizeLookup(booking.licensePlate) !== normalizeLookup(newPlate)) {
+          document.getElementById('searchBookingId').value = String(booking.employeeId) + normalizeLookup(newPlate);
+        }
+        await searchMyBooking();
+        showMessage('myBookingsMessage', result.message || '修改成功', 'success');
+      } catch (error) { showMessage('myBookingsMessage', '修改失敗：' + error.message, 'error'); }
+    }
+
+    let currentBookings = [];
+    async function searchMyBooking() {
+      const bookingId = normalizeLookup(document.getElementById('searchBookingId').value);
+      if (!bookingId) return showMessage('myBookingsMessage', '請輸入姓名代號＋車牌', 'error');
+      showMessage('myBookingsMessage', '查詢中...', 'info');
+      try {
+        const result = await requestBooking('getBookingsByQuery', {bookingId});
+        if (!result.success) throw new Error(result.message || '查無預約');
+        currentBookings = Array.isArray(result.bookings) ? result.bookings : (result.booking ? [result.booking] : []);
+        if (currentBookings.some(b => typeof b.canChange !== 'boolean' || !/^\d{4}-\d{2}-\d{2} 15:00$/.test(String(b.changeDeadline || '')))) {
+          throw new Error('目前 GAS API 未回傳異動截止資訊（canChange／changeDeadline）。請重新部署最新版 code.gs，並確認本頁 GAS_API_URL 指向相同部署。');
+        }
+        displayBookings(currentBookings);
+        document.getElementById('myBookingsMessage').innerHTML = currentBookings.length ? '' : '<div class="alert alert-info">目前沒有符合條件的未來有效預約</div>';
+      } catch (error) {
+        currentBookings = [];
+        document.getElementById('bookingsList').innerHTML = '';
+        showMessage('myBookingsMessage', '查詢失敗：' + error.message, 'error');
+      }
+    }
+
+    function displayBookings(bookings) {
+      const list = document.getElementById('bookingsList');
+      list.innerHTML = '';
+      const times = ['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30'];
+      const statusLabels = {Pending:'待審核',Approved:'已核准',Rejected:'已駁回',Cancelled:'已取消'};
+      bookings.forEach(booking => {
+        const recordId = String(booking.recordId || '');
+        const safeId = escapeHtml(recordId);
+        // 後端依 Holidays 表及台灣時間判斷，前端只負責顯示及停用按鈕。
+        const editable = ['Pending','Approved'].includes(booking.status) && !!recordId && booking.canChange === true;
+        const deadlineText = booking.changeDeadline ? escapeHtml(booking.changeDeadline) : '請洽管理單位';
+        const expired = booking.canChange === false;
+        const div = document.createElement('div');
+        div.className = 'booking-item ' + String(booking.status || '').toLowerCase();
+        div.innerHTML = `
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:start;margin-bottom:10px;">
+            <div><strong>${escapeHtml(booking.name)}</strong> | ${escapeHtml(booking.department)}<br>
+            <small>預約編號：${escapeHtml(booking.bookingId)}</small></div>
+            <span class="status-badge status-${escapeHtml(String(booking.status).toLowerCase())}">${escapeHtml(statusLabels[booking.status] || booking.status)}</span>
+          </div>
+          <div style="color:#666;font-size:.9rem;line-height:1.8;">
+            📅 日期：${escapeHtml(booking.parkingDate)}<br>
+            ⏰ 時間：${escapeHtml(booking.entryTime)}<br>
+            🚙 車牌：${escapeHtml(booking.licensePlate)}<br>
+            🕒 修改／取消截止：${deadlineText}
+          </div>
+          ${expired ? '<div class="alert alert-info" style="margin-top:12px;">🔒 已超過異動期限，仍可查詢預約資料，但不能修改或取消(如需臨時異動請電2366-6439)。</div>' : ''}
+          ${editable ? `
+            <div id="editForm_${safeId}" style="display:none;margin-top:15px;padding-top:15px;border-top:2px solid #e0e0e0;">
+              <label>進場時間</label>
+              <select id="editTime_${safeId}" style="width:100%;padding:10px;margin-bottom:12px;border:2px solid #e0e0e0;border-radius:8px;">
+                ${times.map(t => `<option value="${t}" ${booking.entryTime === t ? 'selected' : ''}>${t}</option>`).join('')}
+              </select>
+              <label>車牌號碼</label>
+              <input id="editPlate_${safeId}" value="${escapeHtml(booking.licensePlate)}" placeholder="例如：AAA-2233">
+              <div style="display:flex;gap:10px;margin-top:12px;">
+                <button type="button" class="btn btn-secondary hide-edit" style="flex:1;">返回</button>
+                <button type="button" class="btn btn-secondary save-edit" style="flex:1;background:#667eea;">確認修改</button>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:12px;">
+              <button type="button" class="btn btn-secondary edit-btn" style="flex:1;">✏️ 修改預約</button>
+              <button type="button" class="btn btn-danger cancel-btn" style="flex:1;margin-top:0;">❌ 取消預約</button>
+            </div>` : ''}
+        `;
+        list.appendChild(div);
+        if (editable) {
+          div.querySelector('.edit-btn').addEventListener('click', () => showEditForm(recordId));
+          div.querySelector('.hide-edit').addEventListener('click', () => hideEditForm(recordId));
+          div.querySelector('.save-edit').addEventListener('click', () => submitEdit(recordId));
+          div.querySelector('.cancel-btn').addEventListener('click', () => showCancelConfirm(recordId));
+        }
+      });
+    }
+
+    function showCancelConfirm(recordId) {
+      pendingCancelData = {recordId};
+      document.getElementById('cancelConfirmOverlay').style.display = 'block';
+    }
+    function closeCancelConfirm() {
+      document.getElementById('cancelConfirmOverlay').style.display = 'none';
+      pendingCancelData = null;
+    }
+    async function executeCancelBooking() {
+      if (!pendingCancelData) return;
+      const {recordId} = pendingCancelData;
+      closeCancelConfirm();
+      showMessage('myBookingsMessage', '正在取消預約...', 'info');
+      try {
+        const result = await requestBooking('cancelBookingById', {recordId});
+        if (!result.success) throw new Error(result.message || '取消失敗');
+        await searchMyBooking();
+        showMessage('myBookingsMessage', result.message || '已取消預約', 'success');
+      } catch (error) { showMessage('myBookingsMessage', '取消失敗：' + error.message, 'error'); }
+    }
+
+    // 顯示訊息
+    function showMessage(elementId, message, type) {
+      const element = document.getElementById(elementId);
+      element.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+      
+      if (type === 'success' || type === 'error') {
+        setTimeout(() => { element.innerHTML = ''; }, 5000);
+      }
+    }
+  </script>
+</body>
+</html>
