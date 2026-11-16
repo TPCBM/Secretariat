@@ -58,6 +58,25 @@
   background: #cccccc;
   transform: none;
 }
+
+    /* ===== 頂端：查詢／修改提示列（整列可點） ===== */
+    .notice-link { display: flex; align-items: center; gap: 12px; background: #f4f6ff; border: 1px solid #dfe3fb; border-radius: 12px; padding: 12px 16px; margin-bottom: 24px; color: #333; text-decoration: none; line-height: 1.6; transition: background 0.2s, border-color 0.2s; }
+    .notice-link:hover { background: #eaeeff; border-color: #667eea; }
+    .notice-link:focus-visible { outline: 3px solid #667eea; outline-offset: 2px; }
+    .notice-icon { flex: 0 0 36px; height: 36px; border-radius: 50%; background: #fff; border: 1px solid #dfe3fb; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+    .notice-text { flex: 1; font-size: 1rem; }
+    .notice-cta { color: #4a58c4; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+    .notice-arrow { flex: 0 0 auto; color: #4a58c4; font-size: 1.5rem; line-height: 1; }
+    /* ===== 頁尾：來電資訊 ===== */
+    .contact-footer { margin-top: 20px; text-align: center; background: rgba(255,255,255,0.95); border-radius: 12px; padding: 14px 16px; color: #333; line-height: 1.6; box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+    .contact-footer a { display: inline-block; padding: 2px 4px; color: #4a58c4; font-weight: 700; font-size: 1.15rem; text-decoration: none; white-space: nowrap; }
+    .contact-footer a:hover { text-decoration: underline; }
+    @media (max-width: 768px) {
+      .notice-link { padding: 12px; gap: 10px; margin-bottom: 16px; }
+      .notice-text { font-size: 0.95rem; }
+      .contact-footer { padding: 12px; font-size: 0.95rem; }
+      .contact-footer a { font-size: 1.1rem; }
+    }
     @media (max-width: 768px) { body { padding: 8px; } .container { max-width: 100%; } .header h1 { font-size: 1.5rem; } .header p { font-size: 0.95rem; } .card { padding: 12px; border-radius: 12px; } .calendar-header { flex-direction: column; gap: 12px; } .calendar-header h2 { font-size: 1.2rem; } .month-nav { width: 100%; justify-content: center; } .nav-btn { padding: 8px 12px; font-size: 0.9rem; } .current-month { font-size: 1.1rem; min-width: 110px; } .calendar { gap: 2px; width: 100%; } .calendar-day-header { padding: 6px 1px; font-size: 0.7rem; } .calendar-day { min-height: 52px; padding: 2px; font-size: 0.75rem; } .day-number { font-size: 0.95rem; margin-bottom: 1px; } .availability { font-size: 0.65rem; padding: 1px 3px; white-space: nowrap; } .availability.none { font-size: 0.6rem; } .legend { gap: 6px; font-size: 0.8rem; margin-top: 20px; } .legend-item { flex: 0 0 calc(50% - 8px); font-size: 0.8rem; } .legend-box { width: 22px; height: 22px; flex-shrink: 0; } .admin-link { font-size: 0.85rem; } .admin-link a { display: block; margin: 5px 0; padding: 10px 12px; } .admin-link span { display: none; } }
     @media (max-width: 390px) { body { padding: 6px; } .card { padding: 10px; } .calendar { gap: 1.5px; } .calendar-day { min-height: 48px; padding: 1px; } .day-number { font-size: 0.9rem; } .availability { font-size: 0.6rem; padding: 1px 2px; } .availability.none { font-size: 0.55rem; } }
     @media (max-width: 375px) { body { padding: 5px; } .header h1 { font-size: 1.3rem; } .header p { font-size: 0.85rem; } .card { padding: 8px; } .calendar { gap: 1px; } .calendar-day-header { padding: 5px 0; font-size: 0.65rem; } .calendar-day { min-height: 45px; padding: 1px; } .day-number { font-size: 0.85rem; } .availability { font-size: 0.55rem; padding: 1px 2px; } .availability.none { font-size: 0.5rem; } .nav-btn { padding: 6px 10px; font-size: 0.85rem; } .current-month { font-size: 1rem; min-width: 100px; } .legend { flex-wrap: wrap; } .legend-item { flex: 0 0 calc(50% - 5px); font-size: 0.75rem; } .legend-box { width: 20px; height: 20px; } }
@@ -72,6 +91,12 @@
     </div>
     
     <div class="card">
+      <a class="notice-link" href="MyBookings.html" target="_blank" rel="noopener" title="前往我的預約" aria-label="前往我的預約：查詢、修改或取消預約">
+        <span class="notice-icon" aria-hidden="true">🔍</span>
+        <span class="notice-text">如需查詢、修改或取消預約，<span class="notice-cta">請點此</span></span>
+        <span class="notice-arrow" aria-hidden="true">›</span>
+      </a>
+
       <div class="calendar-header">
         <h2>選擇停車日期</h2>
         <div class="month-nav">
@@ -105,8 +130,8 @@
       </div>
     </div>
     
-    <div class="admin-link">
-      <a href="MyBookings.html" target="_blank">📋 我的預約</a>
+    <div class="contact-footer">
+      <span aria-hidden="true">☎️</span> 申請遇到問題，請來電<a href="tel:0223668450">(02)2366-8450</a>
     </div>
   </div>
 
