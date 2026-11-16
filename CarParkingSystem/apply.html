@@ -667,7 +667,6 @@
           <div class="form-group autocomplete-container">
             <label>姓名 <span class="required">*</span></label>
             <input type="text" id="name" required autocomplete="off" placeholder="陳小明">
-            <div id="nameAutocomplete" class="autocomplete-list"></div>
           </div>
           
           <div class="form-group">
@@ -758,8 +757,6 @@
   </div>
 
 <script>
-  let userHistory = [];
-  
   // ⚠️ 注意：這裡的網址目前是你原本的舊部署網址
   // 在你修改完 GAS 的 doPost 並重新部署「新版本」後，請記得將這個網址換成新的！
   const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzeYWV2AYZIObL0IemO-r5rTI1Om3LJBOxr-3_2di1jFY99F8vkH1vg6P-zwLPaZ2RweQ/exec'; 
@@ -848,19 +845,7 @@
           showCustomAlert('僅開放申請今天起兩個月內的停車日期，請重新選擇。');
         }
       }
-    }
-    
-    // ⭐ 載入使用者歷史記錄 (改用 callGasApi)
-    callGasApi('getUserHistory')
-      .then(result => {
-        // 為了保險，相容 GAS 轉字串的情境
-        const res = typeof result === 'string' ? JSON.parse(result) : result;
-        if (res.success) {
-          userHistory = res.history;
-        }
-      })
-      .catch(error => console.error('取得歷史紀錄失敗:', error));
-    
+    }  
     // 初始化 Modal
     initializeModal();
   });
@@ -951,52 +936,6 @@
     event.target.classList.add('active');
     document.getElementById(tabName).classList.add('active');
   }
-  
-  // Autocomplete 功能
-  const nameInput = document.getElementById('name');
-  const autocompleteList = document.getElementById('nameAutocomplete');
-  
-  if (nameInput && autocompleteList) {
-    nameInput.addEventListener('input', function() {
-      const value = this.value.toLowerCase();
-      autocompleteList.innerHTML = '';
-      
-      if (value.length < 1) {
-        autocompleteList.style.display = 'none';
-        return;
-      }
-      
-      const matches = userHistory.filter(item => 
-        item.name.toLowerCase().includes(value)
-      );
-      
-      if (matches.length > 0) {
-        matches.forEach(item => {
-          const div = document.createElement('div');
-          div.className = 'autocomplete-item';
-          div.textContent = `${item.name} (${item.employeeId})`;
-          div.onclick = function() {
-            document.getElementById('name').value = item.name;
-            document.getElementById('employeeId').value = item.employeeId;
-            document.getElementById('extension').value = item.extension;
-            document.getElementById('licensePlate').value = item.licensePlate;
-            autocompleteList.style.display = 'none';
-          };
-          autocompleteList.appendChild(div);
-        });
-        autocompleteList.style.display = 'block';
-      } else {
-        autocompleteList.style.display = 'none';
-      }
-    });
-  }
-  
-  // 點擊外部關閉 autocomplete
-  document.addEventListener('click', function(e) {
-    if (autocompleteList && !e.target.closest('.autocomplete-container')) {
-      autocompleteList.style.display = 'none';
-    }
-  });
   
   // ⭐ 送出申請 (改用 callGasApi)
   const bookingForm = document.getElementById('bookingForm');
