@@ -663,10 +663,17 @@
               <option value="999其他非總處台電單位">999其他非總處台電單位</option>
             </select>
           </div>
+
+          <!-- 選「999其他非總處台電單位」時才顯示：申請人自行填寫單位名稱，送出後以此名稱寫入 -->
+          <div class="form-group" id="otherDeptBox" style="display:none;">
+            <label>您的單位名稱 <span class="required">*</span></label>
+            <input type="text" id="otherDepartment" autocomplete="off" placeholder="請填寫單位全名，如：台北市政府工務局">
+          </div>
           
           <div class="form-group autocomplete-container">
-            <label>姓名 <span class="required">*</span></label>
+            <label>姓名（僅限中文） <span class="required">*</span></label>
             <input type="text" id="name" required autocomplete="off" placeholder="陳小明">
+            <div id="nameAutocomplete" class="autocomplete-list"></div>
           </div>
           
           <div class="form-group">
@@ -757,6 +764,8 @@
   </div>
 
 <script>
+  let userHistory = [];
+  
   // ⚠️ 注意：這裡的網址目前是你原本的舊部署網址
   // 在你修改完 GAS 的 doPost 並重新部署「新版本」後，請記得將這個網址換成新的！
   const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwSgo7TebP2Z5BEY6WHZgs5_fCgtDklaaqfaSRRb2AORXOmpi_1AsrlAWJCR5Ok_n-h/exec'; 
@@ -845,7 +854,19 @@
           showCustomAlert('僅開放申請今天起兩個月內的停車日期，請重新選擇。');
         }
       }
-    }  
+    }
+    
+    // ⭐ 載入使用者歷史記錄 (改用 callGasApi)
+    callGasApi('getUserHistory')
+      .then(result => {
+        // 為了保險，相容 GAS 轉字串的情境
+        const res = typeof result === 'string' ? JSON.parse(result) : result;
+        if (res.success) {
+          userHistory = res.history;
+        }
+      })
+      .catch(error => console.error('取得歷史紀錄失敗:', error));
+    
     // 初始化 Modal
     initializeModal();
   });
@@ -937,6 +958,95 @@
     document.getElementById(tabName).classList.add('active');
   }
   
+  // Autocomplete 功能
+  const nameInput = document.getElementById('name');
+  const autocompleteList = document.getElementById('nameAutocomplete');
+  
+  if (nameInput && autocompleteList) {
+    nameInput.addEventListener('input', function() {
+      const value = this.value.toLowerCase();
+      autocompleteList.innerHTML = '';
+      
+      if (value.length < 1) {
+        autocompleteList.style.display = 'none';
+        return;
+      }
+      
+      const matches = userHistory.filter(item => 
+        item.name.toLowerCase().includes(value)
+      );
+      
+      if (matches.length > 0) {
+        matches.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'autocomplete-item';
+          div.textContent = `${item.name} (${item.employeeId})`;
+          div.onclick = function() {
+            document.getElementById('name').value = item.name;
+            document.getElementById('employeeId').value = item.employeeId;
+            document.getElementById('extension').value = item.extension;
+            document.getElementById('licensePlate').value = item.licensePlate;
+            autocompleteList.style.display = 'none';
+          };
+          autocompleteList.appendChild(div);
+        });
+        autocompleteList.style.display = 'block';
+      } else {
+        autocompleteList.style.display = 'none';
+      }
+    });
+  }
+  
+  // 點擊外部關閉 autocomplete
+  document.addEventListener('click', function(e) {
+    if (autocompleteList && !e.target.closest('.autocomplete-container')) {
+      autocompleteList.style.display = 'none';
+    }
+  });
+  
+  // ====== 申請單位「其他」自填、姓名只能輸入中文 ======
+  const OTHER_DEPT_VALUE = '999其他非總處台電單位';
+  // 中日韓漢字範圍（含擴充區，罕用字也能輸入）；姓名間隔點（· ‧ • ． ・）只允許出現在兩段中文之間
+  const HAN_RANGES = '\\u3400-\\u4DBF\\u4E00-\\u9FFF\\uF900-\\uFAFF\\u{20000}-\\u{2A6DF}\\u{2A700}-\\u{2EBEF}\\u{2F800}-\\u{2FA1F}\\u{30000}-\\u{323AF}';
+  const NAME_DOTS = '\\u00B7\\u2027\\u2022\\uFF0E\\u30FB';
+  const DEPT_SYMBOLS = ' ()\\uFF08\\uFF09/\\uFF0F\\u3001.\\uFF0E,\\uFF0C&\\uFF06-';   // 單位名稱可用的符號（空白、括號、斜線、頓號、句點、逗號、&、連字號）
+  const NAME_FULL_RE = new RegExp('^[' + HAN_RANGES + ']+(?:[' + NAME_DOTS + '][' + HAN_RANGES + ']+)*$', 'u');
+  const DEPT_CHAR_RE = new RegExp('[' + HAN_RANGES + 'A-Za-z0-9' + DEPT_SYMBOLS + ']', 'u');
+  const DEPT_HAS_WORD_RE = new RegExp('[' + HAN_RANGES + 'A-Za-z]', 'u');
+
+  // 回傳錯誤訊息；空字串代表通過
+  function checkName(name) {
+    if (Array.from(name).length > 20) return '姓名最多 20 個字，請修正後再送出。';
+    if (!NAME_FULL_RE.test(name)) return '姓名只能輸入中文，不可包含英文字母、數字或空白，請修正後再送出。';
+    return '';
+  }
+
+  function checkDepartmentText(dept) {
+    const len = Array.from(dept).length;
+    if (len < 2 || len > 30) return '請填寫您的單位名稱（2～30 個字），請修正後再送出。';
+    if (!Array.from(dept).every(ch => DEPT_CHAR_RE.test(ch))) {
+      return '單位名稱只能包含中文、英數字及 ( ) （ ） - / 、 . , & 這些符號，請修正後再送出。';
+    }
+    if (!DEPT_HAS_WORD_RE.test(dept)) return '請填寫完整的單位名稱，請修正後再送出。';
+    return '';
+  }
+
+  // 選「999其他非總處台電單位」才顯示單位名稱輸入框（同時切換必填）
+  const departmentSelect = document.getElementById('department');
+  const otherDeptBox = document.getElementById('otherDeptBox');
+  const otherDeptInput = document.getElementById('otherDepartment');
+  function syncOtherDepartment() {
+    const isOther = departmentSelect.value === OTHER_DEPT_VALUE;
+    otherDeptBox.style.display = isOther ? 'block' : 'none';
+    otherDeptInput.required = isOther;
+  }
+  departmentSelect.addEventListener('change', function() {
+    syncOtherDepartment();
+    if (departmentSelect.value === OTHER_DEPT_VALUE) otherDeptInput.focus();
+  });
+  window.addEventListener('pageshow', syncOtherDepartment);   // 重新整理或從上一頁回來時，瀏覽器可能保留已選的單位
+  syncOtherDepartment();
+
   // ⭐ 送出申請 (改用 callGasApi)
   const bookingForm = document.getElementById('bookingForm');
   if (bookingForm) {
@@ -949,9 +1059,22 @@
         return;
       }
 
+      // 申請單位：選「其他」時，以申請人填寫的單位名稱送出
+      let department = departmentSelect.value;
+      if (department === OTHER_DEPT_VALUE) {
+        department = otherDeptInput.value.trim().replace(/\s+/g, ' ');
+        const deptError = checkDepartmentText(department);
+        if (deptError) { showCustomAlert(deptError); return; }
+      }
+
+      // 姓名：只能是中文
+      const nameValue = document.getElementById('name').value.trim();
+      const nameError = checkName(nameValue);
+      if (nameError) { showCustomAlert(nameError); return; }
+
       const data = {
-        department: document.getElementById('department').value,
-        name: document.getElementById('name').value,
+        department: department,
+        name: nameValue,
         employeeId: document.getElementById('employeeId').value,
         extension: document.getElementById('extension').value,
         licensePlate: document.getElementById('licensePlate').value.toUpperCase(),
